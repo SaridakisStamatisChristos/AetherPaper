@@ -38,7 +38,8 @@ def verify_video(path: str | Path, sample_dir: str | Path | None = None) -> dict
     if den==0 or num<=0:
         raise RuntimeError("invalid frame rate")
     output_dir=Path(sample_dir).resolve() if sample_dir else None
-    sample_times=(.1,.5,.9)
+    # Avoid seeking beyond the final presentation timestamp of short clips.
+    sample_times=(.1,.5,.75)
     checks=[]
     with TemporaryDirectory(prefix="aetherpaper-qa-") as tmp:
         destination=output_dir or Path(tmp)
