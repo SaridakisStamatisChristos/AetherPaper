@@ -25,6 +25,7 @@ jobs:
       - name: Verify artist-pose atlas importer and render real v0.6 film
         run: |
           set -euo pipefail
+          mkdir -p output
           aetherpaper pose-demo --source examples/last_light_directed_v05.json --out examples > output/v06_pose_demo_receipt.json
           aetherpaper validate examples/pose_atlas_demo_v06.json
           aetherpaper manifest examples/pose_atlas_demo_v06.json > output/v06_manifest.json
