@@ -120,12 +120,21 @@ def _body(actor: dict, pose, width: int, height: int, time: float):
         dx, dy = pose.look[0] * width-x, pose.look[1] * height-(y-.88*s)
         head_tilt = max(-.3, min(.3, math.atan2(dy, dx)*.18))
     head_tilt *= spring_progress(max(0, time), _config(actor,"spring",3.0))
-    skel = Skeleton([
-        Bone("pelvis",None,.05,-math.pi/2),
-        Bone("torso","pelvis",_config(actor,"torso",.3),0),
-        Bone("neck","torso",_config(actor,"neck",.12),head_tilt),
-    ])
-    return skel.solve(root,s), s, x, y
+    custom=actor.get('rig',{}).get('bones')
+    bones=[Bone(b['name'],b.get('parent'),b['length'],b.get('angle',0),b.get('at',1)) for b in custom] if custom else [
+        Bone('pelvis',None,.05,-math.pi/2),
+        Bone('torso','pelvis',_config(actor,'torso',.3),0),
+        Bone('neck','torso',_config(actor,'neck',.12),0),
+    ]
+    angles={'neck':next(b.angle for b in bones if b.name=='neck')+head_tilt}
+    if pose.bone_angles:
+        weight=pose.pose_weight
+        for b in bones:
+            if b.name in pose.bone_angles:
+                base=angles.get(b.name,b.angle)
+                angles[b.name]=base+(pose.bone_angles[b.name]-base)*weight
+    skel=Skeleton(bones)
+    return skel.solve(root,s,angles=angles), s, x, y
 
 
 def advanced_hand(actor: dict, pose, width: int, height: int, time: float) -> Point:
@@ -147,6 +156,12 @@ def advanced_hand(actor: dict, pose, width: int, height: int, time: float) -> Po
     else:
         swing = (pose.walk+getattr(pose,"run",0.0))*.13*s
         target = (x+.25*s-swing,y-.49*s)
+    if (pose.waving or gesture) and not pose.reach_prop and not pose.holding:
+        swing=(pose.walk+getattr(pose,'run',0.0))*.13*s
+        neutral=(x+.25*s-swing,y-.49*s)
+        w=max(0,min(1,getattr(pose,'gesture_weight',1)))
+        target=(neutral[0]+(target[0]-neutral[0])*w,
+                neutral[1]+(target[1]-neutral[1])*w)
     return two_bone_ik(shoulder,target,s*_config(actor,"upper_arm",.29),
                        s*_config(actor,"forearm",.28),bend=-1)[1]
 
@@ -184,6 +199,9 @@ def draw_character(draw, actor: dict, pose, width: int, height: int, time: float
                   (round(chest[0]-.155*s),round(chest[1]-.01*s))],
                  fill=shirt)
     _line(draw,[torso_start,chest],shirt,.22*s)
+    for name,(start,end,_) in joints.items():
+        if name not in ('pelvis','torso','neck'):
+            _line(draw,[start,end],shirt,.035*s)
     for side in (-1,1):
         shoulder = (chest[0]+side*.155*s,chest[1]+.055*s)
         if side > 0:
