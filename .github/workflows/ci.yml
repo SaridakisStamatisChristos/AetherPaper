@@ -12,7 +12,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng
       - name: Install package and test dependencies
         run: python -m pip install -e '.[dev]'
       - name: Unit and integration tests
@@ -24,6 +24,8 @@ jobs:
           aetherpaper validate examples/rig_demo.json
           aetherpaper validate examples/interaction_demo.json
           aetherpaper validate examples/visual_demo.json
+          aetherpaper validate examples/explainer_demo.json
+          aetherpaper manifest examples/explainer_demo.json > output-manifest.json
       - name: Render actual short movie
         run: aetherpaper render examples/room_pickup.json --width 320 --height 180 --fps 6 --out output/ci.mp4
       - name: Render articulated JSON demonstration
@@ -44,6 +46,11 @@ jobs:
           aetherpaper snapshot examples/visual_demo.json --at 1.5 --out output/style_papercut.png
           aetherpaper snapshot examples/visual_demo.json --at 4.5 --out output/style_scrapbook.png
           aetherpaper snapshot examples/visual_demo.json --at 7.5 --out output/style_storybook.png
+      - name: Render and audit 24-second narrated explainer
+        run: |
+          aetherpaper render examples/explainer_demo.json --voice espeak --width 320 --height 180 --fps 12 --out output/explainer_demo.mp4
+          aetherpaper qa output/explainer_demo.mp4 --frames-dir output/qa > output/explainer_qa.json
+          ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of default=noprint_wrappers=1 output/explainer_demo.mp4 | grep -q 'codec_name=aac'
       - name: Probe MP4 stream
         run: |
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of default=noprint_wrappers=1 output/ci.mp4
@@ -54,6 +61,8 @@ jobs:
           test -s output/interaction_demo.mp4
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/visual_demo.mp4
           test -s output/visual_demo.mp4
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/explainer_demo.mp4
+          test -s output/explainer_demo.mp4
       - name: Upload reproducible rendered demonstrations
         uses: actions/upload-artifact@v4
         with:
@@ -62,6 +71,10 @@ jobs:
             output/rig_demo.mp4
             output/interaction_demo.mp4
             output/visual_demo.mp4
+            output/explainer_demo.mp4
+            output/explainer_qa.json
+            output/qa/
+            output-manifest.json
             output/style_papercut.png
             output/style_scrapbook.png
             output/style_storybook.png
