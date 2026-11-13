@@ -99,7 +99,8 @@ def prop_state(scene: dict, prop: dict, time: float,
         if time < start:
             break
         if freefall is not None:
-            position=falling(*freefall,elapsed=start-freefall[1])
+            initial, started, gravity, ground, bounce, vx = freefall
+            position=falling(initial,start-started,gravity,ground,bounce,vx)
             freefall=None
         kind=action['type']
         if kind == 'pickup':
