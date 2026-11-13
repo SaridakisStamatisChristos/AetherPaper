@@ -103,6 +103,26 @@ def _update_limb(joints:dict[str,Joint],upper_name:str,lower_name:str,
     joints[lower_name]=(hinge,tip,math.atan2(tip[1]-hinge[1],tip[0]-hinge[0]))
 
 
+def _update_limb_front(joints:dict[str,Joint],upper_name:str,lower_name:str,
+                       target:Point,side:int,scale:float,arm:bool=False)->None:
+    """Project a 3-D elbow/knee bend into a coherent front-facing 2-D cutout.
+
+    Real knees flex toward/away from the camera; enforcing both 2-D link
+    lengths creates impossible X-shaped frontal legs. This option intentionally
+    uses optical foreshortening, so drawn link lengths change with pose while
+    the foot/hand endpoint remains exactly planted. Only opt-in artist rigs
+    use this mode; classical two-link IK remains exact elsewhere.
+    """
+    if upper_name not in joints or lower_name not in joints:
+        return
+    root=joints[upper_name][0]
+    dx=target[0]-root[0];dy=target[1]-root[1]
+    mid=(root[0]+dx*.5+side*(.019 if arm else .006)*scale,
+         root[1]+dy*.5+(-.008 if arm else -.012)*scale)
+    joints[upper_name]=(root,mid,math.atan2(mid[1]-root[1],mid[0]-root[0]))
+    joints[lower_name]=(mid,target,math.atan2(target[1]-mid[1],target[0]-mid[0]))
+
+
 def posed_sprite_joints(actor:dict,pose,width:int,height:int,time:float) -> dict[str,Joint]:
     """Solve the shared rig and retarget standard named arm/leg pairs with IK.
 
@@ -111,13 +131,17 @@ def posed_sprite_joints(actor:dict,pose,width:int,height:int,time:float) -> dict
     These are optional: arbitrary custom bones and older sprite kits remain valid.
     """
     joints,s,x,y=_body(actor,pose,width,height,time)
+    front_view=actor.get('rig',{}).get('front_view',False)
     # Avoid writing ephemeral runtime keys into caller's JSON actor object.
     actor_data={**actor,"_width":width,"_height":height}
     for side,suffix in ((-1,"l"),(1,"r")):
         upper,lower="arm_"+suffix,"forearm_"+suffix
         dest=_target(actor_data,pose,side,time,x,y,s)
         if not (pose.bone_angles and (upper in pose.bone_angles or lower in pose.bone_angles)):
-            _update_limb(joints,upper,lower,dest,-side)
+            if front_view:
+                _update_limb_front(joints,upper,lower,dest,side,s,arm=True)
+            else:
+                _update_limb(joints,upper,lower,dest,-side)
     walking=max(abs(pose.walk),abs(pose.run),abs(pose.gait or 0.))
     for side,suffix in ((-1,"l"),(1,"r")):
         upper,lower="thigh_"+suffix,"shin_"+suffix
@@ -134,7 +158,10 @@ def posed_sprite_joints(actor:dict,pose,width:int,height:int,time:float) -> dict
             fx,fy=pose.foot_world[suffix]
             dest=(fx*width,fy*height)
         if not (pose.bone_angles and (upper in pose.bone_angles or lower in pose.bone_angles)):
-            _update_limb(joints,upper,lower,dest,side)
+            if front_view:
+                _update_limb_front(joints,upper,lower,dest,side,s,arm=False)
+            else:
+                _update_limb(joints,upper,lower,dest,side)
     if "cape" in joints:
         a,b,_=joints["cape"]
         length=math.dist(a,b)
