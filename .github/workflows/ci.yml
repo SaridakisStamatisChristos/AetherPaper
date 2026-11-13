@@ -6,6 +6,8 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -94,3 +96,25 @@ jobs:
             output/rig_gesture.png
             output/rig_speech.png
           retention-days: 30
+
+      - name: Archive independently verified MP4 previews in the feature branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/advanced-animation-v0.2'
+        run: |
+          set -euo pipefail
+          if test -f samples/v0.2/explainer_demo.mp4; then
+            echo "Verified samples already preserved in samples/v0.2"
+            exit 0
+          fi
+          mkdir -p samples/v0.2
+          cp output/rig_demo.mp4 output/interaction_demo.mp4 output/physics_demo.mp4 output/visual_demo.mp4 output/explainer_demo.mp4 samples/v0.2/
+          cp output/rig_run.png output/rig_gesture.png output/rig_speech.png samples/v0.2/
+          cp output/prop_pickup.png output/prop_carry.png output/prop_placed.png samples/v0.2/
+          cp output/style_papercut.png output/style_scrapbook.png output/style_storybook.png samples/v0.2/
+          cp output/explainer_qa.json output/physics_qa.json samples/v0.2/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add samples/v0.2
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(samples): preserve CI-verified v0.2 MP4 demonstrations [skip ci]'
+            git push origin HEAD:feature/advanced-animation-v0.2
+          fi
