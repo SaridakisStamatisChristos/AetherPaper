@@ -1,0 +1,28 @@
+{
+  "video": "/home/runner/work/AetherPaper/AetherPaper/output/lantern_keeper_v03.mp4",
+  "codec": "h264",
+  "width": 640,
+  "height": 360,
+  "fps": 24.0,
+  "frames": 240,
+  "duration": 10.0,
+  "audio_codecs": [],
+  "frame_checks": [
+    {
+      "time": 1.37,
+      "variance": 1832.932,
+      "readable": true
+    },
+    {
+      "time": 4.19,
+      "variance": 1772.203,
+      "readable": true
+    },
+    {
+      "time": 7.31,
+      "variance": 1722.793,
+      "readable": true
+    }
+  ],
+  "sample_dir": "/home/runner/work/AetherPaper/AetherPaper/output/lantern_qa"
+}
