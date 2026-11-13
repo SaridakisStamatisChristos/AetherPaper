@@ -1,0 +1,68 @@
+{
+  "format": "aetherpaper-manifest-0.6",
+  "project": "/home/runner/work/AetherPaper/AetherPaper/examples/pose_atlas_demo_v06.json",
+  "version": "0.6",
+  "canvas": {
+    "width": 640,
+    "height": 360,
+    "fps": 12
+  },
+  "duration_seconds": 5.0,
+  "scene_count": 1,
+  "scenes": [
+    {
+      "id": "atlas-demo",
+      "duration": 5.0,
+      "style": "cinematic_storybook",
+      "action_types": [
+        "performance"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "reference": "scenes[0].characters[0].visual.states.walk[0].src",
+      "kind": "image",
+      "path": "assets/pose_atlas_demo/poses/walk_000.png",
+      "bytes": 30310,
+      "sha256": "73eecdcba8995ddbc4a0e15a16fc07e789d468963eb6e3dc0f8ed02ebcba8d95"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.states.walk[1].src",
+      "kind": "image",
+      "path": "assets/pose_atlas_demo/poses/walk_001.png",
+      "bytes": 27262,
+      "sha256": "b4c40ec8765fef8ceb579feade77d3e94847f44d1fcb4dfdff4579d6cf0eac3a"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.states.idle[0].src",
+      "kind": "image",
+      "path": "assets/pose_atlas_demo/poses/idle_000.png",
+      "bytes": 23611,
+      "sha256": "2ae16717eb2e27266b5497667ed8356ce0d934007f182381620f9e819c3aab67"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.states.reach[0].src",
+      "kind": "image",
+      "path": "assets/pose_atlas_demo/poses/reach_000.png",
+      "bytes": 22322,
+      "sha256": "d18540282ac3594edd642151cbb03af019479b6cee354336f9071daa1902fa0b"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.states.carry[0].src",
+      "kind": "image",
+      "path": "assets/pose_atlas_demo/poses/carry_000.png",
+      "bytes": 23878,
+      "sha256": "32ae4048221feb18a6937e2ec0a515bd0e0a253bda2c50dce3a58fa7fbb87530"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.states.speak[0].src",
+      "kind": "image",
+      "path": "assets/pose_atlas_demo/poses/speak_000.png",
+      "bytes": 24835,
+      "sha256": "4344b7f9d3ece97221d646160abc3223d08248d6ece35f24a15e3ccc8b78f6e8"
+    }
+  ],
+  "network_required": false,
+  "ai_runtime_required": false
+}
