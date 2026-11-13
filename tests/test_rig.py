@@ -7,7 +7,7 @@ import pytest
 from PIL import ImageChops
 
 from aetherpaper.model import load_project, validate_project, SceneError
-from aetherpaper.rig import Bone, Skeleton, two_bone_ik, spring_progress, advanced_hand
+from aetherpaper.rig import Bone, Skeleton, two_bone_ik, spring_progress, advanced_hand, _body
 from aetherpaper.paint import render_frame
 from aetherpaper.timeline import actor_pose
 
@@ -62,6 +62,19 @@ def test_v02_scene_has_genuine_motion_and_seek_safe_frames():
     assert ImageChops.difference(a,c).getbbox() is not None
     assert advanced_hand(scene["characters"][0],p1,240,136,1.4) != advanced_hand(
         scene["characters"][0],actor_pose(scene,scene["characters"][0],3.5),240,136,3.5)
+
+
+def test_custom_bones_and_blended_pose():
+    p=load_project(EXAMPLE)
+    actor=p.scenes[0]['characters'][0]
+    state=actor_pose(p.scenes[0],actor,4.4)
+    joints,_,_,_=_body(actor,state,240,136,4.4)
+    assert 'scarf' in joints
+    assert state.pose_weight>0
+    assert state.bone_angles['scarf']==.85
+    early=actor_pose(p.scenes[0],actor,4.201)
+    middle=actor_pose(p.scenes[0],actor,4.6)
+    assert early.gesture_weight < middle.gesture_weight
 
 
 def test_rig_rejects_invalid_lengths_and_mouth_timing():
