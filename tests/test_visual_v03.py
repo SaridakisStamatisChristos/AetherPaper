@@ -32,7 +32,7 @@ def test_illustrated_puppet_renders_and_changes_without_random_flicker():
     assert early.tobytes()==same.tobytes()
     assert ImageChops.difference(early,lifted).getbbox()
     assert ImageChops.difference(lifted,placed).getbbox()
-    assert len(set(early.getdata()))>300
+    assert len(early.getcolors(maxcolors=1_000_000) or [])>300
     assert ImageStat.Stat(early.convert("L")).stddev[0]>15
 
 
@@ -54,6 +54,32 @@ def test_prop_light_follows_carried_actor_hand_and_ends_on_table():
     assert carried.center != initial.center
     assert final.owner is None
     assert final.center==pytest.approx((.8,.636))
+
+
+def test_directed_grasp_and_antialiased_scene():
+    p=load_project(EXAMPLE)
+    scene=p.scenes[0]
+    actor=scene['characters'][0]
+    pose=actor_pose(scene,actor,3.85)
+    assert pose.hand_target==(.585,.648)
+    assert 0<pose.hand_weight<1
+    high=render_frame(p,scene,3.85,width=240,height=136)
+    simple=copy.deepcopy(scene)
+    simple['supersample']=1
+    low=render_frame(p,simple,3.85,width=240,height=136)
+    assert high.size==low.size
+    assert high.tobytes()!=low.tobytes()
+
+
+def test_bad_supersampling_rejected():
+    baseline=load_project(EXAMPLE).data
+    wrong=copy.deepcopy(baseline)
+    wrong['scenes'][0]['supersample']=2.5
+    with pytest.raises(SceneError,match='supersample'):
+        validate_project(wrong)
+    wrong['scenes'][0]['supersample']=5
+    with pytest.raises(SceneError,match='supersample'):
+        validate_project(wrong)
 
 
 def test_bad_new_style_visual_and_title_rejected():
