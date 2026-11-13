@@ -134,9 +134,9 @@ def _base(w:int,h:int,seed:int)->Image.Image:
         _house(d,w,h,x,y,size,seed+i+43)
     # Lighthouse on the far ridge: clear recognisable story destination.
     tower_x=.953*w
-    d.polygon([(tower_x-13*h*.027,.51*h),
+    d.polygon([(tower_x-13*h*.0027,.51*h),
                (tower_x+13*h*.027,.51*h),
-               (tower_x+8*h*.027,.34*h),
+               (tower_x+8*h*.0027,.34*h),
                (tower_x-8*h*.027,.34*h)],fill="#E4D4C5")
     d.polygon(_p(w,h,[(.932,.358),(.974,.358),(.964,.321),(.943,.321)]),
               fill="#594A57")
