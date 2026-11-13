@@ -122,4 +122,8 @@ def camera_state(scene: dict, t: float) -> tuple[float, float, float]:
             a = action.get('center_from', [cx, cy]); b = action.get('center_to', a)
             cx, cy = lerp(a[0], b[0], f), lerp(a[1], b[1], f)
             zoom = lerp(action.get('zoom_from', zoom), action.get('zoom_to', zoom), f)
+            if 'track' in action:
+                actor=next(a for a in scene.get('characters',[]) if a['id']==action['track'])
+                tracked=actor_pose(scene,actor,t)
+                cx,cy=tracked.x,tracked.y-.23*actor.get('scale',1)
     return cx, cy, zoom
