@@ -9,7 +9,7 @@ from typing import Any
 
 HEX_COLOR = re.compile(r'^#[0-9a-fA-F]{6}$')
 SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room', 'rope'}
-PROP_SHAPES = {'book', 'ball', 'cup', 'star', 'box'}
+PROP_SHAPES = {'book', 'ball', 'cup', 'star', 'box', 'lantern'}
 ACTION_TYPES = {'walk', 'run', 'pickup', 'speak', 'wave', 'look', 'gesture', 'expression', 'place', 'release', 'spring', 'pose'}
 
 class SceneError(ValueError):
@@ -89,9 +89,9 @@ def load_project(path: str | Path) -> Project:
 
 def validate_project(data: Any) -> None:
     data = _object(data, '$')
-    if data.get('version') not in ('0.1', '0.2'):
-        _fail('$.version', 'expected "0.1" or "0.2"')
-    if data.get('style','paper_cut') not in ('paper_cut','scrapbook','storybook'):
+    if data.get('version') not in ('0.1', '0.2', '0.3'):
+        _fail('$.version', 'expected "0.1", "0.2" or "0.3"')
+    if data.get('style','paper_cut') not in ('paper_cut','scrapbook','storybook','cinematic_storybook'):
         _fail('$.style','unknown visual preset')
     canvas = _object(data.get('canvas'), '$.canvas')
     for key in ('width', 'height'):
@@ -119,8 +119,19 @@ def validate_project(data: Any) -> None:
             _fail(f'{path}.duration', 'duration must be a multiple of 1/fps')
         total_frames += frames
         _color(scene.get('background', '#F5EAD6'), f'{path}.background')
-        if scene.get('style',data.get('style','paper_cut')) not in ('paper_cut','scrapbook','storybook'):
+        if scene.get('style',data.get('style','paper_cut')) not in ('paper_cut','scrapbook','storybook','cinematic_storybook'):
             _fail(f'{path}.style', 'unknown visual preset')
+        if 'environment' in scene:
+            env=_object(scene['environment'],f'{path}.environment')
+            if env.get('type')!='moonlit_atelier':
+                _fail(f'{path}.environment.type','unknown environment')
+        if 'title_card' in scene:
+            title=_object(scene['title_card'],f'{path}.title_card')
+            _string(title.get('text'),f'{path}.title_card.text')
+            a=_number(title.get('start',0),f'{path}.title_card.start',0,dur)
+            b=_number(title.get('end',2.5),f'{path}.title_card.end',0,dur)
+            if b<=a:
+                _fail(f'{path}.title_card.end','must be later than start')
         if 'transition' in scene:
             tr = _object(scene['transition'],f'{path}.transition')
             if tr.get('type') not in ('fade','wipe'):
@@ -174,6 +185,17 @@ def validate_project(data: Any) -> None:
             for k in ('skin', 'shirt', 'pants', 'hair'):
                 if k in actor:
                     _color(actor[k], f'{cp}.{k}')
+            if 'visual' in actor:
+                visual=_object(actor['visual'],f'{cp}.visual')
+                if visual.get('type') not in ('illustrated',):
+                    _fail(f'{cp}.visual.type','unsupported character visual')
+                if 'rig' not in actor:
+                    _fail(f'{cp}.rig','illustrated characters require a rig object')
+                for key,val in visual.items():
+                    if key in ('coat','lining'):
+                        _color(val,f'{cp}.visual.{key}')
+                    elif key!='type':
+                        _fail(f'{cp}.visual.{key}','unknown visual field')
             if 'rig' in actor:
                 rig = _object(actor['rig'], f'{cp}.rig')
                 lengths = {'torso', 'neck', 'upper_arm', 'forearm', 'thigh', 'shin', 'head'}
