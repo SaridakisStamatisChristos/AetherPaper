@@ -3,6 +3,9 @@ on:
   push:
     branches: [main, feature/**]
   pull_request:
+concurrency:
+  group: aetherpaper-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -124,6 +127,11 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/feature/visual-quality-v0.3'
         run: |
           set -euo pipefail
+          git fetch origin feature/visual-quality-v0.3
+          if [ "$(git rev-parse FETCH_HEAD)" != "$GITHUB_SHA" ]; then
+            echo "New source commit exists; skip publication from stale CI job."
+            exit 0
+          fi
           mkdir -p samples/v0.3
           cp output/lantern_keeper_v03.mp4 samples/v0.3/
           cp output/lantern_approach.png output/lantern_reach.png output/lantern_carry.png output/lantern_final.png samples/v0.3/
