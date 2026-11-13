@@ -2,7 +2,82 @@
 
 **Local-first, model-independent, JSON-driven 2D paper-cut animation.** The render engine works without calling Claude, Gemini, ChatGPT, any external API, or an AI coding agent. A scene document describes character movement, prop interaction, captions, camera motion and timing. AetherPaper renders actual frames into an MP4. The core is reusable across productions.
 
-## Status: v0.1 foundation
+## v0.2 — working animation engine (feature branch)
+
+AetherPaper v0.2 retains every v0.1 scene while adding reusable articulated 2D rigs and prop physics. A model may write **JSON only**; the locally installed Python/Pillow engine renders frames itself, uses FFmpeg for MP4, and can synchronize pre-generated narration WAVs. It does not invoke an AI model during rendering.
+
+### Ubuntu / Linux Mint — complete installation
+
+```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip ffmpeg
+sudo apt install -y espeak-ng  # optional, for narration without external WAVs
+
+git clone https://github.com/SaridakisStamatisChristos/AetherPaper.git
+cd AetherPaper
+git switch feature/advanced-animation-v0.2
+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e '.[dev]'
+
+aetherpaper validate examples/rig_demo.json
+python -m pytest -q
+```
+
+Python 3.10+, Pillow and FFmpeg are required. Node, browsers, Remotion, HyperFrames, cloud accounts and AI subscriptions are **not** required. The GitHub CI target is Ubuntu; Linux Mint is designed to work with equivalent `apt` packages, but has not been manually tested on every Mint version.
+
+### Render five actual example films
+
+```bash
+mkdir -p output
+aetherpaper render examples/rig_demo.json --out output/rig_demo.mp4
+aetherpaper render examples/interaction_demo.json --out output/interaction_demo.mp4
+aetherpaper render examples/physics_demo.json --out output/physics_demo.mp4
+aetherpaper render examples/visual_demo.json --out output/visual_demo.mp4
+aetherpaper render examples/explainer_demo.json --voice espeak --out output/explainer_demo.mp4
+```
+
+For a fast 320x180 preview, add `--width 320 --height 180 --fps 12`. For a vertical social reel add `--width 1080 --height 1920 --fps 30`. Even dimensions are required.
+
+The demonstrations cover character IK, gestures, custom skeletal poses, walking/running and timed mouths; entering, lifting, carrying, placing and releasing objects; grounded gravity, spring and rope motion; three paper presets, camera tracking/parallax and transitions; and a **24-second narrated** four-scene animated explainer.
+
+CI-generated MP4s and representative PNG frames are attached to [successful GitHub Actions runs](https://github.com/SaridakisStamatisChristos/AetherPaper/actions). A separate publishing gate preserves canonical samples under `samples/v0.2/` when that workflow completes.
+
+### Preview, manifest and QA
+
+```bash
+aetherpaper snapshot examples/rig_demo.json --at 3.5 --out output/frame.png
+aetherpaper manifest examples/explainer_demo.json > output/production-manifest.json
+aetherpaper qa output/explainer_demo.mp4 --frames-dir output/qa > output/qa.json
+```
+
+`manifest` validates local image/WAV references and reports SHA-256 hashes. `qa` probes actual H.264 streams and decodes representative frames; it is not a substitute for artistic review. `validate` rejects unsupported JSON versions, bad timing, missing character/prop links, invalid joint parameters and unsafe coordinates.
+
+### Connect Kokoro, ClaudeCreate, AetherMotion or AetherRendering
+
+The authoring system emits a versioned JSON scene file. AetherPaper executes it offline. For speech, attach a pre-generated local Kokoro WAV to a `speak` action:
+
+```json
+{"type":"speak","target":"narrator","start":0.5,"end":4.5,
+ "text":"Welcome.","audio":"assets/line.wav"}
+```
+
+WAV is referenced relative to the JSON directory. AetherPaper aligns each clip to its action's start and muxes AAC, but does not run Kokoro itself or automatically align visemes. Use `--voice espeak` only when a basic local synthesis demo is sufficient.
+
+### v0.2 references
+
+- [Versioned JSON schema and all actions](docs/SCHEMA_V02.md)
+- [Cross-project CLI and audio integration contracts](docs/INTEGRATIONS.md)
+- [Actual source/architecture evaluation and licensing notes](docs/UPSTREAM_EVALUATION.md)
+- [Implementation and verification ledger](docs/PROGRESS_V02.md)
+
+**Scope:** configurable humanoid bone hierarchies, two-bone IK, deterministic object attachment/grounded falls, layered visuals, camera tracking and three looks are implemented. Full general-purpose soft-body physics, arbitrary imported puppet skinning, automatic lipsync, advanced collision response and production-grade art direction are **not** claimed. Review before merging.
+
+---
+
+## v0.1 foundation — historical notes (retained for compatibility)
 
 Implemented and testable:
 
@@ -16,7 +91,7 @@ Implemented and testable:
 - Optional offline eSpeak narration or external pre-generated WAV voice lines (for example, from Kokoro).
 - Tests + an Ubuntu GitHub Actions build that renders and probes a real MP4.
 
-**Not yet implemented:** integrated Kokoro generation, image segmentation, sophisticated inverse-kinematics, generic imported skeleton rigs, a browser UI, direct HyperFrames/Papermotion adapters, an asset-license registry, automated lip phoneme alignment, or production-grade audio mastering. The current mouth motion is timed, not viseme-synchronized. This is an engineering foundation, not a claim of feature parity with upstream projects.
+**Legacy limitations:** v0.1 had no inverse kinematics or configurable rigs; v0.2 adds these. Still missing: integrated Kokoro generation, image segmentation, arbitrary skinned puppet imports, browser UI, direct HyperFrames/Papermotion adapters, asset-license registry, automatic phoneme recognition, and production-grade audio mastering. The current mouth motion is timed, not viseme-synchronized. This is an engineering foundation, not a claim of feature parity with upstream projects.
 
 ## Install — Linux Mint / Ubuntu
 
@@ -27,7 +102,7 @@ sudo apt install -y python3 python3-venv python3-pip ffmpeg
 git clone https://github.com/SaridakisStamatisChristos/AetherPaper.git
 cd AetherPaper
 # While v0.1 is under review:
-git checkout feature/json-animation-v0.1
+git checkout feature/advanced-animation-v0.2
 
 python3 -m venv .venv
 source .venv/bin/activate
