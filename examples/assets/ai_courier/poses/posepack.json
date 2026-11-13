@@ -1,0 +1,111 @@
+{
+  "format": "aetherpaper-posepack-0.6",
+  "source": "original_pose_atlas.png",
+  "source_sha256": "21a117aba23df6a164eb631b5a7bcc4664d19491620ab2ae752da3af053d340b",
+  "frames": 6,
+  "states": {
+    "idle": 1,
+    "walk": 2,
+    "reach": 1,
+    "carry": 1,
+    "speak": 1
+  },
+  "sha256": {
+    "idle_000.png": "6e29627920de586964d50afda73d925d6a5fe49d4c2ee20828929b3f6fe98c37",
+    "walk_000.png": "75b9cffdb8e3b4a3dba3b6b826d627aa0c31c8a3d9922c5a2832111fc4599d15",
+    "walk_001.png": "399106c5b3e82e05358c55e8d6b1cab299fad6df1f01ef52aab0458434cd3e98",
+    "reach_000.png": "1b5bee28efe929382edb01070300f544cc4df738b202ed71d0bc3f788031b286",
+    "carry_000.png": "6bcb58375572c8a25fdd907da2b16c6eeac53aa152d82a5107485d3681fd3c61",
+    "speak_000.png": "f16aa8181d8a738052e1bddfc986a72e808029b986f4249d87a73fdc485d622b"
+  },
+  "visual": {
+    "type": "pose_atlas",
+    "states": {
+      "idle": [
+        {
+          "src": "idle_000.png",
+          "foot_anchor": [
+            0.5,
+            0.975
+          ],
+          "hand_anchor": [
+            0.657,
+            0.565
+          ]
+        }
+      ],
+      "walk": [
+        {
+          "src": "walk_000.png",
+          "foot_anchor": [
+            0.5,
+            0.975
+          ],
+          "hand_anchor": [
+            0.804,
+            0.465
+          ]
+        },
+        {
+          "src": "walk_001.png",
+          "foot_anchor": [
+            0.5,
+            0.975
+          ],
+          "hand_anchor": [
+            0.835,
+            0.435
+          ]
+        }
+      ],
+      "reach": [
+        {
+          "src": "reach_000.png",
+          "foot_anchor": [
+            0.5,
+            0.975
+          ],
+          "hand_anchor": [
+            0.935,
+            0.34
+          ]
+        }
+      ],
+      "carry": [
+        {
+          "src": "carry_000.png",
+          "foot_anchor": [
+            0.5,
+            0.975
+          ],
+          "hand_anchor": [
+            0.764,
+            0.155
+          ]
+        }
+      ],
+      "speak": [
+        {
+          "src": "speak_000.png",
+          "foot_anchor": [
+            0.5,
+            0.975
+          ],
+          "hand_anchor": [
+            0.837,
+            0.35
+          ]
+        }
+      ]
+    },
+    "default": "idle",
+    "foot_anchor": [
+      0.5,
+      0.975
+    ],
+    "height": 0.68,
+    "fps": 6,
+    "playback": "loop"
+  },
+  "note": "Copy these visual paths relative to the scene JSON; no segmentation performed"
+}

@@ -1,0 +1,70 @@
+{
+  "format": "aetherpaper-manifest-0.6",
+  "project": "/home/runner/work/AetherPaper/AetherPaper/examples/ai_illustrated_courier_v06.json",
+  "version": "0.6",
+  "canvas": {
+    "width": 640,
+    "height": 360,
+    "fps": 12
+  },
+  "duration_seconds": 5,
+  "scene_count": 1,
+  "scenes": [
+    {
+      "id": "real-illustrated-pose-courier",
+      "duration": 5,
+      "style": "cinematic_storybook",
+      "action_types": [
+        "performance",
+        "pickup",
+        "speak"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "reference": "scenes[0].characters[0].visual.states.idle[0].src",
+      "kind": "image",
+      "path": "assets/ai_courier/poses/idle_000.png",
+      "bytes": 331046,
+      "sha256": "6e29627920de586964d50afda73d925d6a5fe49d4c2ee20828929b3f6fe98c37"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.states.walk[0].src",
+      "kind": "image",
+      "path": "assets/ai_courier/poses/walk_000.png",
+      "bytes": 343992,
+      "sha256": "75b9cffdb8e3b4a3dba3b6b826d627aa0c31c8a3d9922c5a2832111fc4599d15"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.states.walk[1].src",
+      "kind": "image",
+      "path": "assets/ai_courier/poses/walk_001.png",
+      "bytes": 331885,
+      "sha256": "399106c5b3e82e05358c55e8d6b1cab299fad6df1f01ef52aab0458434cd3e98"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.states.reach[0].src",
+      "kind": "image",
+      "path": "assets/ai_courier/poses/reach_000.png",
+      "bytes": 341593,
+      "sha256": "1b5bee28efe929382edb01070300f544cc4df738b202ed71d0bc3f788031b286"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.states.carry[0].src",
+      "kind": "image",
+      "path": "assets/ai_courier/poses/carry_000.png",
+      "bytes": 344518,
+      "sha256": "6bcb58375572c8a25fdd907da2b16c6eeac53aa152d82a5107485d3681fd3c61"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.states.speak[0].src",
+      "kind": "image",
+      "path": "assets/ai_courier/poses/speak_000.png",
+      "bytes": 345694,
+      "sha256": "f16aa8181d8a738052e1bddfc986a72e808029b986f4249d87a73fdc485d622b"
+    }
+  ],
+  "network_required": false,
+  "ai_runtime_required": false
+}
