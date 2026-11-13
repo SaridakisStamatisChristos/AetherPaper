@@ -99,6 +99,22 @@ def test_physical_held_prop_is_exactly_at_visible_sprite_hand(project):
     assert after.center==pytest.approx((.795,.666))
 
 
+def test_neutral_knees_bend_outward_not_crossed(project):
+    scene=project.scenes[0];actor=scene["characters"][0]
+    pose=actor_pose(scene,actor,.12)
+    joints=posed_sprite_joints(actor,pose,640,360,.12)
+    center=pose.x*640
+    left=joints["thigh_l"][1][0]
+    right=joints["thigh_r"][1][0]
+    assert left < center < right
+    assert left < right
+    # The planted feet must also remain on their own sides of the hip.
+    assert joints["shin_l"][1][0] < center
+    assert joints["shin_r"][1][0] > center
+    # At rest, hands relax at the coat sides rather than wing-shaped elbows.
+    assert joints["forearm_l"][1][0] < center < joints["forearm_r"][1][0]
+
+
 def test_expression_and_mouth_assets_selection(project):
     from aetherpaper.sprite_rig import _selected
     actor=project.scenes[0]["characters"][0];scene=project.scenes[0]
