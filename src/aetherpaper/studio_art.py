@@ -16,6 +16,7 @@ import random
 
 from PIL import Image, ImageChops, ImageFilter, ImageDraw, ImageEnhance
 from . import artkit
+from .portrait import portrait_layers
 
 
 STUDIO_COLORS = {
@@ -103,6 +104,9 @@ def generate_studio_kit(root:str|Path) -> dict:
     finally:
         artkit.PALETTE.clear()
         artkit.PALETTE.update(original_palette)
+    # Replace the old flat circular face with an original eight-part,
+    # self-consistent portrait illustration; body rig interfaces are unchanged.
+    images.update(portrait_layers())
     digests={}
     for name,base in images.items():
         seed=int.from_bytes(sha256(name.encode("utf-8")).digest()[:4],"big")
@@ -119,5 +123,5 @@ def generate_studio_kit(root:str|Path) -> dict:
         digests[path.name]=sha256(buf).hexdigest()
     return {"name":"studio-courier-v0.5","directory":str(destination),
             "parts":len(digests),"sha256":digests,
-            "art_direction":"textured watercolor paper, sunset-rimmed indigo coat and russet scarf",
+            "art_direction":"textured watercolor paper, sculpted expressive portrait, sunset-rimmed indigo coat and russet scarf",
             "reproducible":True,"network_required":False}
