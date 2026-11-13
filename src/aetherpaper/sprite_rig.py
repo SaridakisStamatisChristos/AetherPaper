@@ -130,6 +130,9 @@ def posed_sprite_joints(actor:dict,pose,width:int,height:int,time:float) -> dict
         if pose.foot_targets is not None and suffix in pose.foot_targets:
             dx,dy=pose.foot_targets[suffix]
             dest=(x+dx*s,y+dy*s)
+        if pose.foot_world is not None and suffix in pose.foot_world:
+            fx,fy=pose.foot_world[suffix]
+            dest=(fx*width,fy*height)
         if not (pose.bone_angles and (upper in pose.bone_angles or lower in pose.bone_angles)):
             _update_limb(joints,upper,lower,dest,-side)
     if "cape" in joints:
