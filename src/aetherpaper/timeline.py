@@ -95,6 +95,11 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
             expression = action['state']
         elif action['type'] == 'wave':
             waving = waving or (start <= t < end)
+        elif action['type'] in ('place','release') and t >= end:
+            if holding == action.get('prop'):
+                holding = None
+                reach_prop = None
+                pickup = 0.0
         elif action['type'] == 'pickup' and t >= start:
             holding = action['prop'] if t >= end else None
             pickup = ease((min(t, end)-start)/(end-start))
