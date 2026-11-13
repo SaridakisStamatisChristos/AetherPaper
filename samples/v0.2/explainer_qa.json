@@ -1,0 +1,30 @@
+{
+  "video": "/home/runner/work/AetherPaper/AetherPaper/output/explainer_demo.mp4",
+  "codec": "h264",
+  "width": 320,
+  "height": 180,
+  "fps": 12.0,
+  "frames": 288,
+  "duration": 24.0,
+  "audio_codecs": [
+    "aac"
+  ],
+  "frame_checks": [
+    {
+      "time": 3.288,
+      "variance": 4064.65,
+      "readable": true
+    },
+    {
+      "time": 10.056,
+      "variance": 5545.379,
+      "readable": true
+    },
+    {
+      "time": 17.544,
+      "variance": 4715.82,
+      "readable": true
+    }
+  ],
+  "sample_dir": "/home/runner/work/AetherPaper/AetherPaper/output/qa"
+}
