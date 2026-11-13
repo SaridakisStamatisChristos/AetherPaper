@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aetherpaper"
-version = "0.1.0"
-description = "Local, JSON-driven, reusable paper-cut animation renderer"
+version = "0.2.0"
+description = "Offline JSON-driven articulated paper-cut animation and video renderer"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
