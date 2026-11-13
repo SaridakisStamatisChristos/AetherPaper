@@ -115,7 +115,7 @@ def _config(actor: dict, key: str, default: float) -> float:
 def _body(actor: dict, pose, width: int, height: int, time: float):
     illustrated=actor.get("visual",{}).get("type") in ("illustrated","sprites")
     s = height * (.66 if illustrated else .42) * actor.get("scale", 1)
-    x, y = pose.x * width, pose.y * height
+    x, y = (pose.x+getattr(pose,'body_shift',(0.,0.))[0]) * width, (pose.y+getattr(pose,'body_shift',(0.,0.))[1]) * height
     motion = abs(pose.walk) + abs(getattr(pose, "run", 0.0))
     bob = math.sin(time * 2.5) * .004 * s
     bob += min(1.0, motion) * abs(math.sin(time * 13)) * .018 * s
@@ -123,7 +123,7 @@ def _body(actor: dict, pose, width: int, height: int, time: float):
     head_tilt = 0.0
     if pose.look is not None:
         dx, dy = pose.look[0] * width-x, pose.look[1] * height-(y-.88*s)
-        head_tilt = max(-.3, min(.3, math.atan2(dy, dx)*.18))
+        head_tilt = max(-.3, min(.3, math.atan2(dy, dx)*.18))*getattr(pose,'gaze_weight',1.)
     head_tilt *= spring_progress(max(0, time), _config(actor,"spring",3.0))
     custom=actor.get('rig',{}).get('bones')
     bones=[Bone(b['name'],b.get('parent'),b['length'],b.get('angle',0),
