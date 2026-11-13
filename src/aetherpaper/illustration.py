@@ -97,11 +97,11 @@ def draw_illustrated(image: Image.Image, actor: dict, pose, t: float) -> None:
     # The near/far boot and trousers are drawn independently with two-bone IK.
     for side in (-1,1):
         phase=t*(17 if run else 11)+(math.pi if side>0 else 0)
-        step=math.sin(phase)*(.19 if run else .115)*activity*s
+        step=math.sin(phase)*(.15 if run else .075)*activity*s
         lift=max(0,math.cos(phase))*(.19 if run else .095)*activity*s
         hip=(root[0]+side*.105*s,root[1]+.005*s)
         target=(x+side*.135*s+step,y-.022*s-lift)
-        knee,foot=two_bone_ik(hip,target,.205*s,.235*s,bend=side)
+        knee,foot=two_bone_ik(hip,target,.205*s,.235*s,bend=-side)
         pants_fill=trousers if side>0 else _shade(trousers,-18)
         _mass(d,hip,knee,.073*s,.061*s,pants_fill,ink,edge)
         _mass(d,knee,foot,.061*s,.044*s,_shade(pants_fill,-5),ink,edge)
@@ -161,7 +161,7 @@ def draw_illustrated(image: Image.Image, actor: dict, pose, t: float) -> None:
         if side>0:
             hand=advanced_hand(actor,pose,W,H,t)
         else:
-            neutral=(x-.24*s+sway,y-.42*s)
+            neutral=(x-.24*s+sway,y-.32*s)
             hand=neutral
         upper=actor.get('rig',{}).get('upper_arm',.20)
         fore=actor.get('rig',{}).get('forearm',.21)
