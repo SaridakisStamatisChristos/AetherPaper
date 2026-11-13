@@ -16,7 +16,7 @@ from .rig import advanced_hand, draw_character as draw_rig_character
 from .physics import rope_points, prop_state
 from .styles import styled_background, shadows, finish_style, transition_frame
 from .illustration import draw_illustrated
-from .sprite_rig import draw_sprite_character
+from .sprite_rig import draw_sprite_character, sprite_hand
 from .cinematic import (render_atelier_background, add_prop_light,
                         foreground_and_grade, cinematic_caption, title_overlay)
 
@@ -179,6 +179,8 @@ def _draw_prop(d, prop: dict, W:int, H:int, cx:float, cy:float, scale:float=1.0)
 
 
 def _hand(actor:dict, pose, W:int, H:int, t:float):
+    if actor.get('visual',{}).get('type')=='sprites':
+        return sprite_hand(actor,pose,W,H,t)
     if 'rig' in actor:
         return advanced_hand(actor,pose,W,H,t)
     s=H*.42*actor.get('scale',1)

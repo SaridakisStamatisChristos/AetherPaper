@@ -1,0 +1,28 @@
+{
+  "artkit": "atelier-courier-v0.4",
+  "directory": "/home/runner/work/AetherPaper/AetherPaper/examples/assets/atelier_courier",
+  "parts": 20,
+  "sha256": {
+    "cape.png": "d04c21385eff564221eeffd173dcdc4ca54b1331b6bdee2269f356766f8538d5",
+    "thigh_l.png": "25c2f537408933318caad3e82b9026a4271413e653e45f4364e10863aeadbf0e",
+    "shin_l.png": "fb8e64166f48a93a899a89a3321c2fc3d2ae191cffafd48fb3991a1d0fea92b3",
+    "thigh_r.png": "4731b6299d7465ad1e7261dec16cb4c81dd4ad613b4b9e2432f3ae1f8a78ad07",
+    "shin_r.png": "93dda1e382a521278afe20573f38983f054c9077bb360f292535a1ea90d2fcd2",
+    "arm_l.png": "4a88fba27d4bfd284835301c9699f496b12e53c04ae7f524ad9599b6d47f6068",
+    "forearm_l.png": "ca1a07a66048d97507780bb17fbcc8f96af4344d01f29a5db4746a605c792ac2",
+    "torso.png": "a85eb872ad4d1993146b9848936bec20f873002ebad90d5035c31678392a1f76",
+    "arm_r.png": "f481fde99dc0307763649b8e677552384792761494abd0f9ddf59f59b5d8519f",
+    "forearm_r.png": "e03570e75e453886cc0f5d72e99a11d72cc09a2e6bf82af89e9f0c9bc13ec5a0",
+    "head.png": "919a2524e3094d9e27c41d5b220e48d7cef20ab7dd9fc228536d617cbef93a1e",
+    "hair_back.png": "8b44bb2815fa39d3f20993082deda9bb33f04a5d42baed6cae2e63165f2dd300",
+    "hair_front.png": "a0651419f3c244073247863ba8d070e68168369e94671f1bae2caa07f62380be",
+    "scarf.png": "50b10b106e209d312131fbe98c1363e2855842fa9dbde19031d954314cb3ab51",
+    "face_neutral.png": "8364b07f600bbb99c191ff5569fd9bbd96e735d913a3d63973baa3c9f88dadac",
+    "face_happy.png": "e55a58fb6cce2f015859945d48daf3e12221fb2cc7927e1ac19c54c342f6e9dd",
+    "face_sad.png": "4730471ac455c89019f7bb9a331ac300f6df035768f809e80fd9bdae3d64b283",
+    "face_surprised.png": "c652bc8b3f93fac9cc5a5ef7b64703f0b130a05a59e50ae347891d1b0d9fd25e",
+    "mouth_open.png": "f6d957ca570de58c24062806e463f1b9f7dcaadc1fc00ba7b87668bc30f8ebf1",
+    "mouth_closed.png": "26262c9b6fb007a467f9051dada77ac51ff2df05ccba5425711d71750dc13f2f"
+  },
+  "license": "original AetherPaper source-generated assets (MIT)"
+}

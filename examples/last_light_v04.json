@@ -1,0 +1,524 @@
+{
+  "version": "0.4",
+  "title": "AetherPaper v0.4 — The Last Light / Original Layered Sprite Art",
+  "canvas": {
+    "width": 960,
+    "height": 540,
+    "fps": 24
+  },
+  "style": "cinematic_storybook",
+  "scenes": [
+    {
+      "id": "last-light",
+      "duration": 11,
+      "background": "#254552",
+      "environment": {
+        "type": "moonlit_atelier"
+      },
+      "supersample": 2,
+      "title_card": {
+        "text": "THE LAST LIGHT",
+        "start": 0.08,
+        "end": 2.48
+      },
+      "characters": [
+        {
+          "id": "courier",
+          "x": 0.14,
+          "y": 0.875,
+          "scale": 1.02,
+          "shirt": "#2A7781",
+          "pants": "#41566B",
+          "skin": "#DDB089",
+          "hair": "#33434E",
+          "rig": {
+            "bones": [
+              {
+                "name": "pelvis",
+                "parent": null,
+                "length": 0.05,
+                "angle": -1.5707963267948966,
+                "at": 1
+              },
+              {
+                "name": "torso",
+                "parent": "pelvis",
+                "length": 0.3,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "cape",
+                "parent": "torso",
+                "length": 0.39,
+                "angle": 3.141592653589793,
+                "at": 0.18,
+                "offset": [
+                  -0.16,
+                  0
+                ]
+              },
+              {
+                "name": "thigh_l",
+                "parent": "pelvis",
+                "length": 0.193,
+                "angle": 3.141592653589793,
+                "at": 0,
+                "offset": [
+                  -0.11,
+                  0
+                ]
+              },
+              {
+                "name": "shin_l",
+                "parent": "thigh_l",
+                "length": 0.195,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "thigh_r",
+                "parent": "pelvis",
+                "length": 0.193,
+                "angle": 3.141592653589793,
+                "at": 0,
+                "offset": [
+                  0.11,
+                  0
+                ]
+              },
+              {
+                "name": "shin_r",
+                "parent": "thigh_r",
+                "length": 0.195,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "arm_l",
+                "parent": "torso",
+                "length": 0.195,
+                "angle": 3.141592653589793,
+                "at": 0.91,
+                "offset": [
+                  -0.185,
+                  0
+                ]
+              },
+              {
+                "name": "forearm_l",
+                "parent": "arm_l",
+                "length": 0.205,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "arm_r",
+                "parent": "torso",
+                "length": 0.195,
+                "angle": 3.141592653589793,
+                "at": 0.91,
+                "offset": [
+                  0.185,
+                  0
+                ]
+              },
+              {
+                "name": "forearm_r",
+                "parent": "arm_r",
+                "length": 0.205,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "neck",
+                "parent": "torso",
+                "length": 0.116,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "head",
+                "parent": "neck",
+                "length": 0.205,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "hair_back",
+                "parent": "head",
+                "length": 0.17,
+                "angle": 3.141592653589793,
+                "at": 0.57,
+                "offset": [
+                  -0.018,
+                  0
+                ]
+              }
+            ],
+            "spring": 3
+          },
+          "visual": {
+            "type": "sprites",
+            "parts": [
+              {
+                "bone": "cape",
+                "src": "assets/atelier_courier/cape.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -24
+              },
+              {
+                "bone": "hair_back",
+                "src": "assets/atelier_courier/hair_back.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -21
+              },
+              {
+                "bone": "thigh_l",
+                "src": "assets/atelier_courier/thigh_l.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -15
+              },
+              {
+                "bone": "shin_l",
+                "src": "assets/atelier_courier/shin_l.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -14
+              },
+              {
+                "bone": "arm_l",
+                "src": "assets/atelier_courier/arm_l.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -13
+              },
+              {
+                "bone": "forearm_l",
+                "src": "assets/atelier_courier/forearm_l.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -12
+              },
+              {
+                "bone": "thigh_r",
+                "src": "assets/atelier_courier/thigh_r.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -9
+              },
+              {
+                "bone": "shin_r",
+                "src": "assets/atelier_courier/shin_r.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -8
+              },
+              {
+                "bone": "torso",
+                "src": "assets/atelier_courier/torso.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -1
+              },
+              {
+                "bone": "arm_r",
+                "src": "assets/atelier_courier/arm_r.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 2
+              },
+              {
+                "bone": "forearm_r",
+                "src": "assets/atelier_courier/forearm_r.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 3
+              },
+              {
+                "bone": "neck",
+                "src": "assets/atelier_courier/scarf.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 4
+              },
+              {
+                "bone": "head",
+                "src": "assets/atelier_courier/head.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 6
+              },
+              {
+                "bone": "head",
+                "src": "assets/atelier_courier/hair_front.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 11
+              },
+              {
+                "bone": "head",
+                "src": "assets/atelier_courier/face_neutral.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 8,
+                "expression": "neutral"
+              },
+              {
+                "bone": "head",
+                "src": "assets/atelier_courier/face_happy.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 8,
+                "expression": "happy"
+              },
+              {
+                "bone": "head",
+                "src": "assets/atelier_courier/face_sad.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 8,
+                "expression": "sad"
+              },
+              {
+                "bone": "head",
+                "src": "assets/atelier_courier/face_surprised.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 8,
+                "expression": "surprised"
+              },
+              {
+                "bone": "head",
+                "src": "assets/atelier_courier/mouth_closed.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 9,
+                "mouth_state": "closed"
+              },
+              {
+                "bone": "head",
+                "src": "assets/atelier_courier/mouth_open.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 9,
+                "mouth_state": "open"
+              }
+            ]
+          }
+        }
+      ],
+      "props": [
+        {
+          "id": "glow",
+          "shape": "lantern",
+          "x": 0.625,
+          "y": 0.676,
+          "size": 0.17,
+          "color": "#D9A96B"
+        }
+      ],
+      "layers": [],
+      "actions": [
+        {
+          "type": "walk",
+          "target": "courier",
+          "start": 0.5,
+          "end": 3.12,
+          "to": [
+            0.523,
+            0.875
+          ]
+        },
+        {
+          "type": "look",
+          "target": "courier",
+          "start": 2.1,
+          "end": 10.7,
+          "to": [
+            0.625,
+            0.676
+          ]
+        },
+        {
+          "type": "pickup",
+          "target": "courier",
+          "prop": "glow",
+          "start": 3.33,
+          "end": 4.43,
+          "hand_to": [
+            0.625,
+            0.676
+          ]
+        },
+        {
+          "type": "walk",
+          "target": "courier",
+          "start": 4.72,
+          "end": 7.15,
+          "to": [
+            0.675,
+            0.875
+          ]
+        },
+        {
+          "type": "place",
+          "target": "courier",
+          "prop": "glow",
+          "start": 7.32,
+          "end": 8.38,
+          "to": [
+            0.795,
+            0.666
+          ]
+        },
+        {
+          "type": "expression",
+          "target": "courier",
+          "start": 8.51,
+          "end": 10.8,
+          "state": "happy"
+        },
+        {
+          "type": "gesture",
+          "target": "courier",
+          "start": 8.54,
+          "end": 9.5,
+          "name": "raise"
+        },
+        {
+          "type": "speak",
+          "target": "courier",
+          "start": 8.71,
+          "end": 10.62,
+          "text": "A little light changes everything.",
+          "mouth_cues": [
+            {
+              "at": 0,
+              "openness": 0
+            },
+            {
+              "at": 0.18,
+              "openness": 0.82
+            },
+            {
+              "at": 0.3,
+              "openness": 0.1
+            },
+            {
+              "at": 0.48,
+              "openness": 0.8
+            },
+            {
+              "at": 0.65,
+              "openness": 0.14
+            },
+            {
+              "at": 0.88,
+              "openness": 0.7
+            },
+            {
+              "at": 1.12,
+              "openness": 0.12
+            },
+            {
+              "at": 1.34,
+              "openness": 0.8
+            },
+            {
+              "at": 1.49,
+              "openness": 0
+            },
+            {
+              "at": 1.72,
+              "openness": 0.69
+            },
+            {
+              "at": 1.9,
+              "openness": 0
+            }
+          ]
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 11,
+          "zoom_from": 1,
+          "zoom_to": 1.1,
+          "center_from": [
+            0.5,
+            0.5
+          ],
+          "center_to": [
+            0.53,
+            0.5
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,7 @@ from .model import load_project, SceneError
 from .renderer import snapshot, render
 from .assets import production_manifest
 from .qa import verify_video
+from .artkit import build_artkit
 
 
 def main(argv=None) -> int:
@@ -25,8 +26,13 @@ def main(argv=None) -> int:
     m.add_argument('project')
     q=sub.add_parser('qa',help='probe H.264 stream and decode three real video frames')
     q.add_argument('video');q.add_argument('--frames-dir')
+    g=sub.add_parser('artkit',help='generate original transparent PNG artwork for the v0.4 rig')
+    g.add_argument('--out',default='examples/assets/atelier_courier')
     args=parser.parse_args(argv)
     try:
+        if args.command=='artkit':
+            print(json.dumps(build_artkit(args.out),indent=2))
+            return 0
         if args.command=='qa':
             print(json.dumps(verify_video(args.video,sample_dir=args.frames_dir),indent=2))
             return 0
@@ -42,5 +48,5 @@ def main(argv=None) -> int:
             print(json.dumps(render(project,args.out,width=args.width,height=args.height,
                                     fps=args.fps,voice=args.voice),indent=2))
         return 0
-    except (SceneError,ValueError,RuntimeError,OSError,FileNotFoundError) as exc:
+    except (SceneError,ValueError,RuntimeError,OSError,FileNotFoundError,FileExistsError) as exc:
         parser.exit(2,f'error: {exc}\n')

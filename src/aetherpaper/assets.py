@@ -50,7 +50,7 @@ def audit_assets(project) -> list[dict]:
 
 def production_manifest(project) -> dict:
     return {
-        "format":"aetherpaper-manifest-0.2",
+        "format":"aetherpaper-manifest-0.4",
         "project":str(project.source),
         "version":project.data["version"],
         "canvas":dict(project.canvas),

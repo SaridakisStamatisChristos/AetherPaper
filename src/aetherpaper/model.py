@@ -89,8 +89,8 @@ def load_project(path: str | Path) -> Project:
 
 def validate_project(data: Any) -> None:
     data = _object(data, '$')
-    if data.get('version') not in ('0.1', '0.2', '0.3'):
-        _fail('$.version', 'expected "0.1", "0.2" or "0.3"')
+    if data.get('version') not in ('0.1', '0.2', '0.3', '0.4'):
+        _fail('$.version', 'expected version "0.1", "0.2", "0.3" or "0.4"')
     if data.get('style','paper_cut') not in ('paper_cut','scrapbook','storybook','cinematic_storybook'):
         _fail('$.style','unknown visual preset')
     canvas = _object(data.get('canvas'), '$.canvas')
@@ -215,7 +215,11 @@ def validate_project(data: Any) -> None:
                             _number(value,f'{sp}.pivot[{axis}]',0,1)
                         _number(part.get('scale',1),f'{sp}.scale',.1,4)
                         _number(part.get('z',0),f'{sp}.z',-100,100)
-                        if set(part)-{'bone','src','pivot','scale','z'}:
+                        if 'expression' in part and part['expression'] not in ('neutral','happy','sad','surprised'):
+                            _fail(f'{sp}.expression','unknown expression state')
+                        if 'mouth_state' in part and part['mouth_state'] not in ('open','closed'):
+                            _fail(f'{sp}.mouth_state','must be open or closed')
+                        if set(part)-{'bone','src','pivot','scale','z','expression','mouth_state'}:
                             _fail(sp,'unsupported sprite part fields')
                 for key,val in visual.items():
                     if key in ('coat','lining') and visual['type']=='illustrated':
@@ -241,6 +245,12 @@ def validate_project(data: Any) -> None:
                             _number(bone.get('length'),f'{bp}.length',.02,1)
                             _number(bone.get('angle',0),f'{bp}.angle',-math.pi,math.pi)
                             _number(bone.get('at',1),f'{bp}.at',0,1)
+                            if 'offset' in bone:
+                                offset=bone['offset']
+                                if not isinstance(offset,list) or len(offset)!=2:
+                                    _fail(f'{bp}.offset','expected [x,y]')
+                                for k,axis in enumerate(offset):
+                                    _number(axis,f'{bp}.offset[{k}]',-1,1)
                             seen.add(name)
                         if not {'pelvis','torso','neck'} <= seen:
                             _fail(f'{cp}.rig.bones','must contain pelvis, torso and neck bones')

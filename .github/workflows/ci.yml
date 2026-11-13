@@ -71,6 +71,19 @@ jobs:
           aetherpaper snapshot examples/lantern_keeper_v03.json --at 9.2 --out output/lantern_final.png --width 960 --height 540
           aetherpaper qa output/lantern_keeper_v03.mp4 --frames-dir output/lantern_qa > output/lantern_quality.json
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/lantern_keeper_v03.mp4
+      - name: Generate 20 PNG parts and render v0.4 character art film
+        run: |
+          set -euo pipefail
+          aetherpaper artkit --out examples/assets/atelier_courier > output/artkit_receipt_v04.json
+          aetherpaper validate examples/last_light_v04.json
+          aetherpaper manifest examples/last_light_v04.json > output/asset_manifest_v04.json
+          aetherpaper render examples/last_light_v04.json --width 640 --height 360 --fps 24 --out output/last_light_v04.mp4
+          aetherpaper snapshot examples/last_light_v04.json --at 1.8 --width 960 --height 540 --out output/artkit_approach.png
+          aetherpaper snapshot examples/last_light_v04.json --at 3.95 --width 960 --height 540 --out output/artkit_reach.png
+          aetherpaper snapshot examples/last_light_v04.json --at 6.0 --width 960 --height 540 --out output/artkit_carry.png
+          aetherpaper snapshot examples/last_light_v04.json --at 9.5 --width 960 --height 540 --out output/artkit_expression.png
+          aetherpaper qa output/last_light_v04.mp4 --frames-dir output/artkit_qa > output/artkit_quality_v04.json
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/last_light_v04.mp4
       - name: Probe MP4 stream
         run: |
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of default=noprint_wrappers=1 output/ci.mp4
@@ -143,6 +156,46 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m 'chore(samples): publish verified cinematic v0.3 demo [skip ci]'
             git push origin HEAD:feature/visual-quality-v0.3
+          fi
+      - name: Upload independently rendered v0.4 character film and original artkit
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetherpaper-v04-character-art
+          path: |
+            output/last_light_v04.mp4
+            output/artkit_approach.png
+            output/artkit_reach.png
+            output/artkit_carry.png
+            output/artkit_expression.png
+            output/artkit_quality_v04.json
+            output/artkit_receipt_v04.json
+            output/asset_manifest_v04.json
+            output/artkit_qa/
+            examples/assets/atelier_courier/
+          retention-days: 30
+      - name: Permanently preserve verified v0.4 artkit and cinematic film
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/character-art-v0.4'
+        run: |
+          set -euo pipefail
+          git fetch origin feature/character-art-v0.4
+          if [ "$(git rev-parse FETCH_HEAD)" != "$GITHUB_SHA" ]; then
+            echo "Source branch updated during CI; do not publish stale samples."
+            exit 0
+          fi
+          mkdir -p samples/v0.4
+          cp output/last_light_v04.mp4 samples/v0.4/
+          cp output/artkit_approach.png output/artkit_reach.png output/artkit_carry.png output/artkit_expression.png samples/v0.4/
+          cp output/artkit_quality_v04.json output/artkit_receipt_v04.json output/asset_manifest_v04.json samples/v0.4/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Keep the 20 original source-generated transparent artworks in GitHub too.
+          # They are the exact PNGs used to render the attached MP4.
+          git add samples/v0.4
+          git add -f examples/assets/atelier_courier/*.png
+          git add -f samples/v0.4/last_light_v04.mp4
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(samples): preserve CI-verified v0.4 character art film [skip ci]'
+            git push origin HEAD:feature/character-art-v0.4
           fi
       - name: Archive independently verified MP4 previews in the feature branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/feature/advanced-animation-v0.2'
