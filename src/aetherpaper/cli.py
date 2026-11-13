@@ -9,6 +9,7 @@ from .qa import verify_video
 from .artkit import build_artkit
 from .studio_art import generate_studio_kit
 from .pose_atlas import import_pose_sheet
+from .pose_demo import make_demo
 
 
 def main(argv=None) -> int:
@@ -35,8 +36,14 @@ def main(argv=None) -> int:
     pa.add_argument('--sheet',required=True)
     pa.add_argument('--layout',required=True)
     pa.add_argument('--out',required=True)
+    pd=sub.add_parser('pose-demo',help='generate an actual pose-atlas regression scene from preserved artwork')
+    pd.add_argument('--source',default='examples/last_light_directed_v05.json')
+    pd.add_argument('--out',default='examples')
     args=parser.parse_args(argv)
     try:
+        if args.command=='pose-demo':
+            print(json.dumps(make_demo(args.source,args.out),indent=2))
+            return 0
         if args.command=='posepack':
             print(json.dumps(import_pose_sheet(args.sheet,args.layout,args.out),indent=2))
             return 0
