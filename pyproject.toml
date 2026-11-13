@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aetherpaper"
-version = "0.5.0"
-description = "Offline cinematic 2D animation with illustrated art packs, director keyframes, IK feet and JSON pipeline"
+version = "0.6.0"
+description = "Local cinematic animation supporting artist-illustrated pose frames, transparent atlas import, skeletal rigs and directed JSON scenes"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
