@@ -114,6 +114,8 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add samples/v0.2
+          # mp4 is deliberately ignored for ordinary development: only CI can force-add verified previews.
+          git add -f samples/v0.2/rig_demo.mp4 samples/v0.2/interaction_demo.mp4 samples/v0.2/physics_demo.mp4 samples/v0.2/visual_demo.mp4 samples/v0.2/explainer_demo.mp4
           if ! git diff --cached --quiet; then
             git commit -m 'chore(samples): preserve CI-verified v0.2 MP4 demonstrations [skip ci]'
             git push origin HEAD:feature/advanced-animation-v0.2
