@@ -187,14 +187,37 @@ def validate_project(data: Any) -> None:
                     _color(actor[k], f'{cp}.{k}')
             if 'visual' in actor:
                 visual=_object(actor['visual'],f'{cp}.visual')
-                if visual.get('type') not in ('illustrated',):
+                if visual.get('type') not in ('illustrated','sprites'):
                     _fail(f'{cp}.visual.type','unsupported character visual')
                 if 'rig' not in actor:
-                    _fail(f'{cp}.rig','illustrated characters require a rig object')
+                    _fail(f'{cp}.rig','illustrated or sprite characters require a rig object')
+                if visual['type']=='sprites':
+                    rawrig=_object(actor['rig'],f'{cp}.rig')
+                    available={b.get('name') for b in _list(rawrig.get('bones'),f'{cp}.rig.bones') if isinstance(b,dict)}
+                    if not available:
+                        _fail(f'{cp}.rig.bones','sprite characters need named bones')
+                    parts=_list(visual.get('parts'),f'{cp}.visual.parts')
+                    if not (1<=len(parts)<=64):
+                        _fail(f'{cp}.visual.parts','requires 1..64 image parts')
+                    for k,part in enumerate(parts):
+                        sp=f'{cp}.visual.parts[{k}]'
+                        part=_object(part,sp)
+                        if part.get('bone') not in available:
+                            _fail(f'{sp}.bone','unknown target bone')
+                        _string(part.get('src'),f'{sp}.src')
+                        pivot=part.get('pivot',[0,.5])
+                        if not isinstance(pivot,list) or len(pivot)!=2:
+                            _fail(f'{sp}.pivot','expected [x,y]')
+                        for axis,value in enumerate(pivot):
+                            _number(value,f'{sp}.pivot[{axis}]',0,1)
+                        _number(part.get('scale',1),f'{sp}.scale',.1,4)
+                        _number(part.get('z',0),f'{sp}.z',-100,100)
+                        if set(part)-{'bone','src','pivot','scale','z'}:
+                            _fail(sp,'unsupported sprite part fields')
                 for key,val in visual.items():
-                    if key in ('coat','lining'):
+                    if key in ('coat','lining') and visual['type']=='illustrated':
                         _color(val,f'{cp}.visual.{key}')
-                    elif key!='type':
+                    elif key not in ({'type','coat','lining'} if visual['type']=='illustrated' else {'type','parts'}):
                         _fail(f'{cp}.visual.{key}','unknown visual field')
             if 'rig' in actor:
                 rig = _object(actor['rig'], f'{cp}.rig')
