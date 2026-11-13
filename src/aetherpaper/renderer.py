@@ -8,6 +8,7 @@ from .model import Project
 from .timeline import at_time
 from .paint import render_frame
 from .audio import mux_voice
+from .assets import audit_assets
 
 
 def snapshot(project:Project,t:float,out:str|Path,width:int|None=None,height:int|None=None) -> Path:
@@ -28,6 +29,8 @@ def render(project:Project,out:str|Path,width:int|None=None,height:int|None=None
         raise ValueError('fps must be within 1..60')
     if voice not in ('none','espeak'):
         raise ValueError('unsupported voice backend')
+    # Preflight all local image/WAV references before creating any output.
+    audit_assets(project)
     executable=shutil.which('ffmpeg')
     if not executable:
         raise RuntimeError('FFmpeg is required to render MP4; install ffmpeg')
