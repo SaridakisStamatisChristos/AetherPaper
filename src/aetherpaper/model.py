@@ -89,8 +89,8 @@ def load_project(path: str | Path) -> Project:
 
 def validate_project(data: Any) -> None:
     data = _object(data, '$')
-    if data.get('version') not in ('0.1', '0.2', '0.3', '0.4', '0.5'):
-        _fail('$.version', 'expected a version from "0.1" through "0.5"')
+    if data.get('version') not in ('0.1', '0.2', '0.3', '0.4', '0.5', '0.6'):
+        _fail('$.version', 'expected a version from "0.1" through "0.6"')
     if data.get('style','paper_cut') not in ('paper_cut','scrapbook','storybook','cinematic_storybook'):
         _fail('$.style','unknown visual preset')
     canvas = _object(data.get('canvas'), '$.canvas')
@@ -190,10 +190,50 @@ def validate_project(data: Any) -> None:
                     _color(actor[k], f'{cp}.{k}')
             if 'visual' in actor:
                 visual=_object(actor['visual'],f'{cp}.visual')
-                if visual.get('type') not in ('illustrated','sprites'):
+                if visual.get('type') not in ('illustrated','sprites','pose_atlas'):
                     _fail(f'{cp}.visual.type','unsupported character visual')
-                if 'rig' not in actor:
+                if 'rig' not in actor and visual['type']!='pose_atlas':
                     _fail(f'{cp}.rig','illustrated or sprite characters require a rig object')
+                if visual['type']=='pose_atlas':
+                    states=_object(visual.get('states'),f'{cp}.visual.states')
+                    if not 1<=len(states)<=24:
+                        _fail(f'{cp}.visual.states','requires 1..24 named pose states')
+                    total=0
+                    for state,frames in states.items():
+                        if not isinstance(state,str) or re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]{0,39}',state) is None:
+                            _fail(f'{cp}.visual.states','unsafe pose state label')
+                        frames=_list(frames,f'{cp}.visual.states.{state}')
+                        if not 1<=len(frames)<=64:
+                            _fail(f'{cp}.visual.states.{state}','requires 1..64 PNG frames')
+                        total+=len(frames)
+                        for n,entry in enumerate(frames):
+                            ep=f'{cp}.visual.states.{state}[{n}]'
+                            entry=_object(entry,ep)
+                            _string(entry.get('src'),ep+'.src')
+                            for field in ('foot_anchor','hand_anchor'):
+                                if field in entry:
+                                    v=entry[field]
+                                    if not isinstance(v,list) or len(v)!=2:_fail(ep+'.'+field,'expected [x,y]')
+                                    for k,num in enumerate(v):_number(num,f'{ep}.{field}[{k}]',0,1)
+                            if 'scale' in entry:_number(entry['scale'],ep+'.scale',.1,3)
+                            if set(entry)-{'src','foot_anchor','hand_anchor','scale'}:
+                                _fail(ep,'unknown pose frame field')
+                    if total>128:_fail(f'{cp}.visual.states','at most 128 PNG frames per character')
+                    default=visual.get('default','idle')
+                    if default not in states:_fail(f'{cp}.visual.default','unknown default pose state')
+                    for field in ('foot_anchor','hand_anchor'):
+                        if field in visual:
+                            v=visual[field]
+                            if not isinstance(v,list) or len(v)!=2:_fail(f'{cp}.visual.{field}','expected [x,y]')
+                            for k,num in enumerate(v):_number(num,f'{cp}.visual.{field}[{k}]',0,1)
+                    _number(visual.get('height',.56),f'{cp}.visual.height',.05,2)
+                    _number(visual.get('fps',8),f'{cp}.visual.fps',1,30)
+                    if visual.get('playback','loop') not in ('loop','once'):
+                        _fail(f'{cp}.visual.playback','must be loop or once')
+                    if not isinstance(visual.get('mirror',False),bool):
+                        _fail(f'{cp}.visual.mirror','must be boolean')
+                    if set(visual)-{'type','states','default','foot_anchor','hand_anchor','height','fps','playback','mirror'}:
+                        _fail(f'{cp}.visual','unknown pose atlas fields')
                 if visual['type']=='sprites':
                     rawrig=_object(actor['rig'],f'{cp}.rig')
                     available={b.get('name') for b in _list(rawrig.get('bones'),f'{cp}.rig.bones') if isinstance(b,dict)}
@@ -221,7 +261,7 @@ def validate_project(data: Any) -> None:
                             _fail(f'{sp}.mouth_state','must be open or closed')
                         if set(part)-{'bone','src','pivot','scale','z','expression','mouth_state'}:
                             _fail(sp,'unsupported sprite part fields')
-                for key,val in visual.items():
+                for key,val in ([] if visual['type']=='pose_atlas' else visual.items()):
                     if key in ('coat','lining') and visual['type']=='illustrated':
                         _color(val,f'{cp}.visual.{key}')
                     elif key not in ({'type','coat','lining'} if visual['type']=='illustrated' else {'type','parts'}):
@@ -328,9 +368,13 @@ def validate_project(data: Any) -> None:
                         for name,angle in angles.items():
                             if name not in named:_fail(kp+'.angles.'+name,'unknown bone')
                             _number(angle,kp+'.angles.'+name,-math.pi,math.pi)
+                    if 'sprite_state' in kf:
+                        v=kf['sprite_state']
+                        if actor.get('visual',{}).get('type')!='pose_atlas' or v not in actor['visual']['states']:
+                            _fail(kp+'.sprite_state','unknown pose state for this character')
                     if 'expression' in kf and kf['expression'] not in ('neutral','happy','sad','surprised'):
                         _fail(kp+'.expression','invalid expression')
-                    if set(kf)-{'at','interpolation','position','look','hand_to','body_shift','hand_weight','gaze_weight','gait','feet','feet_world','angles','expression'}:
+                    if set(kf)-{'at','interpolation','position','look','hand_to','body_shift','hand_weight','gaze_weight','gait','feet','feet_world','angles','expression','sprite_state'}:
                         _fail(kp,'unknown performance keyframe field')
                 if abs(kfs[0]['at'])>1e-8 or abs(kfs[-1]['at']-(end-start))>1e-8:
                     _fail(f'{ap}.keyframes','first stamp must be 0 and last must equal clip duration')

@@ -1,0 +1,211 @@
+{
+  "version": "0.6",
+  "title": "Pose Atlas Pipeline Acceptance \u2014 Source Art Baseline",
+  "style": "cinematic_storybook",
+  "canvas": {
+    "width": 640,
+    "height": 360,
+    "fps": 12
+  },
+  "scenes": [
+    {
+      "id": "atlas-demo",
+      "duration": 5.0,
+      "style": "cinematic_storybook",
+      "environment": {
+        "type": "sunset_cliff"
+      },
+      "supersample": 1,
+      "characters": [
+        {
+          "id": "courier",
+          "x": 0.25,
+          "y": 0.89,
+          "scale": 1.0,
+          "visual": {
+            "type": "pose_atlas",
+            "states": {
+              "walk": [
+                {
+                  "src": "assets/pose_atlas_demo/poses/walk_000.png",
+                  "foot_anchor": [
+                    0.5,
+                    0.89
+                  ],
+                  "hand_anchor": [
+                    0.6645875,
+                    0.6674150000000001
+                  ]
+                },
+                {
+                  "src": "assets/pose_atlas_demo/poses/walk_001.png",
+                  "foot_anchor": [
+                    0.5,
+                    0.89
+                  ],
+                  "hand_anchor": [
+                    0.6645875,
+                    0.6674150000000001
+                  ]
+                }
+              ],
+              "idle": [
+                {
+                  "src": "assets/pose_atlas_demo/poses/idle_000.png",
+                  "foot_anchor": [
+                    0.5,
+                    0.89
+                  ],
+                  "hand_anchor": [
+                    0.6645875,
+                    0.6674150000000001
+                  ]
+                }
+              ],
+              "reach": [
+                {
+                  "src": "assets/pose_atlas_demo/poses/reach_000.png",
+                  "foot_anchor": [
+                    0.5,
+                    0.89
+                  ],
+                  "hand_anchor": [
+                    0.54,
+                    0.625
+                  ]
+                }
+              ],
+              "carry": [
+                {
+                  "src": "assets/pose_atlas_demo/poses/carry_000.png",
+                  "foot_anchor": [
+                    0.5,
+                    0.89
+                  ],
+                  "hand_anchor": [
+                    0.719437748065544,
+                    0.6486033883705054
+                  ]
+                }
+              ],
+              "speak": [
+                {
+                  "src": "assets/pose_atlas_demo/poses/speak_000.png",
+                  "foot_anchor": [
+                    0.5,
+                    0.89
+                  ],
+                  "hand_anchor": [
+                    0.6645875,
+                    0.6674150000000001
+                  ]
+                }
+              ]
+            },
+            "default": "idle",
+            "foot_anchor": [
+              0.5,
+              0.89
+            ],
+            "height": 0.64,
+            "fps": 6,
+            "playback": "loop"
+          }
+        }
+      ],
+      "props": [],
+      "layers": [],
+      "actions": [
+        {
+          "type": "performance",
+          "target": "courier",
+          "start": 0,
+          "end": 5,
+          "keyframes": [
+            {
+              "at": 0,
+              "position": [
+                0.25,
+                0.89
+              ],
+              "sprite_state": "walk"
+            },
+            {
+              "at": 0.6,
+              "position": [
+                0.33,
+                0.89
+              ],
+              "sprite_state": "walk"
+            },
+            {
+              "at": 1.2,
+              "position": [
+                0.42,
+                0.89
+              ],
+              "sprite_state": "walk"
+            },
+            {
+              "at": 1.7,
+              "position": [
+                0.5,
+                0.89
+              ],
+              "sprite_state": "idle"
+            },
+            {
+              "at": 2.1,
+              "position": [
+                0.52,
+                0.89
+              ],
+              "sprite_state": "reach"
+            },
+            {
+              "at": 3.0,
+              "position": [
+                0.52,
+                0.89
+              ],
+              "sprite_state": "carry"
+            },
+            {
+              "at": 4.0,
+              "position": [
+                0.52,
+                0.89
+              ],
+              "sprite_state": "speak",
+              "expression": "happy"
+            },
+            {
+              "at": 5.0,
+              "position": [
+                0.52,
+                0.89
+              ],
+              "sprite_state": "idle"
+            }
+          ]
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 5,
+          "zoom_from": 1,
+          "zoom_to": 1.08,
+          "center_from": [
+            0.5,
+            0.5
+          ],
+          "center_to": [
+            0.53,
+            0.5
+          ]
+        }
+      ]
+    }
+  ]
+}

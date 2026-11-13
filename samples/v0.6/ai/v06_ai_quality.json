@@ -1,0 +1,28 @@
+{
+  "video": "/home/runner/work/AetherPaper/AetherPaper/samples/v0.6/ai/v06_ai_illustrated_movie.mp4",
+  "codec": "h264",
+  "width": 640,
+  "height": 360,
+  "fps": 12.0,
+  "frames": 60,
+  "duration": 5.0,
+  "audio_codecs": [],
+  "frame_checks": [
+    {
+      "time": 0.685,
+      "variance": 1148.738,
+      "readable": true
+    },
+    {
+      "time": 2.095,
+      "variance": 1137.129,
+      "readable": true
+    },
+    {
+      "time": 3.655,
+      "variance": 1147.965,
+      "readable": true
+    }
+  ],
+  "sample_dir": "/home/runner/work/AetherPaper/AetherPaper/illustrated_qa"
+}

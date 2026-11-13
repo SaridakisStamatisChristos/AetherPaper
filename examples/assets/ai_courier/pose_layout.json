@@ -1,0 +1,80 @@
+{
+  "columns": 3,
+  "rows": 2,
+  "fps": 6,
+  "height": 0.68,
+  "foot_anchor": [
+    0.5,
+    0.975
+  ],
+  "default": "idle",
+  "playback": "loop",
+  "frames": [
+    {
+      "state": "idle",
+      "cell": [
+        0,
+        0
+      ],
+      "hand_anchor": [
+        0.657,
+        0.565
+      ]
+    },
+    {
+      "state": "walk",
+      "cell": [
+        1,
+        0
+      ],
+      "hand_anchor": [
+        0.804,
+        0.465
+      ]
+    },
+    {
+      "state": "walk",
+      "cell": [
+        2,
+        0
+      ],
+      "hand_anchor": [
+        0.835,
+        0.435
+      ]
+    },
+    {
+      "state": "reach",
+      "cell": [
+        0,
+        1
+      ],
+      "hand_anchor": [
+        0.935,
+        0.34
+      ]
+    },
+    {
+      "state": "carry",
+      "cell": [
+        1,
+        1
+      ],
+      "hand_anchor": [
+        0.764,
+        0.155
+      ]
+    },
+    {
+      "state": "speak",
+      "cell": [
+        2,
+        1
+      ],
+      "hand_anchor": [
+        0.837,
+        0.35
+      ]
+    }
+  ]
+}

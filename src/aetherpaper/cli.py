@@ -8,6 +8,8 @@ from .assets import production_manifest
 from .qa import verify_video
 from .artkit import build_artkit
 from .studio_art import generate_studio_kit
+from .pose_atlas import import_pose_sheet
+from .pose_demo import make_demo
 
 
 def main(argv=None) -> int:
@@ -30,8 +32,21 @@ def main(argv=None) -> int:
     g=sub.add_parser('artkit',help='generate original transparent PNG artwork for the v0.4 rig')
     g.add_argument('--out',default='examples/assets/atelier_courier')
     g.add_argument('--edition',choices=['original','studio'],default='original')
+    pa=sub.add_parser('posepack',help='import artist-supplied transparent PNG pose sheet using JSON cell layout')
+    pa.add_argument('--sheet',required=True)
+    pa.add_argument('--layout',required=True)
+    pa.add_argument('--out',required=True)
+    pd=sub.add_parser('pose-demo',help='generate an actual pose-atlas regression scene from preserved artwork')
+    pd.add_argument('--source',default='examples/last_light_directed_v05.json')
+    pd.add_argument('--out',default='examples')
     args=parser.parse_args(argv)
     try:
+        if args.command=='pose-demo':
+            print(json.dumps(make_demo(args.source,args.out),indent=2))
+            return 0
+        if args.command=='posepack':
+            print(json.dumps(import_pose_sheet(args.sheet,args.layout,args.out),indent=2))
+            return 0
         if args.command=='artkit':
             print(json.dumps(generate_studio_kit(args.out) if args.edition=='studio' else build_artkit(args.out),indent=2))
             return 0

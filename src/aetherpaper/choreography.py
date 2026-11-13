@@ -91,6 +91,7 @@ class Performance:
     feet_world:dict[str,tuple[float,float]]|None=None
     angles:dict[str,float]|None=None
     expression:str|None=None
+    sprite_state:str|None=None
 
 
 def evaluate(action:dict,t:float)->Performance:
@@ -129,9 +130,12 @@ def evaluate(action:dict,t:float)->Performance:
                for k in keyframes if side in k.get("feet_world",{})]
         if track:feet_world[side]=tuple(_field(track,"value",local))
     expression=None
+    sprite_state=None
     for key in keyframes:
         if key["at"]<=local and "expression" in key:
             expression=key["expression"]
+        if key["at"]<=local and "sprite_state" in key:
+            sprite_state=key["sprite_state"]
     return Performance(positions,shift,look,hand,max(0.,min(1.,hand_weight)),
                        max(0.,min(1.,gaze_weight)),gait,
-                       feet or None,feet_world or None,angles or None,expression)
+                       feet or None,feet_world or None,angles or None,expression,sprite_state)

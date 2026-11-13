@@ -55,6 +55,7 @@ class Pose:
     foot_world: dict | None = None
     gaze_weight: float = 1.0
     gait: float | None = None
+    sprite_state: str | None = None
 
 
 def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
@@ -81,6 +82,7 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
     foot_world = None
     gaze_weight = 1.0
     gait = None
+    sprite_state = None
     for action in scene.get('actions', []):
         if action['target'] != actor['id']:
             continue
@@ -165,9 +167,10 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
         if p.feet_world is not None:foot_world=p.feet_world
         if p.gait is not None:gait=p.gait
         if p.expression is not None:expression=p.expression
+        if p.sprite_state is not None:sprite_state=p.sprite_state
     return Pose(x, y, walk, talking, waving, pickup, holding, reach_prop, run, gesture, look,
                 expression, mouth, gesture_weight, bone_angles, pose_weight, hand_target,
-                hand_weight, body_shift, foot_targets, foot_world, gaze_weight, gait)
+                hand_weight, body_shift, foot_targets, foot_world, gaze_weight, gait, sprite_state)
 
 
 def active_caption(scene: dict, t: float) -> str | None:

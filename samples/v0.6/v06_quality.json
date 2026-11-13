@@ -1,0 +1,28 @@
+{
+  "video": "/home/runner/work/AetherPaper/AetherPaper/output/v06_pose_atlas_demo.mp4",
+  "codec": "h264",
+  "width": 640,
+  "height": 360,
+  "fps": 12.0,
+  "frames": 60,
+  "duration": 5.0,
+  "audio_codecs": [],
+  "frame_checks": [
+    {
+      "time": 0.685,
+      "variance": 1113.899,
+      "readable": true
+    },
+    {
+      "time": 2.095,
+      "variance": 1087.597,
+      "readable": true
+    },
+    {
+      "time": 3.655,
+      "variance": 1075.866,
+      "readable": true
+    }
+  ],
+  "sample_dir": "/home/runner/work/AetherPaper/AetherPaper/output/v06_qa"
+}
