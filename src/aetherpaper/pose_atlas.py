@@ -256,7 +256,8 @@ def import_pose_sheet(sheet_path: str | Path, layout_path: str | Path,
     if "hand_anchor" in layout:visual["hand_anchor"]=layout["hand_anchor"]
     checksums={name:sha256(payload).hexdigest() for name,payload,_ in staged}
     result={"format":"aetherpaper-posepack-0.6",
-            "source":str(path.resolve()),"frames":len(staged),
+            "source":path.name,"source_sha256":sha256(path.read_bytes()).hexdigest(),
+            "frames":len(staged),
             "states":{name:len(frames) for name,frames in states.items()},
             "sha256":checksums,"visual":visual,
             "note":"Copy these visual paths relative to the scene JSON; no segmentation performed"}
