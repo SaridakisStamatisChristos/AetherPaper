@@ -1,0 +1,247 @@
+{
+  "version": "0.6",
+  "title": "The Last Light — AI Illustrated Character Acceptance (v0.6)",
+  "style": "cinematic_storybook",
+  "canvas": {
+    "width": 640,
+    "height": 360,
+    "fps": 12
+  },
+  "scenes": [
+    {
+      "id": "real-illustrated-pose-courier",
+      "duration": 5,
+      "style": "cinematic_storybook",
+      "environment": {
+        "type": "sunset_cliff"
+      },
+      "supersample": 1,
+      "characters": [
+        {
+          "id": "courier",
+          "x": 0.22,
+          "y": 0.895,
+          "scale": 1,
+          "visual": {
+            "type": "pose_atlas",
+            "default": "idle",
+            "height": 0.68,
+            "fps": 6,
+            "foot_anchor": [
+              0.5,
+              0.975
+            ],
+            "playback": "loop",
+            "states": {
+              "idle": [
+                {
+                  "src": "assets/ai_courier/poses/idle_000.png",
+                  "hand_anchor": [
+                    0.657,
+                    0.565
+                  ]
+                }
+              ],
+              "walk": [
+                {
+                  "src": "assets/ai_courier/poses/walk_000.png",
+                  "hand_anchor": [
+                    0.804,
+                    0.465
+                  ]
+                },
+                {
+                  "src": "assets/ai_courier/poses/walk_001.png",
+                  "hand_anchor": [
+                    0.835,
+                    0.435
+                  ]
+                }
+              ],
+              "reach": [
+                {
+                  "src": "assets/ai_courier/poses/reach_000.png",
+                  "hand_anchor": [
+                    0.935,
+                    0.34
+                  ]
+                }
+              ],
+              "carry": [
+                {
+                  "src": "assets/ai_courier/poses/carry_000.png",
+                  "hand_anchor": [
+                    0.764,
+                    0.155
+                  ]
+                }
+              ],
+              "speak": [
+                {
+                  "src": "assets/ai_courier/poses/speak_000.png",
+                  "hand_anchor": [
+                    0.837,
+                    0.35
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "layers": [
+        {
+          "type": "pedestal",
+          "x": 0.652,
+          "y": 0.505,
+          "width": 0.091,
+          "height": 0.392,
+          "color": "#96838A",
+          "depth": 0.95
+        }
+      ],
+      "props": [
+        {
+          "id": "light",
+          "shape": "lantern",
+          "x": 0.697,
+          "y": 0.435,
+          "size": 0.11,
+          "color": "#CBA069"
+        }
+      ],
+      "actions": [
+        {
+          "type": "pickup",
+          "target": "courier",
+          "prop": "light",
+          "start": 1.9,
+          "end": 3,
+          "hand_to": [
+            0.697,
+            0.435
+          ]
+        },
+        {
+          "type": "speak",
+          "target": "courier",
+          "start": 4.05,
+          "end": 4.9,
+          "text": "A little light can guide us home."
+        },
+        {
+          "type": "performance",
+          "target": "courier",
+          "start": 0,
+          "end": 5,
+          "keyframes": [
+            {
+              "at": 0,
+              "position": [
+                0.22,
+                0.895
+              ],
+              "sprite_state": "walk"
+            },
+            {
+              "at": 0.5,
+              "position": [
+                0.31,
+                0.895
+              ],
+              "sprite_state": "walk"
+            },
+            {
+              "at": 1.15,
+              "position": [
+                0.43,
+                0.895
+              ],
+              "sprite_state": "walk"
+            },
+            {
+              "at": 1.65,
+              "position": [
+                0.515,
+                0.895
+              ],
+              "sprite_state": "idle"
+            },
+            {
+              "at": 1.9,
+              "position": [
+                0.515,
+                0.895
+              ],
+              "sprite_state": "reach"
+            },
+            {
+              "at": 2.72,
+              "position": [
+                0.515,
+                0.895
+              ],
+              "sprite_state": "reach"
+            },
+            {
+              "at": 3,
+              "position": [
+                0.515,
+                0.895
+              ],
+              "sprite_state": "carry"
+            },
+            {
+              "at": 3.82,
+              "position": [
+                0.515,
+                0.895
+              ],
+              "sprite_state": "carry"
+            },
+            {
+              "at": 4.05,
+              "position": [
+                0.515,
+                0.895
+              ],
+              "sprite_state": "speak"
+            },
+            {
+              "at": 4.9,
+              "position": [
+                0.515,
+                0.895
+              ],
+              "sprite_state": "speak"
+            },
+            {
+              "at": 5,
+              "position": [
+                0.515,
+                0.895
+              ],
+              "sprite_state": "idle"
+            }
+          ]
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 5,
+          "zoom_from": 1,
+          "zoom_to": 1.06,
+          "center_from": [
+            0.5,
+            0.5
+          ],
+          "center_to": [
+            0.53,
+            0.49
+          ]
+        }
+      ]
+    }
+  ]
+}
