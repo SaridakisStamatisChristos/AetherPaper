@@ -8,9 +8,9 @@ import re
 from typing import Any
 
 HEX_COLOR = re.compile(r'^#[0-9a-fA-F]{6}$')
-SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room'}
+SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room', 'rope'}
 PROP_SHAPES = {'book', 'ball', 'cup', 'star', 'box'}
-ACTION_TYPES = {'walk', 'run', 'pickup', 'speak', 'wave', 'look', 'gesture', 'expression'}
+ACTION_TYPES = {'walk', 'run', 'pickup', 'speak', 'wave', 'look', 'gesture', 'expression', 'place', 'release', 'spring'}
 
 class SceneError(ValueError):
     """Invalid animation project."""
@@ -123,7 +123,12 @@ def validate_project(data: Any) -> None:
             kind = _string(layer.get('type'), f'{lp}.type')
             if kind not in SHAPES:
                 _fail(f'{lp}.type', f'unsupported shape {kind!r}')
-            if kind != 'room':
+            if kind == 'rope':
+                _coord(layer.get('from'), f'{lp}.from')
+                _coord(layer.get('to'), f'{lp}.to')
+                _number(layer.get('sag',.12), f'{lp}.sag', 0, 1)
+                _number(layer.get('wind',0), f'{lp}.wind', 0, .5)
+            if kind not in ('room','rope'):
                 for k in ('x', 'y', 'width', 'height'):
                     _number(layer.get(k), f'{lp}.{k}', -2, 3)
             if kind == 'text':
@@ -196,9 +201,19 @@ def validate_project(data: Any) -> None:
                 _fail(f'{ap}.name', 'unknown gesture')
             if typ == 'expression' and action.get('state') not in ('neutral', 'happy', 'sad', 'surprised'):
                 _fail(f'{ap}.state', 'unknown expression')
-            if typ == 'pickup':
+            if typ in ('pickup','place','release','spring'):
                 if action.get('prop') not in prop_ids:
                     _fail(f'{ap}.prop', 'unknown prop')
+            if typ in ('place','spring'):
+                _coord(action.get('to'), f'{ap}.to')
+            if typ == 'release':
+                _number(action.get('gravity',.9), f'{ap}.gravity', .01, 3)
+                _number(action.get('ground',.78), f'{ap}.ground', 0, 2)
+                _number(action.get('bounce',.28), f'{ap}.bounce', 0, 1)
+                _number(action.get('velocity_x',0), f'{ap}.velocity_x', -2, 2)
+            if typ == 'spring':
+                _number(action.get('frequency',2.2), f'{ap}.frequency', .1, 12)
+                _number(action.get('damping',.68), f'{ap}.damping', .01, .99)
             if typ == 'speak':
                 _string(action.get('text'), f'{ap}.text')
                 if 'audio' in action:
@@ -215,6 +230,18 @@ def validate_project(data: Any) -> None:
                             _fail(f'{ap}.mouth_cues[{k}].at', 'cues must be strictly increasing')
                         previous = stamp
                         _number(cue.get('openness'), f'{ap}.mouth_cues[{k}].openness', 0, 1)
+        # Release and placement must follow a pickup by the same character.
+        owned: dict[str,str] = {}
+        interactions = sorted(enumerate(scene.get('actions',[])),key=lambda p:p[1]['start'])
+        for index, action in interactions:
+            if action['type'] == 'pickup':
+                if action['prop'] in owned:
+                    _fail(f'{path}.actions[{index}]', 'prop already held')
+                owned[action['prop']] = action['target']
+            elif action['type'] in ('place','release'):
+                if owned.get(action['prop']) != action['target']:
+                    _fail(f'{path}.actions[{index}]', 'prop must be picked up by this character first')
+                owned.pop(action['prop'])
         for j, cam in enumerate(_list(scene.get('camera', []), f'{path}.camera')):
             cp = f'{path}.camera[{j}]'
             cam = _object(cam, cp)
