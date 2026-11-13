@@ -39,6 +39,11 @@ class Pose:
     pickup: float = 0
     holding: str | None = None
     reach_prop: str | None = None
+    run: float = 0.0
+    gesture: str | None = None
+    look: tuple[float, float] | None = None
+    expression: str = 'neutral'
+    mouth: float = 0.0
 
 
 def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
@@ -50,25 +55,51 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
     pickup = 0.0
     holding = None
     reach_prop = None
+    run = 0.0
+    gesture = None
+    look = None
+    expression = 'neutral'
+    mouth = 0.0
     for action in scene.get('actions', []):
         if action['target'] != actor['id']:
             continue
         start, end = action['start'], action['end']
-        if action['type'] == 'walk':
+        if action['type'] in ('walk', 'run'):
             if t >= start:
                 progress = ease((min(t, end) - start) / (end - start))
                 x, y = lerp(x, action['to'][0], progress), lerp(y, action['to'][1], progress)
                 if t < end:
-                    walk = math.sin((t-start) * 2*math.pi*2.1) * (0.7 + 0.3 * math.sin(math.pi*progress))
+                    phase = math.sin((t-start) * 2*math.pi*(3.6 if action['type']=='run' else 2.1))
+                    if action['type'] == 'run':
+                        run = phase
+                    else:
+                        walk = phase * (0.7 + 0.3 * math.sin(math.pi*progress))
         elif action['type'] == 'speak':
             talking = talking or (start <= t < end)
+            if start <= t < end and action.get('mouth_cues'):
+                cues = action['mouth_cues']
+                relative = t - start
+                mouth = cues[0]['openness']
+                for left, right in zip(cues, cues[1:]):
+                    if relative >= right['at']:
+                        mouth = right['openness']
+                    elif left['at'] <= relative < right['at']:
+                        f = (relative-left['at'])/(right['at']-left['at'])
+                        mouth = lerp(left['openness'],right['openness'],f)
+                        break
+        elif action['type'] == 'look' and t >= start:
+            look = tuple(action['to'])
+        elif action['type'] == 'gesture' and start <= t < end:
+            gesture = action['name']
+        elif action['type'] == 'expression' and start <= t < end:
+            expression = action['state']
         elif action['type'] == 'wave':
             waving = waving or (start <= t < end)
         elif action['type'] == 'pickup' and t >= start:
             holding = action['prop'] if t >= end else None
             pickup = ease((min(t, end)-start)/(end-start))
             reach_prop = action['prop']
-    return Pose(x, y, walk, talking, waving, pickup, holding, reach_prop)
+    return Pose(x, y, walk, talking, waving, pickup, holding, reach_prop, run, gesture, look, expression, mouth)
 
 
 def active_caption(scene: dict, t: float) -> str | None:
