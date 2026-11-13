@@ -25,6 +25,7 @@ jobs:
           aetherpaper validate examples/interaction_demo.json
           aetherpaper validate examples/visual_demo.json
           aetherpaper validate examples/explainer_demo.json
+          aetherpaper validate examples/physics_demo.json
           aetherpaper manifest examples/explainer_demo.json > output-manifest.json
       - name: Render actual short movie
         run: aetherpaper render examples/room_pickup.json --width 320 --height 180 --fps 6 --out output/ci.mp4
@@ -51,6 +52,10 @@ jobs:
           aetherpaper render examples/explainer_demo.json --voice espeak --width 320 --height 180 --fps 12 --out output/explainer_demo.mp4
           aetherpaper qa output/explainer_demo.mp4 --frames-dir output/qa > output/explainer_qa.json
           ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of default=noprint_wrappers=1 output/explainer_demo.mp4 | grep -q 'codec_name=aac'
+      - name: Render physics demonstration
+        run: |
+          aetherpaper render examples/physics_demo.json --width 320 --height 180 --fps 12 --out output/physics_demo.mp4
+          aetherpaper qa output/physics_demo.mp4 --frames-dir output/physics_qa > output/physics_qa.json
       - name: Probe MP4 stream
         run: |
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of default=noprint_wrappers=1 output/ci.mp4
@@ -63,6 +68,7 @@ jobs:
           test -s output/visual_demo.mp4
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/explainer_demo.mp4
           test -s output/explainer_demo.mp4
+          test -s output/physics_demo.mp4
       - name: Upload reproducible rendered demonstrations
         uses: actions/upload-artifact@v4
         with:
@@ -72,6 +78,9 @@ jobs:
             output/interaction_demo.mp4
             output/visual_demo.mp4
             output/explainer_demo.mp4
+            output/physics_demo.mp4
+            output/physics_qa.json
+            output/physics_qa/
             output/explainer_qa.json
             output/qa/
             output-manifest.json
