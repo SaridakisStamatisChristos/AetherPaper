@@ -41,10 +41,14 @@ def _treat(original:Image.Image,name:str,seed:int)->Image.Image:
     img=original.convert("RGBA")
     w,h=img.size
     alpha=img.getchannel("A")
-    base=Image.new("RGB",img.size)
-    base.paste(img.convert("RGB"))
     rng=random.Random(seed)
     coarse=_paper_noise(w,h,seed)
+    # Real large-area pigment density variation, not merely scattered dots.
+    # Multiplication by a softened noise map gives subtle watercolor pooling.
+    density=coarse.point(lambda p:max(0,min(255,round(244+(p-202)*.17))))
+    pigment=Image.merge("RGB",(density,density,density))
+    rgb=ImageChops.multiply(img.convert("RGB"),pigment)
+    img=Image.merge("RGBA",(*rgb.split(),alpha))
     # Translucent watercolor mottling: contrast stays readable after 2x shrink.
     tone=Image.new("RGBA",img.size,(0,0,0,0))
     td=ImageDraw.Draw(tone)
