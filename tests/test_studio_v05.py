@@ -47,8 +47,11 @@ def test_artkit_is_real_editable_transparent_png_and_palette_is_restored(studio_
     assert PALETTE["coat"]=="#2A7781"
 
 
-def test_generator_never_overwrites_artist_authored_replacement(studio_project):
-    root=studio_project.source.parent/"assets"/"studio_courier"
+def test_generator_never_overwrites_artist_authored_replacement(tmp_path):
+    # Use a dedicated kit; corrupting the shared module fixture makes later
+    # render tests fail for an unrelated, intentionally malformed PNG.
+    root=tmp_path/"artist_edited_kit"
+    generate_studio_kit(root)
     again=generate_studio_kit(root)
     assert again["parts"]==20
     modified=root/"head.png"
