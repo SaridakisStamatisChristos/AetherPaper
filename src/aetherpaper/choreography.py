@@ -88,6 +88,7 @@ class Performance:
     gaze_weight:float=0.
     gait:float|None=None
     feet:dict[str,tuple[float,float]]|None=None
+    feet_world:dict[str,tuple[float,float]]|None=None
     angles:dict[str,float]|None=None
     expression:str|None=None
 
@@ -121,10 +122,16 @@ def evaluate(action:dict,t:float)->Performance:
                 "interpolation":k.get("interpolation","smooth")}
                for k in keyframes if side in k.get("feet",{})]
         if track:feet[side]=tuple(_field(track,"value",local))
+    feet_world={}
+    for side in ("l","r"):
+        track=[{"at":k["at"],"value":k["feet_world"][side],
+                "interpolation":k.get("interpolation","smooth")}
+               for k in keyframes if side in k.get("feet_world",{})]
+        if track:feet_world[side]=tuple(_field(track,"value",local))
     expression=None
     for key in keyframes:
         if key["at"]<=local and "expression" in key:
             expression=key["expression"]
     return Performance(positions,shift,look,hand,max(0.,min(1.,hand_weight)),
                        max(0.,min(1.,gaze_weight)),gait,
-                       feet or None,angles or None,expression)
+                       feet or None,feet_world or None,angles or None,expression)
