@@ -52,6 +52,7 @@ class Pose:
     hand_weight: float = 0.0
     body_shift: tuple[float,float] = (0.,0.)
     foot_targets: dict | None = None
+    foot_world: dict | None = None
     gaze_weight: float = 1.0
     gait: float | None = None
 
@@ -77,6 +78,7 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
     hand_weight = 0.0
     body_shift = (0.,0.)
     foot_targets = None
+    foot_world = None
     gaze_weight = 1.0
     gait = None
     for action in scene.get('actions', []):
@@ -160,11 +162,12 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
             bone_angles={**(bone_angles or {}),**p.angles}
             pose_weight=1.0
         if p.feet is not None:foot_targets=p.feet
+        if p.feet_world is not None:foot_world=p.feet_world
         if p.gait is not None:gait=p.gait
         if p.expression is not None:expression=p.expression
     return Pose(x, y, walk, talking, waving, pickup, holding, reach_prop, run, gesture, look,
                 expression, mouth, gesture_weight, bone_angles, pose_weight, hand_target,
-                hand_weight, body_shift, foot_targets, gaze_weight, gait)
+                hand_weight, body_shift, foot_targets, foot_world, gaze_weight, gait)
 
 
 def active_caption(scene: dict, t: float) -> str | None:
