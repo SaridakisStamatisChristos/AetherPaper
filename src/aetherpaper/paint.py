@@ -16,6 +16,7 @@ from .rig import advanced_hand, draw_character as draw_rig_character
 from .physics import rope_points, prop_state
 from .styles import styled_background, shadows, finish_style, transition_frame
 from .illustration import draw_illustrated
+from .sprite_rig import draw_sprite_character
 from .cinematic import (render_atelier_background, add_prop_light,
                         foreground_and_grade, cinematic_caption, title_overlay)
 
@@ -304,8 +305,12 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
             _draw_prop(d,prop,W,H,*state.center)
     # Draw back-to-front by canvas y.
     for actor in sorted(scene.get('characters',[]),key=lambda a:poses[a['id']].y):
-        if actor.get('visual',{}).get('type')=='illustrated':
+        visual_type=actor.get('visual',{}).get('type')
+        if visual_type=='illustrated':
             draw_illustrated(canvas,actor,poses[actor['id']],t)
+            d=ImageDraw.Draw(canvas)
+        elif visual_type=='sprites':
+            draw_sprite_character(canvas,project.source.parent,actor,poses[actor['id']],t)
             d=ImageDraw.Draw(canvas)
         else:
             _draw_character(d,actor,poses[actor['id']],W,H,t)
