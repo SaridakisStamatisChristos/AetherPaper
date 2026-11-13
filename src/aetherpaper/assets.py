@@ -15,6 +15,11 @@ def audit_assets(project) -> list[dict]:
                 for k,part in enumerate(actor['visual']['parts']):
                     references.append((f'scenes[{i}].characters[{j}].visual.parts[{k}].src',
                                        part['src'],'image'))
+            elif actor.get('visual',{}).get('type')=='pose_atlas':
+                for state,frames in actor['visual']['states'].items():
+                    for k,part in enumerate(frames):
+                        references.append((f'scenes[{i}].characters[{j}].visual.states.{state}[{k}].src',
+                                           part['src'],'image'))
         for j,layer in enumerate(scene.get("layers",[])):
             if layer["type"]=="image":
                 references.append((f"scenes[{i}].layers[{j}].src",layer["src"],"image"))
@@ -50,7 +55,7 @@ def audit_assets(project) -> list[dict]:
 
 def production_manifest(project) -> dict:
     return {
-        "format":"aetherpaper-manifest-0.4",
+        "format":"aetherpaper-manifest-0.6",
         "project":str(project.source),
         "version":project.data["version"],
         "canvas":dict(project.canvas),
