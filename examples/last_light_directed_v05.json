@@ -1,0 +1,1254 @@
+{
+  "version": "0.5",
+  "title": "The Last Light — Directed Cutout Performance (v0.5)",
+  "canvas": {
+    "width": 960,
+    "height": 540,
+    "fps": 24
+  },
+  "style": "cinematic_storybook",
+  "scenes": [
+    {
+      "id": "sunset-last-light",
+      "duration": 14,
+      "background": "#A97A92",
+      "style": "cinematic_storybook",
+      "environment": {
+        "type": "sunset_cliff"
+      },
+      "supersample": 2,
+      "title_card": {
+        "text": "THE LAST LIGHT",
+        "start": 0.08,
+        "end": 2.5
+      },
+      "characters": [
+        {
+          "id": "courier",
+          "x": 0.145,
+          "y": 0.884,
+          "scale": 0.95,
+          "shirt": "#2A7781",
+          "pants": "#41566B",
+          "skin": "#DDB089",
+          "hair": "#33434E",
+          "rig": {
+            "bones": [
+              {
+                "name": "pelvis",
+                "parent": null,
+                "length": 0.022,
+                "angle": -1.5707963267948966,
+                "at": 1
+              },
+              {
+                "name": "torso",
+                "parent": "pelvis",
+                "length": 0.33,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "cape",
+                "parent": "torso",
+                "length": 0.28,
+                "angle": 3.141592653589793,
+                "at": 0.88,
+                "offset": [
+                  -0.09,
+                  0
+                ]
+              },
+              {
+                "name": "thigh_l",
+                "parent": "pelvis",
+                "length": 0.205,
+                "angle": 3.141592653589793,
+                "at": 0,
+                "offset": [
+                  -0.11,
+                  0
+                ]
+              },
+              {
+                "name": "shin_l",
+                "parent": "thigh_l",
+                "length": 0.205,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "thigh_r",
+                "parent": "pelvis",
+                "length": 0.205,
+                "angle": 3.141592653589793,
+                "at": 0,
+                "offset": [
+                  0.11,
+                  0
+                ]
+              },
+              {
+                "name": "shin_r",
+                "parent": "thigh_r",
+                "length": 0.205,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "arm_l",
+                "parent": "torso",
+                "length": 0.19,
+                "angle": 3.141592653589793,
+                "at": 0.93,
+                "offset": [
+                  -0.16,
+                  -0.012
+                ]
+              },
+              {
+                "name": "forearm_l",
+                "parent": "arm_l",
+                "length": 0.195,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "arm_r",
+                "parent": "torso",
+                "length": 0.19,
+                "angle": 3.141592653589793,
+                "at": 0.93,
+                "offset": [
+                  0.16,
+                  -0.012
+                ]
+              },
+              {
+                "name": "forearm_r",
+                "parent": "arm_r",
+                "length": 0.195,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "neck",
+                "parent": "torso",
+                "length": 0.025,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "head",
+                "parent": "neck",
+                "length": 0.235,
+                "angle": 0,
+                "at": 1
+              },
+              {
+                "name": "hair_back",
+                "parent": "head",
+                "length": 0.17,
+                "angle": 3.141592653589793,
+                "at": 0.57,
+                "offset": [
+                  -0.018,
+                  0
+                ]
+              }
+            ],
+            "spring": 3,
+            "root_height": 0.365,
+            "front_view": true
+          },
+          "visual": {
+            "type": "sprites",
+            "parts": [
+              {
+                "bone": "cape",
+                "src": "assets/studio_courier/cape.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 0.93,
+                "z": -24
+              },
+              {
+                "bone": "hair_back",
+                "src": "assets/studio_courier/hair_back.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -21
+              },
+              {
+                "bone": "thigh_l",
+                "src": "assets/studio_courier/thigh_l.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -15
+              },
+              {
+                "bone": "shin_l",
+                "src": "assets/studio_courier/shin_l.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -14
+              },
+              {
+                "bone": "arm_l",
+                "src": "assets/studio_courier/arm_l.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -13
+              },
+              {
+                "bone": "forearm_l",
+                "src": "assets/studio_courier/forearm_l.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -12
+              },
+              {
+                "bone": "thigh_r",
+                "src": "assets/studio_courier/thigh_r.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -9
+              },
+              {
+                "bone": "shin_r",
+                "src": "assets/studio_courier/shin_r.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -8
+              },
+              {
+                "bone": "torso",
+                "src": "assets/studio_courier/torso.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": -1
+              },
+              {
+                "bone": "arm_r",
+                "src": "assets/studio_courier/arm_r.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 2
+              },
+              {
+                "bone": "forearm_r",
+                "src": "assets/studio_courier/forearm_r.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 3
+              },
+              {
+                "bone": "neck",
+                "src": "assets/studio_courier/scarf.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 4
+              },
+              {
+                "bone": "head",
+                "src": "assets/studio_courier/head.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 6
+              },
+              {
+                "bone": "head",
+                "src": "assets/studio_courier/hair_front.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 11
+              },
+              {
+                "bone": "head",
+                "src": "assets/studio_courier/face_neutral.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 8,
+                "expression": "neutral"
+              },
+              {
+                "bone": "head",
+                "src": "assets/studio_courier/face_happy.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 8,
+                "expression": "happy"
+              },
+              {
+                "bone": "head",
+                "src": "assets/studio_courier/face_sad.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 8,
+                "expression": "sad"
+              },
+              {
+                "bone": "head",
+                "src": "assets/studio_courier/face_surprised.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 8,
+                "expression": "surprised"
+              },
+              {
+                "bone": "head",
+                "src": "assets/studio_courier/mouth_closed.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 9,
+                "mouth_state": "closed"
+              },
+              {
+                "bone": "head",
+                "src": "assets/studio_courier/mouth_open.png",
+                "pivot": [
+                  0,
+                  0.5
+                ],
+                "scale": 1,
+                "z": 9,
+                "mouth_state": "open"
+              }
+            ]
+          }
+        }
+      ],
+      "props": [
+        {
+          "id": "glow",
+          "shape": "lantern",
+          "x": 0.54,
+          "y": 0.625,
+          "size": 0.135,
+          "color": "#D49D64"
+        }
+      ],
+      "layers": [
+        {
+          "type": "pedestal",
+          "x": 0.496,
+          "y": 0.653,
+          "width": 0.091,
+          "height": 0.235,
+          "color": "#827B83",
+          "depth": 0.95
+        },
+        {
+          "type": "pedestal",
+          "x": 0.664,
+          "y": 0.653,
+          "width": 0.091,
+          "height": 0.235,
+          "color": "#8D8286",
+          "depth": 0.95
+        }
+      ],
+      "actions": [
+        {
+          "type": "pickup",
+          "target": "courier",
+          "prop": "glow",
+          "start": 4,
+          "end": 5.15,
+          "hand_to": [
+            0.54,
+            0.625
+          ]
+        },
+        {
+          "type": "place",
+          "target": "courier",
+          "prop": "glow",
+          "start": 9.35,
+          "end": 10.65,
+          "to": [
+            0.7,
+            0.625
+          ]
+        },
+        {
+          "type": "speak",
+          "target": "courier",
+          "start": 11.78,
+          "end": 13.75,
+          "text": "Even the smallest light can guide us home.",
+          "mouth_cues": [
+            {
+              "at": 0,
+              "openness": 0
+            },
+            {
+              "at": 0.17,
+              "openness": 0.65
+            },
+            {
+              "at": 0.3,
+              "openness": 0.1
+            },
+            {
+              "at": 0.45,
+              "openness": 0.8
+            },
+            {
+              "at": 0.63,
+              "openness": 0.16
+            },
+            {
+              "at": 0.85,
+              "openness": 0.75
+            },
+            {
+              "at": 1.1,
+              "openness": 0.15
+            },
+            {
+              "at": 1.35,
+              "openness": 0.9
+            },
+            {
+              "at": 1.48,
+              "openness": 0
+            },
+            {
+              "at": 1.68,
+              "openness": 0.45
+            },
+            {
+              "at": 1.94,
+              "openness": 0
+            }
+          ]
+        },
+        {
+          "type": "performance",
+          "target": "courier",
+          "start": 0,
+          "end": 14,
+          "keyframes": [
+            {
+              "at": 0,
+              "position": [
+                0.145,
+                0.884
+              ],
+              "feet_world": {
+                "l": [
+                  0.112,
+                  0.892
+                ],
+                "r": [
+                  0.177,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "look": [
+                0.86,
+                0.43
+              ],
+              "gaze_weight": 0.45,
+              "body_shift": [
+                0,
+                0
+              ],
+              "angles": {
+                "head": 0.03
+              },
+              "hand_to": [
+                0.54,
+                0.625
+              ],
+              "hand_weight": 0
+            },
+            {
+              "at": 0.45,
+              "position": [
+                0.178,
+                0.883
+              ],
+              "feet_world": {
+                "l": [
+                  0.112,
+                  0.892
+                ],
+                "r": [
+                  0.207,
+                  0.842
+                ]
+              },
+              "gait": 0.7,
+              "body_shift": [
+                0,
+                -0.006
+              ],
+              "angles": {
+                "head": 0.045
+              }
+            },
+            {
+              "at": 0.92,
+              "position": [
+                0.228,
+                0.883
+              ],
+              "feet_world": {
+                "l": [
+                  0.112,
+                  0.892
+                ],
+                "r": [
+                  0.257,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0
+              ]
+            },
+            {
+              "at": 1.35,
+              "position": [
+                0.263,
+                0.882
+              ],
+              "feet_world": {
+                "l": [
+                  0.228,
+                  0.845
+                ],
+                "r": [
+                  0.257,
+                  0.892
+                ]
+              },
+              "gait": -0.65,
+              "body_shift": [
+                0,
+                -0.007
+              ]
+            },
+            {
+              "at": 1.84,
+              "position": [
+                0.31,
+                0.883
+              ],
+              "feet_world": {
+                "l": [
+                  0.305,
+                  0.892
+                ],
+                "r": [
+                  0.257,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0
+              ]
+            },
+            {
+              "at": 2.28,
+              "position": [
+                0.355,
+                0.882
+              ],
+              "feet_world": {
+                "l": [
+                  0.305,
+                  0.892
+                ],
+                "r": [
+                  0.373,
+                  0.84
+                ]
+              },
+              "gait": 0.67,
+              "body_shift": [
+                0,
+                -0.006
+              ]
+            },
+            {
+              "at": 2.72,
+              "position": [
+                0.397,
+                0.882
+              ],
+              "feet_world": {
+                "l": [
+                  0.372,
+                  0.892
+                ],
+                "r": [
+                  0.408,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0
+              ]
+            },
+            {
+              "at": 3.18,
+              "position": [
+                0.447,
+                0.884
+              ],
+              "feet_world": {
+                "l": [
+                  0.434,
+                  0.892
+                ],
+                "r": [
+                  0.47,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0.001
+              ],
+              "angles": {
+                "head": -0.09
+              },
+              "look": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 3.8,
+              "position": [
+                0.457,
+                0.885
+              ],
+              "feet_world": {
+                "l": [
+                  0.435,
+                  0.892
+                ],
+                "r": [
+                  0.479,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0.006
+              ],
+              "angles": {
+                "head": -0.16
+              },
+              "hand_weight": 0,
+              "hand_to": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 4.2,
+              "position": [
+                0.459,
+                0.89
+              ],
+              "feet_world": {
+                "l": [
+                  0.435,
+                  0.892
+                ],
+                "r": [
+                  0.479,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0.017
+              ],
+              "angles": {
+                "head": -0.18
+              },
+              "hand_weight": 0.45,
+              "hand_to": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 4.65,
+              "position": [
+                0.458,
+                0.89
+              ],
+              "feet_world": {
+                "l": [
+                  0.435,
+                  0.892
+                ],
+                "r": [
+                  0.479,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0.018
+              ],
+              "angles": {
+                "head": -0.11
+              },
+              "hand_weight": 1,
+              "hand_to": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 5.17,
+              "position": [
+                0.46,
+                0.879
+              ],
+              "feet_world": {
+                "l": [
+                  0.435,
+                  0.892
+                ],
+                "r": [
+                  0.479,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0
+              ],
+              "angles": {
+                "head": -0.07
+              },
+              "hand_weight": 1,
+              "hand_to": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 5.75,
+              "position": [
+                0.46,
+                0.881
+              ],
+              "feet_world": {
+                "l": [
+                  0.435,
+                  0.892
+                ],
+                "r": [
+                  0.479,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                -0.011
+              ],
+              "angles": {
+                "head": 0.03
+              },
+              "hand_weight": 0.15,
+              "hand_to": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 6.4,
+              "position": [
+                0.463,
+                0.882
+              ],
+              "feet_world": {
+                "l": [
+                  0.435,
+                  0.892
+                ],
+                "r": [
+                  0.479,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0
+              ],
+              "angles": {
+                "head": 0.07
+              },
+              "hand_weight": 0,
+              "hand_to": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 7,
+              "position": [
+                0.493,
+                0.882
+              ],
+              "feet_world": {
+                "l": [
+                  0.435,
+                  0.892
+                ],
+                "r": [
+                  0.534,
+                  0.844
+                ]
+              },
+              "gait": 0.65,
+              "body_shift": [
+                0,
+                -0.006
+              ],
+              "hand_to": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 7.48,
+              "position": [
+                0.542,
+                0.881
+              ],
+              "feet_world": {
+                "l": [
+                  0.525,
+                  0.892
+                ],
+                "r": [
+                  0.534,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0
+              ],
+              "hand_to": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 8.05,
+              "position": [
+                0.573,
+                0.882
+              ],
+              "feet_world": {
+                "l": [
+                  0.525,
+                  0.892
+                ],
+                "r": [
+                  0.597,
+                  0.84
+                ]
+              },
+              "gait": 0.64,
+              "body_shift": [
+                0,
+                -0.006
+              ],
+              "hand_to": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 8.6,
+              "position": [
+                0.622,
+                0.883
+              ],
+              "feet_world": {
+                "l": [
+                  0.595,
+                  0.892
+                ],
+                "r": [
+                  0.66,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0
+              ],
+              "hand_to": [
+                0.54,
+                0.625
+              ]
+            },
+            {
+              "at": 9.16,
+              "position": [
+                0.63,
+                0.884
+              ],
+              "feet_world": {
+                "l": [
+                  0.595,
+                  0.892
+                ],
+                "r": [
+                  0.66,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0.005
+              ],
+              "hand_to": [
+                0.7,
+                0.625
+              ],
+              "hand_weight": 0.2,
+              "look": [
+                0.7,
+                0.625
+              ]
+            },
+            {
+              "at": 9.74,
+              "position": [
+                0.63,
+                0.884
+              ],
+              "feet_world": {
+                "l": [
+                  0.595,
+                  0.892
+                ],
+                "r": [
+                  0.66,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0.012
+              ],
+              "hand_weight": 0.75,
+              "angles": {
+                "head": -0.07
+              },
+              "hand_to": [
+                0.7,
+                0.625
+              ]
+            },
+            {
+              "at": 10.35,
+              "position": [
+                0.63,
+                0.884
+              ],
+              "feet_world": {
+                "l": [
+                  0.595,
+                  0.892
+                ],
+                "r": [
+                  0.66,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0.015
+              ],
+              "hand_weight": 1,
+              "angles": {
+                "head": -0.06
+              },
+              "hand_to": [
+                0.7,
+                0.625
+              ]
+            },
+            {
+              "at": 10.9,
+              "position": [
+                0.63,
+                0.883
+              ],
+              "feet_world": {
+                "l": [
+                  0.595,
+                  0.892
+                ],
+                "r": [
+                  0.66,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0
+              ],
+              "hand_weight": 0,
+              "angles": {
+                "head": 0.03
+              },
+              "expression": "happy",
+              "hand_to": [
+                0.7,
+                0.625
+              ]
+            },
+            {
+              "at": 11.75,
+              "position": [
+                0.63,
+                0.881
+              ],
+              "feet_world": {
+                "l": [
+                  0.595,
+                  0.892
+                ],
+                "r": [
+                  0.66,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                -0.012
+              ],
+              "hand_weight": 0,
+              "angles": {
+                "head": 0.09
+              },
+              "look": [
+                0.948,
+                0.342
+              ],
+              "expression": "happy",
+              "hand_to": [
+                0.7,
+                0.625
+              ]
+            },
+            {
+              "at": 12.6,
+              "position": [
+                0.63,
+                0.882
+              ],
+              "feet_world": {
+                "l": [
+                  0.595,
+                  0.892
+                ],
+                "r": [
+                  0.66,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0
+              ],
+              "angles": {
+                "head": 0.06
+              },
+              "expression": "happy",
+              "hand_to": [
+                0.7,
+                0.625
+              ]
+            },
+            {
+              "at": 13.5,
+              "position": [
+                0.63,
+                0.882
+              ],
+              "feet_world": {
+                "l": [
+                  0.595,
+                  0.892
+                ],
+                "r": [
+                  0.66,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                -0.004
+              ],
+              "angles": {
+                "head": 0.04
+              },
+              "expression": "happy",
+              "hand_to": [
+                0.7,
+                0.625
+              ]
+            },
+            {
+              "at": 14,
+              "position": [
+                0.63,
+                0.883
+              ],
+              "feet_world": {
+                "l": [
+                  0.595,
+                  0.892
+                ],
+                "r": [
+                  0.66,
+                  0.892
+                ]
+              },
+              "gait": 0,
+              "body_shift": [
+                0,
+                0
+              ],
+              "angles": {
+                "head": 0.04
+              },
+              "expression": "happy",
+              "hand_to": [
+                0.7,
+                0.625
+              ]
+            }
+          ]
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 6.5,
+          "center_from": [
+            0.5,
+            0.5
+          ],
+          "center_to": [
+            0.515,
+            0.51
+          ],
+          "zoom_from": 1,
+          "zoom_to": 1.075
+        },
+        {
+          "start": 6.5,
+          "end": 14,
+          "center_from": [
+            0.515,
+            0.51
+          ],
+          "center_to": [
+            0.58,
+            0.5
+          ],
+          "zoom_from": 1.075,
+          "zoom_to": 1.17
+        }
+      ]
+    }
+  ]
+}

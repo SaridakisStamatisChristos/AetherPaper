@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import math
 from .model import Project
+from .choreography import evaluate
 
 
 def clamp(v: float, a: float = 0, b: float = 1) -> float:
@@ -49,6 +50,11 @@ class Pose:
     pose_weight: float = 0.0
     hand_target: tuple[float,float] | None = None
     hand_weight: float = 0.0
+    body_shift: tuple[float,float] = (0.,0.)
+    foot_targets: dict | None = None
+    foot_world: dict | None = None
+    gaze_weight: float = 1.0
+    gait: float | None = None
 
 
 def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
@@ -70,6 +76,11 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
     pose_weight = 0.0
     hand_target = None
     hand_weight = 0.0
+    body_shift = (0.,0.)
+    foot_targets = None
+    foot_world = None
+    gaze_weight = 1.0
+    gait = None
     for action in scene.get('actions', []):
         if action['target'] != actor['id']:
             continue
@@ -135,7 +146,28 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
                 elif t < end + .45:
                     hand_weight = 1 - ease((t-end)/.45)
                     hand_target = tuple(action['hand_to'])
-    return Pose(x, y, walk, talking, waving, pickup, holding, reach_prop, run, gesture, look, expression, mouth, gesture_weight, bone_angles, pose_weight, hand_target, hand_weight)
+    # Performance clips overlay movement actions as a separate direction layer;
+    # all values are evaluated from absolute scene time, without prior frames.
+    for action in scene.get('actions',[]):
+        if action['target']!=actor['id'] or action['type']!='performance' or t<action['start']:
+            continue
+        p=evaluate(action,t)
+        if p.position is not None:x,y=p.position
+        body_shift=p.body_shift
+        if p.look is not None:look=p.look;gaze_weight=p.gaze_weight
+        if p.hand_to is not None:
+            hand_target=p.hand_to
+            hand_weight=p.hand_weight
+        if p.angles is not None:
+            bone_angles={**(bone_angles or {}),**p.angles}
+            pose_weight=1.0
+        if p.feet is not None:foot_targets=p.feet
+        if p.feet_world is not None:foot_world=p.feet_world
+        if p.gait is not None:gait=p.gait
+        if p.expression is not None:expression=p.expression
+    return Pose(x, y, walk, talking, waving, pickup, holding, reach_prop, run, gesture, look,
+                expression, mouth, gesture_weight, bone_angles, pose_weight, hand_target,
+                hand_weight, body_shift, foot_targets, foot_world, gaze_weight, gait)
 
 
 def active_caption(scene: dict, t: float) -> str | None:

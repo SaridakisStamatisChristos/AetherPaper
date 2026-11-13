@@ -8,9 +8,9 @@ import re
 from typing import Any
 
 HEX_COLOR = re.compile(r'^#[0-9a-fA-F]{6}$')
-SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room', 'rope'}
+SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room', 'rope', 'pedestal'}
 PROP_SHAPES = {'book', 'ball', 'cup', 'star', 'box', 'lantern'}
-ACTION_TYPES = {'walk', 'run', 'pickup', 'speak', 'wave', 'look', 'gesture', 'expression', 'place', 'release', 'spring', 'pose'}
+ACTION_TYPES = {'walk', 'run', 'pickup', 'speak', 'wave', 'look', 'gesture', 'expression', 'place', 'release', 'spring', 'pose', 'performance'}
 
 class SceneError(ValueError):
     """Invalid animation project."""
@@ -89,8 +89,8 @@ def load_project(path: str | Path) -> Project:
 
 def validate_project(data: Any) -> None:
     data = _object(data, '$')
-    if data.get('version') not in ('0.1', '0.2', '0.3', '0.4'):
-        _fail('$.version', 'expected version "0.1", "0.2", "0.3" or "0.4"')
+    if data.get('version') not in ('0.1', '0.2', '0.3', '0.4', '0.5'):
+        _fail('$.version', 'expected a version from "0.1" through "0.5"')
     if data.get('style','paper_cut') not in ('paper_cut','scrapbook','storybook','cinematic_storybook'):
         _fail('$.style','unknown visual preset')
     canvas = _object(data.get('canvas'), '$.canvas')
@@ -126,7 +126,7 @@ def validate_project(data: Any) -> None:
             _fail(f'{path}.style', 'unknown visual preset')
         if 'environment' in scene:
             env=_object(scene['environment'],f'{path}.environment')
-            if env.get('type')!='moonlit_atelier':
+            if env.get('type') not in ('moonlit_atelier','sunset_cliff'):
                 _fail(f'{path}.environment.type','unknown environment')
         if 'title_card' in scene:
             title=_object(scene['title_card'],f'{path}.title_card')
@@ -228,7 +228,7 @@ def validate_project(data: Any) -> None:
                         _fail(f'{cp}.visual.{key}','unknown visual field')
             if 'rig' in actor:
                 rig = _object(actor['rig'], f'{cp}.rig')
-                lengths = {'torso', 'neck', 'upper_arm', 'forearm', 'thigh', 'shin', 'head'}
+                lengths = {'torso', 'neck', 'upper_arm', 'forearm', 'thigh', 'shin', 'head', 'root_height'}
                 for key, value in rig.items():
                     if key == 'bones':
                         bones = _list(value,f'{cp}.rig.bones')
@@ -254,6 +254,9 @@ def validate_project(data: Any) -> None:
                             seen.add(name)
                         if not {'pelvis','torso','neck'} <= seen:
                             _fail(f'{cp}.rig.bones','must contain pelvis, torso and neck bones')
+                    elif key == 'front_view':
+                        if not isinstance(value,bool):
+                            _fail(f'{cp}.rig.front_view','must be boolean')
                     elif key in lengths | {'spring'}:
                         _number(value, f'{cp}.rig.{key}', 0.02 if key != 'spring' else 0.1, 1 if key != 'spring' else 12)
                     else:
@@ -289,6 +292,48 @@ def validate_project(data: Any) -> None:
                 _fail(f'{ap}.end', 'must be later than start')
             if typ in ('walk', 'run', 'look'):
                 _coord(action.get('to'), f'{ap}.to')
+            if typ == 'performance':
+                kfs=_list(action.get('keyframes'),f'{ap}.keyframes')
+                if len(kfs)<2 or len(kfs)>1000:
+                    _fail(f'{ap}.keyframes','requires 2..1000 director keyframes')
+                previous=-1.
+                actor=next(a for a in scene['characters'] if a['id']==target)
+                named={b['name'] for b in actor.get('rig',{}).get('bones',[])}
+                for k,kf in enumerate(kfs):
+                    kp=f'{ap}.keyframes[{k}]'
+                    kf=_object(kf,kp)
+                    stamp=_number(kf.get('at'),kp+'.at',0,end-start)
+                    if stamp<=previous:_fail(kp+'.at','keyframe stamps must increase strictly')
+                    previous=stamp
+                    if kf.get('interpolation','smooth') not in ('smooth','linear','hold'):
+                        _fail(kp+'.interpolation','expected smooth, linear or hold')
+                    for coord in ('position','look','hand_to','body_shift'):
+                        if coord in kf:_coord(kf[coord],kp+'.'+coord)
+                    for numeric,lo,hi in (('hand_weight',0,1),('gaze_weight',0,1),('gait',-1,1)):
+                        if numeric in kf:_number(kf[numeric],kp+'.'+numeric,lo,hi)
+                    if 'feet_world' in kf:
+                        feet_world=_object(kf['feet_world'],kp+'.feet_world')
+                        for side,vec in feet_world.items():
+                            if side not in ('l','r'):_fail(kp+'.feet_world.'+side,'expected left or right foot')
+                            _coord(vec,kp+'.feet_world.'+side)
+                    if 'feet' in kf:
+                        feet=_object(kf['feet'],kp+'.feet')
+                        for side,vec in feet.items():
+                            if side not in ('l','r'):_fail(kp+'.feet.'+side,'expected left or right foot')
+                            if not isinstance(vec,list) or len(vec)!=2:
+                                _fail(kp+'.feet.'+side,'expected [x,y]')
+                            for axis,num in enumerate(vec):_number(num,f'{kp}.feet.{side}[{axis}]',-1,1)
+                    if 'angles' in kf:
+                        angles=_object(kf['angles'],kp+'.angles')
+                        for name,angle in angles.items():
+                            if name not in named:_fail(kp+'.angles.'+name,'unknown bone')
+                            _number(angle,kp+'.angles.'+name,-math.pi,math.pi)
+                    if 'expression' in kf and kf['expression'] not in ('neutral','happy','sad','surprised'):
+                        _fail(kp+'.expression','invalid expression')
+                    if set(kf)-{'at','interpolation','position','look','hand_to','body_shift','hand_weight','gaze_weight','gait','feet','feet_world','angles','expression'}:
+                        _fail(kp,'unknown performance keyframe field')
+                if abs(kfs[0]['at'])>1e-8 or abs(kfs[-1]['at']-(end-start))>1e-8:
+                    _fail(f'{ap}.keyframes','first stamp must be 0 and last must equal clip duration')
             if typ == 'gesture' and action.get('name') not in ('wave', 'point', 'raise'):
                 _fail(f'{ap}.name', 'unknown gesture')
             if typ == 'expression' and action.get('state') not in ('neutral', 'happy', 'sad', 'surprised'):

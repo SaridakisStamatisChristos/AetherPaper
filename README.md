@@ -2,6 +2,35 @@
 
 **Local-first, model-independent, JSON-driven 2D paper-cut animation.** The render engine works without calling Claude, Gemini, ChatGPT, any external API, or an AI coding agent. A scene document describes character movement, prop interaction, captions, camera motion and timing. AetherPaper renders actual frames into an MP4. The core is reusable across productions.
 
+## v0.5 — director-controlled storybook performance
+
+**Feature branch:** `feature/art-direction-v0.5` (stacked on v0.4). This release focuses on improving visual direction, not simply increasing the number of rendered frames.
+
+- **20 independent original studio PNGs:** unified indigo/russet art direction, textured paper and watercolor treatment, shaded cut-paper borders, expression and lip variants. Artists can replace these with their own painted parts.
+- **Directed choreography:** time-aware keyframes for body blocking, head angles, gaze, animated hand targets and separately **world-planted left/right feet**. Keyframes support smooth/linear/hold interpolation and deterministic random seeking.
+- **A second handcrafted environment:** sunset cliff with mountains, sea, lighthouse, village, foreground foliage and atmospheric depth.
+- **14-second acceptance film:** a courier walks into the sunset, approaches a lantern, anticipates the reach, picks it up, carries and places it, then looks to the lighthouse and speaks.
+- No web, AI model or API cost during artkit creation or MP4 rendering. Existing v0.1–0.4 projects remain supported.
+
+```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip ffmpeg espeak-ng
+git clone https://github.com/SaridakisStamatisChristos/AetherPaper.git
+cd AetherPaper
+git switch feature/art-direction-v0.5
+python3 -m venv .venv && source .venv/bin/activate
+python -m pip install -e '.[dev]'
+pytest -q
+aetherpaper artkit --edition studio --out examples/assets/studio_courier
+aetherpaper validate examples/last_light_directed_v05.json
+aetherpaper render examples/last_light_directed_v05.json --out output/last_light_directed_v05.mp4
+aetherpaper qa output/last_light_directed_v05.mp4 --frames-dir output/studio_qa
+```
+
+For the full performance keyframe API, asset authoring and limitations, see [v0.5 Art Direction Guide](docs/ART_DIRECTION_V05.md). **The included imagery is original, procedural illustration with richer artistic treatment; it should not be described as professional studio character art until independently reviewed.**
+
+---
+
 ## v0.4 — 20-piece original artkit and fully tracked character motion
 
 **Feature branch:** feature/character-art-v0.4 (stacked on v0.3; main unchanged).

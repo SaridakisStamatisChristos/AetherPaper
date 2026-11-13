@@ -7,6 +7,7 @@ from .renderer import snapshot, render
 from .assets import production_manifest
 from .qa import verify_video
 from .artkit import build_artkit
+from .studio_art import generate_studio_kit
 
 
 def main(argv=None) -> int:
@@ -28,10 +29,11 @@ def main(argv=None) -> int:
     q.add_argument('video');q.add_argument('--frames-dir')
     g=sub.add_parser('artkit',help='generate original transparent PNG artwork for the v0.4 rig')
     g.add_argument('--out',default='examples/assets/atelier_courier')
+    g.add_argument('--edition',choices=['original','studio'],default='original')
     args=parser.parse_args(argv)
     try:
         if args.command=='artkit':
-            print(json.dumps(build_artkit(args.out),indent=2))
+            print(json.dumps(generate_studio_kit(args.out) if args.edition=='studio' else build_artkit(args.out),indent=2))
             return 0
         if args.command=='qa':
             print(json.dumps(verify_video(args.video,sample_dir=args.frames_dir),indent=2))

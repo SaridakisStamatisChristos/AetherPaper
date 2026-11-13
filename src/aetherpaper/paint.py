@@ -19,6 +19,7 @@ from .illustration import draw_illustrated
 from .sprite_rig import draw_sprite_character, sprite_hand
 from .cinematic import (render_atelier_background, add_prop_light,
                         foreground_and_grade, cinematic_caption, title_overlay)
+from .sunset import sunset_background, sunset_foreground
 
 INK = '#312D34'
 OUTLINE = '#5D4B49'
@@ -121,6 +122,35 @@ def _draw_layer(img: Image.Image, layer: dict, source: Path, t: float, offset=(0
     edge=max(1,round(H*layer.get('edge_width',.005)))
     if kind == 'rectangle':
         _paper_rectangle(d, (x0,y0,x1,y1), c, outline=outline, width=edge)
+    elif kind == 'pedestal':
+        # Hand-cut sandstone/limestone relief instead of a flat stage box.
+        bw=x1-x0;bh=y1-y0;top=y0+bh*.105
+        dark=_shade(c,-36)
+        light=_shade(c,20)
+        medium=_shade(c,-13)
+        _poly(d,[(x0-bw*.04,top),(x0+bw*.88,top-bh*.03),
+                 (x1+bw*.07,top),(x1+bw*.02,y1),
+                 (x0-bw*.07,y1)],medium,stroke=outline,w=edge,shadow=False)
+        _poly(d,[(x0-bw*.07,top),(x0+bw*.15,top+bh*.02),
+                 (x0+bw*.11,y1),(x0-bw*.07,y1)],
+              dark,stroke=outline,w=max(1,edge-1),shadow=False)
+        _poly(d,[(x0-bw*.13,top-bh*.11),(x1+bw*.10,top-bh*.11),
+                 (x1+bw*.13,top+bh*.025),(x0-bw*.15,top+bh*.025)],
+              light,stroke=outline,w=edge,shadow=False)
+        d.line([(round(x0+bw*.18),round(top+bh*.28)),
+                (round(x0+bw*.32),round(top+bh*.41)),
+                (round(x0+bw*.26),round(top+bh*.54))],
+               fill=dark,width=max(1,round(edge*.9)),joint='curve')
+        d.line([(round(x0+bw*.58),round(top+bh*.67)),
+                (round(x0+bw*.69),round(top+bh*.8))],
+               fill=_shade(c,-28),width=max(1,edge))
+        # Old limestone has a quiet engraved rosette and warm lit chips.
+        d.ellipse((round(x0+bw*.43),round(top+bh*.23),
+                   round(x0+bw*.62),round(top+bh*.40)),
+                  outline=dark,width=max(1,edge))
+        d.arc((round(x0+bw*.12),round(top+bh*.1),
+               round(x0+bw*.90),round(top+bh*.98)),
+              212,278,fill=light,width=max(1,edge))
     elif kind == 'ellipse':
         _ellipse(d, (x0+3,y0+4,x1+3,y1+4), '#968474', outline=None)
         _ellipse(d,(x0,y0,x1,y1),c, outline=outline, line=edge)
@@ -285,7 +315,9 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
     seed=int.from_bytes(sha256(scene['id'].encode()).digest()[:4], 'big')
     preset=scene.get('style',project.data.get('style','paper_cut'))
     if preset=='cinematic_storybook':
-        canvas=render_atelier_background(scene,W,H,t)
+        canvas=(sunset_background(scene,W,H,t)
+                if scene.get('environment',{}).get('type')=='sunset_cliff'
+                else render_atelier_background(scene,W,H,t))
     else:
         canvas=styled_background(_background(W,H,scene.get('background','#F5EAD6'),seed).copy(),preset,seed)
     cx,cy,zoom=camera_state(scene,t)
@@ -333,7 +365,9 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
         canvas=canvas.crop((round(left),round(top),round(left+cropW),round(top+cropH))).resize((W,H),Image.Resampling.BICUBIC)
     canvas=finish_style(canvas,preset,t)
     if preset=='cinematic_storybook':
-        canvas=foreground_and_grade(canvas,scene,t)
+        canvas=(sunset_foreground(canvas,t)
+                if scene.get('environment',{}).get('type')=='sunset_cliff'
+                else foreground_and_grade(canvas,scene,t))
     if scene.get('transition'):
         canvas=transition_frame(canvas,scene['transition'],t)
     caption=active_caption(scene,t)
