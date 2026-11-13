@@ -109,6 +109,33 @@ jobs:
           aetherpaper snapshot examples/pose_atlas_demo_v06.json --at 4.3 --out output/v06_speak.png --width 640 --height 360
           aetherpaper qa output/v06_pose_atlas_demo.mp4 --frames-dir output/v06_qa > output/v06_quality.json
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/v06_pose_atlas_demo.mp4
+      - name: Import the actual six-pose AI illustrated RGBA character atlas
+        run: |
+          set -euo pipefail
+          mkdir -p examples/assets/ai_courier
+          if [ ! -f examples/assets/ai_courier/original_pose_atlas.png ]; then
+            curl --fail --location --silent --show-error --retry 3 --max-time 120 \
+              'https://e750f2de-4821-48f5-92b3-32ccdc49b9dc.sandbox.floot.app/_cdn/static/9432aaf0-941e-41db-8551-675429b4166c-aetherpaper_v06_illustrated_six_pose_atlas.png' \
+              --output examples/assets/ai_courier/original_pose_atlas.png
+          fi
+          echo '21a117aba23df6a164eb631b5a7bcc4664d19491620ab2ae752da3af053d340b  examples/assets/ai_courier/original_pose_atlas.png' | sha256sum --check
+          aetherpaper posepack --sheet examples/assets/ai_courier/original_pose_atlas.png \
+             --layout examples/assets/ai_courier/pose_layout.json \
+             --out examples/assets/ai_courier/poses > output/v06_ai_posepack_receipt.json
+          aetherpaper validate examples/ai_illustrated_courier_v06.json
+          aetherpaper manifest examples/ai_illustrated_courier_v06.json > output/v06_ai_asset_manifest.json
+          python -m pytest -q tests/test_ai_courier_v06.py
+      - name: Render the five-second true illustrated character film
+        run: |
+          set -euo pipefail
+          aetherpaper render examples/ai_illustrated_courier_v06.json --width 640 --height 360 --fps 12 \
+            --out output/v06_ai_illustrated_movie.mp4
+          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 0.85 --width 640 --height 360 --out output/v06_ai_walk.png
+          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 2.45 --width 640 --height 360 --out output/v06_ai_reach.png
+          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 3.45 --width 640 --height 360 --out output/v06_ai_carry.png
+          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 4.55 --width 640 --height 360 --out output/v06_ai_speak.png
+          aetherpaper qa output/v06_ai_illustrated_movie.mp4 --frames-dir output/v06_ai_qa > output/v06_ai_quality.json
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/v06_ai_illustrated_movie.mp4
       - name: Probe MP4 stream
         run: |
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of default=noprint_wrappers=1 output/ci.mp4
@@ -295,6 +322,44 @@ jobs:
           git add -f samples/v0.6/v06_pose_atlas_demo.mp4 examples/assets/pose_atlas_demo/demo_sheet.png examples/assets/pose_atlas_demo/poses/*.png examples/assets/pose_atlas_demo/poses/posepack.json
           if ! git diff --cached --quiet; then
             git commit -m 'chore(samples): archive verified v0.6 transparent pose atlas and 5-second film [skip ci]'
+            git push origin HEAD:feature/illustrated-assets-v0.6
+          fi
+      - name: Upload actual AI illustrated film and imported pose source
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetherpaper-v06-ai-illustrated-courier
+          path: |
+            output/v06_ai_illustrated_movie.mp4
+            output/v06_ai_walk.png
+            output/v06_ai_reach.png
+            output/v06_ai_carry.png
+            output/v06_ai_speak.png
+            output/v06_ai_quality.json
+            output/v06_ai_asset_manifest.json
+            output/v06_ai_posepack_receipt.json
+            output/v06_ai_qa/
+            examples/assets/ai_courier/
+            examples/ai_illustrated_courier_v06.json
+          retention-days: 30
+      - name: Preserve actual transparent AI illustration and verified video in GitHub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/illustrated-assets-v0.6'
+        run: |
+          set -euo pipefail
+          git fetch origin feature/illustrated-assets-v0.6
+          if [ "$(git rev-parse FETCH_HEAD)" != "$GITHUB_SHA" ]; then
+            echo "A newer commit exists; skip publication of stale frames."
+            exit 0
+          fi
+          mkdir -p samples/v0.6/ai
+          cp output/v06_ai_illustrated_movie.mp4 samples/v0.6/ai/
+          cp output/v06_ai_walk.png output/v06_ai_reach.png output/v06_ai_carry.png output/v06_ai_speak.png samples/v0.6/ai/
+          cp output/v06_ai_quality.json output/v06_ai_asset_manifest.json samples/v0.6/ai/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add samples/v0.6/ai examples/assets/ai_courier/pose_layout.json
+          git add -f examples/assets/ai_courier/original_pose_atlas.png examples/assets/ai_courier/poses/*.png examples/assets/ai_courier/poses/posepack.json samples/v0.6/ai/v06_ai_illustrated_movie.mp4
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(samples): preserve actual six-pose AI character artwork and five-second acceptance film [skip ci]'
             git push origin HEAD:feature/illustrated-assets-v0.6
           fi
       - name: Archive independently verified MP4 previews in the feature branch
