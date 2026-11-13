@@ -135,9 +135,9 @@ def _base(w:int,h:int,seed:int)->Image.Image:
     # Lighthouse on the far ridge: clear recognisable story destination.
     tower_x=.953*w
     d.polygon([(tower_x-13*h*.0027,.51*h),
-               (tower_x+13*h*.027,.51*h),
+               (tower_x+13*h*.0027,.51*h),
                (tower_x+8*h*.0027,.34*h),
-               (tower_x-8*h*.027,.34*h)],fill="#E4D4C5")
+               (tower_x-8*h*.0027,.34*h)],fill="#E4D4C5")
     d.polygon(_p(w,h,[(.932,.358),(.974,.358),(.964,.321),(.943,.321)]),
               fill="#594A57")
     d.rounded_rectangle((round(.947*w),round(.282*h),round(.963*w),round(.336*h)),
