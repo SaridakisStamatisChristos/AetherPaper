@@ -19,6 +19,7 @@ from .illustration import draw_illustrated
 from .sprite_rig import draw_sprite_character, sprite_hand
 from .cinematic import (render_atelier_background, add_prop_light,
                         foreground_and_grade, cinematic_caption, title_overlay)
+from .sunset import sunset_background, sunset_foreground
 
 INK = '#312D34'
 OUTLINE = '#5D4B49'
@@ -285,7 +286,9 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
     seed=int.from_bytes(sha256(scene['id'].encode()).digest()[:4], 'big')
     preset=scene.get('style',project.data.get('style','paper_cut'))
     if preset=='cinematic_storybook':
-        canvas=render_atelier_background(scene,W,H,t)
+        canvas=(sunset_background(scene,W,H,t)
+                if scene.get('environment',{}).get('type')=='sunset_cliff'
+                else render_atelier_background(scene,W,H,t))
     else:
         canvas=styled_background(_background(W,H,scene.get('background','#F5EAD6'),seed).copy(),preset,seed)
     cx,cy,zoom=camera_state(scene,t)
@@ -333,7 +336,9 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
         canvas=canvas.crop((round(left),round(top),round(left+cropW),round(top+cropH))).resize((W,H),Image.Resampling.BICUBIC)
     canvas=finish_style(canvas,preset,t)
     if preset=='cinematic_storybook':
-        canvas=foreground_and_grade(canvas,scene,t)
+        canvas=(sunset_foreground(canvas,t)
+                if scene.get('environment',{}).get('type')=='sunset_cliff'
+                else foreground_and_grade(canvas,scene,t))
     if scene.get('transition'):
         canvas=transition_frame(canvas,scene['transition'],t)
     caption=active_caption(scene,t)
