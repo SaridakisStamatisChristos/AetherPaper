@@ -20,6 +20,7 @@ class Bone:
     length: float
     angle: float = 0.0
     at: float = 1.0
+    offset: Point = (0.0, 0.0)
 
 
 class Skeleton:
@@ -37,6 +38,8 @@ class Skeleton:
                 raise ValueError("bone length must be positive and finite")
             if not (math.isfinite(bone.angle) and 0 <= bone.at <= 1):
                 raise ValueError("invalid bone angle or attachment")
+            if len(bone.offset)!=2 or not all(math.isfinite(v) and -1 <= v <= 1 for v in bone.offset):
+                raise ValueError("bone offset must be a finite normalized pair")
             names.add(bone.name)
 
     def solve(self, root: Point, scale: float = 1.0,
@@ -54,6 +57,7 @@ class Skeleton:
                 a, b, parent_angle = out[bone.parent]
                 start = (a[0] + (b[0] - a[0]) * bone.at,
                          a[1] + (b[1] - a[1]) * bone.at)
+            start=(start[0]+bone.offset[0]*scale,start[1]+bone.offset[1]*scale)
             angle = parent_angle + angles.get(bone.name, bone.angle)
             end = (start[0] + math.cos(angle) * bone.length * scale,
                    start[1] + math.sin(angle) * bone.length * scale)
@@ -109,7 +113,7 @@ def _config(actor: dict, key: str, default: float) -> float:
 
 
 def _body(actor: dict, pose, width: int, height: int, time: float):
-    illustrated=actor.get("visual",{}).get("type")=="illustrated"
+    illustrated=actor.get("visual",{}).get("type") in ("illustrated","sprites")
     s = height * (.66 if illustrated else .42) * actor.get("scale", 1)
     x, y = pose.x * width, pose.y * height
     motion = abs(pose.walk) + abs(getattr(pose, "run", 0.0))
@@ -122,7 +126,8 @@ def _body(actor: dict, pose, width: int, height: int, time: float):
         head_tilt = max(-.3, min(.3, math.atan2(dy, dx)*.18))
     head_tilt *= spring_progress(max(0, time), _config(actor,"spring",3.0))
     custom=actor.get('rig',{}).get('bones')
-    bones=[Bone(b['name'],b.get('parent'),b['length'],b.get('angle',0),b.get('at',1)) for b in custom] if custom else [
+    bones=[Bone(b['name'],b.get('parent'),b['length'],b.get('angle',0),
+                b.get('at',1),tuple(b.get('offset',[0.,0.]))) for b in custom] if custom else [
         Bone('pelvis',None,.05,-math.pi/2),
         Bone('torso','pelvis',_config(actor,'torso',.3),0),
         Bone('neck','torso',_config(actor,'neck',.12),0),
@@ -158,7 +163,7 @@ def advanced_hand(actor: dict, pose, width: int, height: int, time: float) -> Po
         swing = (pose.walk+getattr(pose,"run",0.0))*.13*s
         target = (x+(.24 if actor.get('visual',{}).get('type')=='illustrated' else .25)*s-swing,
                   y-(.32 if actor.get('visual',{}).get('type')=='illustrated' else .49)*s)
-    if getattr(pose,'hand_target',None) is not None and actor.get('visual',{}).get('type')=='illustrated':
+    if getattr(pose,'hand_target',None) is not None and actor.get('visual',{}).get('type') in ('illustrated','sprites'):
         neutral=(x+.24*s,y-.32*s)
         aim=(pose.hand_target[0]*width,pose.hand_target[1]*height)
         f=max(0,min(1,pose.hand_weight))
