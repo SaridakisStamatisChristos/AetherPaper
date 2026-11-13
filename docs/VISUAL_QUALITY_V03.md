@@ -93,7 +93,7 @@ aetherpaper snapshot examples/lantern_keeper_v03.json --at 5.7 --out output/lant
 aetherpaper qa output/lantern_keeper_v03.mp4 --frames-dir output/lantern_qa
 ```
 
-The 10-second accepted JSON source is `examples/lantern_keeper_v03.json`; its default canvas is 960 × 540 at 24 fps. The CI preview is 640 × 360 at 24 fps, while sampled PNGs are rendered at 960 × 540. The animated story: a keeper enters a moonlit atelier, approaches a lantern, picks it up with articulated motion, carries it, places it down, and delivers a short captioned line.
+The 10-second accepted JSON source is `examples/lantern_keeper_v03.json`; its default canvas is 960 × 540 at 24 fps. Its scene declares `supersample: 2`, meaning a frame is internally drawn at twice the requested size then downsampled with Lanczos filtering. Other scenes default to 1; values 1, 2, and 3 are accepted with a raster-memory bound. The CI preview is 640 × 360 at 24 fps, while sampled PNGs are rendered at 960 × 540. The animated story: a keeper enters a moonlit atelier, approaches a lantern, picks it up with articulated motion, carries it, places it down, and delivers a short captioned line.
 
 ### Current quality limits
 
