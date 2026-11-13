@@ -126,7 +126,7 @@ def validate_project(data: Any) -> None:
             _fail(f'{path}.style', 'unknown visual preset')
         if 'environment' in scene:
             env=_object(scene['environment'],f'{path}.environment')
-            if env.get('type')!='moonlit_atelier':
+            if env.get('type') not in ('moonlit_atelier','sunset_cliff'):
                 _fail(f'{path}.environment.type','unknown environment')
         if 'title_card' in scene:
             title=_object(scene['title_card'],f'{path}.title_card')
@@ -308,6 +308,11 @@ def validate_project(data: Any) -> None:
                         if coord in kf:_coord(kf[coord],kp+'.'+coord)
                     for numeric,lo,hi in (('hand_weight',0,1),('gaze_weight',0,1),('gait',-1,1)):
                         if numeric in kf:_number(kf[numeric],kp+'.'+numeric,lo,hi)
+                    if 'feet_world' in kf:
+                        feet_world=_object(kf['feet_world'],kp+'.feet_world')
+                        for side,vec in feet_world.items():
+                            if side not in ('l','r'):_fail(kp+'.feet_world.'+side,'expected left or right foot')
+                            _coord(vec,kp+'.feet_world.'+side)
                     if 'feet' in kf:
                         feet=_object(kf['feet'],kp+'.feet')
                         for side,vec in feet.items():
@@ -322,7 +327,7 @@ def validate_project(data: Any) -> None:
                             _number(angle,kp+'.angles.'+name,-math.pi,math.pi)
                     if 'expression' in kf and kf['expression'] not in ('neutral','happy','sad','surprised'):
                         _fail(kp+'.expression','invalid expression')
-                    if set(kf)-{'at','interpolation','position','look','hand_to','body_shift','hand_weight','gaze_weight','gait','feet','angles','expression'}:
+                    if set(kf)-{'at','interpolation','position','look','hand_to','body_shift','hand_weight','gaze_weight','gait','feet','feet_world','angles','expression'}:
                         _fail(kp,'unknown performance keyframe field')
                 if abs(kfs[0]['at'])>1e-8 or abs(kfs[-1]['at']-(end-start))>1e-8:
                     _fail(f'{ap}.keyframes','first stamp must be 0 and last must equal clip duration')
