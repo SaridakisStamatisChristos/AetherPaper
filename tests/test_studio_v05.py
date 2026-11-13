@@ -70,10 +70,10 @@ def test_director_interpolates_positions_without_overstepping_segment(studio_pro
     assert .22<middle.position[0]<.31
     assert last.position==pytest.approx((.63,.883))
     assert last.expression=="happy"
-    assert first.feet_world["l"]==pytest.approx((.112,.877))
+    assert first.feet_world["l"]==pytest.approx((.112,.892))
     # The left shoe is planted for first half step, not oscillating in place.
-    assert evaluate(perf,.1).feet_world["l"]==pytest.approx((.112,.877))
-    assert evaluate(perf,.3).feet_world["l"]==pytest.approx((.112,.877))
+    assert evaluate(perf,.1).feet_world["l"]==pytest.approx((.112,.892))
+    assert evaluate(perf,.3).feet_world["l"]==pytest.approx((.112,.892))
     assert evaluate(perf,.3).feet_world["r"][0] > first.feet_world["r"][0]
 
 
@@ -132,6 +132,9 @@ def test_studio_limbs_root_join_and_foot_contact(studio_project):
         assert math.dist(foot,(goal[0]*width,goal[1]*height)) < 2
     # Smaller bent knees must stay in their respective left/right lanes.
     assert joints["thigh_l"][1][0] < joints["thigh_r"][1][0]
+    for side in ("l","r"):
+        thigh=joints["thigh_"+side]
+        assert abs(thigh[1][0]-thigh[0][0]) < .055*s
     # Directed pickup end must be at the illustrated visible right hand.
     reaching=actor_pose(scene,actor,5.10)
     hand=sprite_hand(actor,reaching,width,height,5.10)
@@ -155,6 +158,10 @@ def test_v05_rejects_invalid_foot_and_time_choreography(studio_project):
     a=next(x for x in modified["scenes"][0]["actions"] if x["type"]=="performance")
     a["keyframes"][0]["angles"]["wrong"]=-.2
     with pytest.raises(SceneError,match="unknown bone"):
+        validate_project(modified)
+    modified=copy.deepcopy(data)
+    modified["scenes"][0]["characters"][0]["rig"]["front_view"]="yes"
+    with pytest.raises(SceneError,match="front_view"):
         validate_project(modified)
     modified=copy.deepcopy(data)
     a=next(x for x in modified["scenes"][0]["actions"] if x["type"]=="performance")
