@@ -264,8 +264,21 @@ def import_pose_sheet(sheet_path: str | Path, layout_path: str | Path,
     manifest=output/"posepack.json"
     data=json.dumps(result,indent=2)+"\n"
     if manifest.exists() and manifest.read_text(encoding="utf-8")!=data:
-        # Manifests are reproducible from the supplied source and layout.
-        raise FileExistsError(f"refusing to overwrite edited posepack receipt: {manifest}")
+        # Only migrate the historical 0.6 receipt that recorded an absolute
+        # checkout path. Every content hash, state and visual field must still
+        # match: an edited receipt is never silently overwritten.
+        try:
+            old=json.loads(manifest.read_text(encoding="utf-8"))
+        except (ValueError,OSError):
+            raise FileExistsError(f"refusing to overwrite edited posepack receipt: {manifest}")
+        legacy=(isinstance(old,dict) and "source_sha256" not in old
+                and isinstance(old.get("source"),str)
+                and Path(old["source"]).name==path.name)
+        if not legacy:
+            raise FileExistsError(f"refusing to overwrite edited posepack receipt: {manifest}")
+        comparable={**old,"source":path.name,"source_sha256":result["source_sha256"]}
+        if comparable!=result:
+            raise FileExistsError(f"refusing to overwrite edited posepack receipt: {manifest}")
     # All errors are checked before the first file is created.
     output.mkdir(parents=True,exist_ok=True)
     for name,payload,_ in staged:
