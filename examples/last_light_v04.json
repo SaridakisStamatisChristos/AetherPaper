@@ -54,14 +54,14 @@
                 "angle": 3.141592653589793,
                 "at": 0.18,
                 "offset": [
-                  -0.032,
+                  -0.16,
                   0
                 ]
               },
               {
                 "name": "thigh_l",
                 "parent": "pelvis",
-                "length": 0.205,
+                "length": 0.193,
                 "angle": 3.141592653589793,
                 "at": 0,
                 "offset": [
@@ -72,14 +72,14 @@
               {
                 "name": "shin_l",
                 "parent": "thigh_l",
-                "length": 0.215,
+                "length": 0.195,
                 "angle": 0,
                 "at": 1
               },
               {
                 "name": "thigh_r",
                 "parent": "pelvis",
-                "length": 0.205,
+                "length": 0.193,
                 "angle": 3.141592653589793,
                 "at": 0,
                 "offset": [
@@ -90,14 +90,14 @@
               {
                 "name": "shin_r",
                 "parent": "thigh_r",
-                "length": 0.215,
+                "length": 0.195,
                 "angle": 0,
                 "at": 1
               },
               {
                 "name": "arm_l",
                 "parent": "torso",
-                "length": 0.215,
+                "length": 0.195,
                 "angle": 3.141592653589793,
                 "at": 0.91,
                 "offset": [
@@ -108,14 +108,14 @@
               {
                 "name": "forearm_l",
                 "parent": "arm_l",
-                "length": 0.215,
+                "length": 0.205,
                 "angle": 0,
                 "at": 1
               },
               {
                 "name": "arm_r",
                 "parent": "torso",
-                "length": 0.215,
+                "length": 0.195,
                 "angle": 3.141592653589793,
                 "at": 0.91,
                 "offset": [
@@ -126,7 +126,7 @@
               {
                 "name": "forearm_r",
                 "parent": "arm_r",
-                "length": 0.215,
+                "length": 0.205,
                 "angle": 0,
                 "at": 1
               },
@@ -140,7 +140,7 @@
               {
                 "name": "head",
                 "parent": "neck",
-                "length": 0.18,
+                "length": 0.205,
                 "angle": 0,
                 "at": 1
               },
@@ -389,7 +389,7 @@
           "start": 0.5,
           "end": 3.12,
           "to": [
-            0.515,
+            0.523,
             0.875
           ]
         },
