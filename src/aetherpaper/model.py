@@ -10,7 +10,7 @@ from typing import Any
 HEX_COLOR = re.compile(r'^#[0-9a-fA-F]{6}$')
 SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room'}
 PROP_SHAPES = {'book', 'ball', 'cup', 'star', 'box'}
-ACTION_TYPES = {'walk', 'pickup', 'speak', 'wave'}
+ACTION_TYPES = {'walk', 'run', 'pickup', 'speak', 'wave', 'look', 'gesture', 'expression'}
 
 class SceneError(ValueError):
     """Invalid animation project."""
@@ -89,8 +89,8 @@ def load_project(path: str | Path) -> Project:
 
 def validate_project(data: Any) -> None:
     data = _object(data, '$')
-    if data.get('version') != '0.1':
-        _fail('$.version', 'expected "0.1"')
+    if data.get('version') not in ('0.1', '0.2'):
+        _fail('$.version', 'expected "0.1" or "0.2"')
     canvas = _object(data.get('canvas'), '$.canvas')
     for key in ('width', 'height'):
         v = _number(canvas.get(key), f'$.canvas.{key}', 64, 4096)
@@ -154,6 +154,13 @@ def validate_project(data: Any) -> None:
             for k in ('skin', 'shirt', 'pants', 'hair'):
                 if k in actor:
                     _color(actor[k], f'{cp}.{k}')
+            if 'rig' in actor:
+                rig = _object(actor['rig'], f'{cp}.rig')
+                lengths = {'torso', 'neck', 'upper_arm', 'forearm', 'thigh', 'shin', 'head'}
+                for key, value in rig.items():
+                    if key not in lengths | {'spring'}:
+                        _fail(f'{cp}.rig.{key}', 'unknown rig property')
+                    _number(value, f'{cp}.rig.{key}', 0.02 if key != 'spring' else 0.1, 1 if key != 'spring' else 12)
         prop_ids: set[str] = set()
         for j, prop in enumerate(_list(scene.get('props', []), f'{path}.props')):
             pp = f'{path}.props[{j}]'
@@ -183,8 +190,12 @@ def validate_project(data: Any) -> None:
             end = _number(action.get('end'), f'{ap}.end', 0, dur)
             if end <= start:
                 _fail(f'{ap}.end', 'must be later than start')
-            if typ == 'walk':
+            if typ in ('walk', 'run', 'look'):
                 _coord(action.get('to'), f'{ap}.to')
+            if typ == 'gesture' and action.get('name') not in ('wave', 'point', 'raise'):
+                _fail(f'{ap}.name', 'unknown gesture')
+            if typ == 'expression' and action.get('state') not in ('neutral', 'happy', 'sad', 'surprised'):
+                _fail(f'{ap}.state', 'unknown expression')
             if typ == 'pickup':
                 if action.get('prop') not in prop_ids:
                     _fail(f'{ap}.prop', 'unknown prop')
@@ -192,6 +203,18 @@ def validate_project(data: Any) -> None:
                 _string(action.get('text'), f'{ap}.text')
                 if 'audio' in action:
                     _string(action['audio'], f'{ap}.audio')
+                if 'mouth_cues' in action:
+                    cues = _list(action['mouth_cues'], f'{ap}.mouth_cues')
+                    if not cues:
+                        _fail(f'{ap}.mouth_cues', 'requires at least one cue')
+                    previous = -1.0
+                    for k, cue in enumerate(cues):
+                        cue = _object(cue, f'{ap}.mouth_cues[{k}]')
+                        stamp = _number(cue.get('at'), f'{ap}.mouth_cues[{k}].at', 0, end-start)
+                        if stamp <= previous:
+                            _fail(f'{ap}.mouth_cues[{k}].at', 'cues must be strictly increasing')
+                        previous = stamp
+                        _number(cue.get('openness'), f'{ap}.mouth_cues[{k}].openness', 0, 1)
         for j, cam in enumerate(_list(scene.get('camera', []), f'{path}.camera')):
             cp = f'{path}.camera[{j}]'
             cam = _object(cam, cp)
