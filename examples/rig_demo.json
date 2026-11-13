@@ -42,7 +42,34 @@
             "forearm": 0.28,
             "thigh": 0.23,
             "shin": 0.23,
-            "spring": 3
+            "spring": 3,
+            "bones": [
+              {
+                "name": "pelvis",
+                "parent": null,
+                "length": 0.05,
+                "angle": -1.5707963267948966
+              },
+              {
+                "name": "torso",
+                "parent": "pelvis",
+                "length": 0.3,
+                "angle": 0
+              },
+              {
+                "name": "neck",
+                "parent": "torso",
+                "length": 0.12,
+                "angle": 0
+              },
+              {
+                "name": "scarf",
+                "parent": "torso",
+                "length": 0.13,
+                "angle": 0.38,
+                "at": 0.7
+              }
+            ]
           }
         },
         {
@@ -120,6 +147,16 @@
           "target": "mira",
           "start": 4.2,
           "end": 5.05
+        },
+        {
+          "type": "pose",
+          "target": "mira",
+          "start": 4.15,
+          "end": 5.02,
+          "angles": {
+            "neck": 0.19,
+            "scarf": 0.85
+          }
         },
         {
           "type": "speak",
