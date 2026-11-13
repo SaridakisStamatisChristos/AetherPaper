@@ -119,6 +119,9 @@ def validate_project(data: Any) -> None:
             _fail(f'{path}.duration', 'duration must be a multiple of 1/fps')
         total_frames += frames
         _color(scene.get('background', '#F5EAD6'), f'{path}.background')
+        aa=_number(scene.get('supersample',1),f'{path}.supersample',1,3)
+        if int(aa)!=aa:
+            _fail(f'{path}.supersample','must be an integer')
         if scene.get('style',data.get('style','paper_cut')) not in ('paper_cut','scrapbook','storybook','cinematic_storybook'):
             _fail(f'{path}.style', 'unknown visual preset')
         if 'environment' in scene:
