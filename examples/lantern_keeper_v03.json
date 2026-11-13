@@ -33,8 +33,8 @@
           "rig": {
             "torso": 0.31,
             "neck": 0.12,
-            "upper_arm": 0.29,
-            "forearm": 0.28,
+            "upper_arm": 0.2,
+            "forearm": 0.21,
             "thigh": 0.245,
             "shin": 0.258,
             "head": 0.175,
@@ -84,7 +84,11 @@
           "target": "keeper",
           "start": 3,
           "end": 4.22,
-          "prop": "light"
+          "prop": "light",
+          "hand_to": [
+            0.585,
+            0.648
+          ]
         },
         {
           "type": "walk",
