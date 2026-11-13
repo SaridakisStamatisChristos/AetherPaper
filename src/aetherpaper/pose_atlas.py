@@ -64,9 +64,15 @@ def _read_png(path: str | Path, pixel_limit: int = MAX_FRAME_PIXELS) -> Image.Im
 
 
 @lru_cache(maxsize=256)
-def _pose_png(path: str) -> Image.Image:
-    # Cache decoded art to make frame rendering independent of disk latency.
+def _pose_png(path: str, mtime_ns: int, file_size: int) -> Image.Image:
+    # Cache the exact current content version. Updating the artist's PNG at
+    # the same path cannot silently keep an obsolete illustration on screen.
     return _read_png(path)
+
+
+def _current_pose(path: Path) -> Image.Image:
+    info=path.stat()
+    return _pose_png(str(path),info.st_mtime_ns,info.st_size)
 
 
 def select_pose(visual: dict, pose, t: float) -> tuple[str, dict, int]:
@@ -102,9 +108,10 @@ def frame_geometry(image_size: tuple[int,int], actor:dict, pose,
         raise ValueError("illustrated figure exceeds safe canvas scale")
     w = max(1,round(artwork.width/artwork.height*h))
     foot=part.get("foot_anchor",settings.get("foot_anchor",[.5,.97]))
+    anchor_x=1-float(foot[0]) if settings.get("mirror",False) else float(foot[0])
     center_x=(pose.x+getattr(pose,"body_shift",(0,0))[0])*W
     center_y=(pose.y+getattr(pose,"body_shift",(0,0))[1])*H
-    return round(center_x-float(foot[0])*w),round(center_y-float(foot[1])*h),w,h
+    return round(center_x-anchor_x*w),round(center_y-float(foot[1])*h),w,h
 
 
 def draw_pose_atlas(canvas:Image.Image,source_root:Path,
@@ -112,7 +119,7 @@ def draw_pose_atlas(canvas:Image.Image,source_root:Path,
     """Composite a whole painted body without separating or distorting limbs."""
     state,part,index=select_pose(actor["visual"],pose,time)
     path=safe_asset(source_root,part["src"])
-    art=_pose_png(str(path))
+    art=_current_pose(path)
     left,top,w,h=frame_geometry(canvas.size,actor,pose,art,part)
     if actor["visual"].get("mirror",False):
         art=ImageOps.mirror(art)
@@ -134,7 +141,7 @@ def illustrated_hand(actor:dict,pose,time:float,W:int,H:int,source_root:Path)->t
     p = part.get("hand_anchor", actor["visual"].get("hand_anchor"))
     if p is None:
         raise ValueError(f"pose atlas state {state!r} has no hand_anchor for prop interaction")
-    art=_pose_png(str(safe_asset(source_root,part["src"])))
+    art=_current_pose(safe_asset(source_root,part["src"]))
     left,top,w,h=frame_geometry((W,H),actor,pose,art,part)
     x=float(p[0])
     if actor["visual"].get("mirror",False):
@@ -247,12 +254,7 @@ def import_pose_sheet(sheet_path: str | Path, layout_path: str | Path,
     if visual["playback"] not in ("loop","once"):
         raise ValueError("playback must be loop or once")
     if "hand_anchor" in layout:visual["hand_anchor"]=layout["hand_anchor"]
-    output.mkdir(parents=True,exist_ok=True)
-    checksums={}
-    for name,payload,_ in staged:
-        dest=output/name
-        if not dest.exists():dest.write_bytes(payload)
-        checksums[name]=sha256(payload).hexdigest()
+    checksums={name:sha256(payload).hexdigest() for name,payload,_ in staged}
     result={"format":"aetherpaper-posepack-0.6",
             "source":str(path.resolve()),"frames":len(staged),
             "states":{name:len(frames) for name,frames in states.items()},
@@ -263,5 +265,10 @@ def import_pose_sheet(sheet_path: str | Path, layout_path: str | Path,
     if manifest.exists() and manifest.read_text(encoding="utf-8")!=data:
         # Manifests are reproducible from the supplied source and layout.
         raise FileExistsError(f"refusing to overwrite edited posepack receipt: {manifest}")
+    # All errors are checked before the first file is created.
+    output.mkdir(parents=True,exist_ok=True)
+    for name,payload,_ in staged:
+        dest=output/name
+        if not dest.exists():dest.write_bytes(payload)
     manifest.write_text(data,encoding="utf-8")
     return result
