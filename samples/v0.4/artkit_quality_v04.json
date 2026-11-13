@@ -1,0 +1,28 @@
+{
+  "video": "/home/runner/work/AetherPaper/AetherPaper/output/last_light_v04.mp4",
+  "codec": "h264",
+  "width": 640,
+  "height": 360,
+  "fps": 24.0,
+  "frames": 264,
+  "duration": 11.0,
+  "audio_codecs": [],
+  "frame_checks": [
+    {
+      "time": 1.507,
+      "variance": 1887.738,
+      "readable": true
+    },
+    {
+      "time": 4.609,
+      "variance": 1859.813,
+      "readable": true
+    },
+    {
+      "time": 8.041,
+      "variance": 1742.612,
+      "readable": true
+    }
+  ],
+  "sample_dir": "/home/runner/work/AetherPaper/AetherPaper/output/artkit_qa"
+}

@@ -1,0 +1,172 @@
+{
+  "format": "aetherpaper-manifest-0.4",
+  "project": "/home/runner/work/AetherPaper/AetherPaper/examples/last_light_v04.json",
+  "version": "0.4",
+  "canvas": {
+    "width": 960,
+    "height": 540,
+    "fps": 24
+  },
+  "duration_seconds": 11,
+  "scene_count": 1,
+  "scenes": [
+    {
+      "id": "last-light",
+      "duration": 11,
+      "style": "cinematic_storybook",
+      "action_types": [
+        "expression",
+        "gesture",
+        "look",
+        "pickup",
+        "place",
+        "speak",
+        "walk"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "reference": "scenes[0].characters[0].visual.parts[0].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/cape.png",
+      "bytes": 6067,
+      "sha256": "d04c21385eff564221eeffd173dcdc4ca54b1331b6bdee2269f356766f8538d5"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[1].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/hair_back.png",
+      "bytes": 3973,
+      "sha256": "8b44bb2815fa39d3f20993082deda9bb33f04a5d42baed6cae2e63165f2dd300"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[2].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/thigh_l.png",
+      "bytes": 4530,
+      "sha256": "25c2f537408933318caad3e82b9026a4271413e653e45f4364e10863aeadbf0e"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[3].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/shin_l.png",
+      "bytes": 4503,
+      "sha256": "fb8e64166f48a93a899a89a3321c2fc3d2ae191cffafd48fb3991a1d0fea92b3"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[4].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/arm_l.png",
+      "bytes": 4324,
+      "sha256": "4a88fba27d4bfd284835301c9699f496b12e53c04ae7f524ad9599b6d47f6068"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[5].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/forearm_l.png",
+      "bytes": 4646,
+      "sha256": "ca1a07a66048d97507780bb17fbcc8f96af4344d01f29a5db4746a605c792ac2"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[6].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/thigh_r.png",
+      "bytes": 4434,
+      "sha256": "4731b6299d7465ad1e7261dec16cb4c81dd4ad613b4b9e2432f3ae1f8a78ad07"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[7].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/shin_r.png",
+      "bytes": 4546,
+      "sha256": "93dda1e382a521278afe20573f38983f054c9077bb360f292535a1ea90d2fcd2"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[8].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/torso.png",
+      "bytes": 9953,
+      "sha256": "a85eb872ad4d1993146b9848936bec20f873002ebad90d5035c31678392a1f76"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[9].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/arm_r.png",
+      "bytes": 4565,
+      "sha256": "f481fde99dc0307763649b8e677552384792761494abd0f9ddf59f59b5d8519f"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[10].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/forearm_r.png",
+      "bytes": 4502,
+      "sha256": "e03570e75e453886cc0f5d72e99a11d72cc09a2e6bf82af89e9f0c9bc13ec5a0"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[11].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/scarf.png",
+      "bytes": 4181,
+      "sha256": "50b10b106e209d312131fbe98c1363e2855842fa9dbde19031d954314cb3ab51"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[12].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/head.png",
+      "bytes": 7698,
+      "sha256": "919a2524e3094d9e27c41d5b220e48d7cef20ab7dd9fc228536d617cbef93a1e"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[13].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/hair_front.png",
+      "bytes": 5337,
+      "sha256": "a0651419f3c244073247863ba8d070e68168369e94671f1bae2caa07f62380be"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[14].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/face_neutral.png",
+      "bytes": 3459,
+      "sha256": "8364b07f600bbb99c191ff5569fd9bbd96e735d913a3d63973baa3c9f88dadac"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[15].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/face_happy.png",
+      "bytes": 3567,
+      "sha256": "e55a58fb6cce2f015859945d48daf3e12221fb2cc7927e1ac19c54c342f6e9dd"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[16].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/face_sad.png",
+      "bytes": 3625,
+      "sha256": "4730471ac455c89019f7bb9a331ac300f6df035768f809e80fd9bdae3d64b283"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[17].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/face_surprised.png",
+      "bytes": 3442,
+      "sha256": "c652bc8b3f93fac9cc5a5ef7b64703f0b130a05a59e50ae347891d1b0d9fd25e"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[18].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/mouth_closed.png",
+      "bytes": 2233,
+      "sha256": "26262c9b6fb007a467f9051dada77ac51ff2df05ccba5425711d71750dc13f2f"
+    },
+    {
+      "reference": "scenes[0].characters[0].visual.parts[19].src",
+      "kind": "image",
+      "path": "assets/atelier_courier/mouth_open.png",
+      "bytes": 2475,
+      "sha256": "f6d957ca570de58c24062806e463f1b9f7dcaadc1fc00ba7b87668bc30f8ebf1"
+    }
+  ],
+  "network_required": false,
+  "ai_runtime_required": false
+}
