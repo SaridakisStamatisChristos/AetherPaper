@@ -119,7 +119,7 @@ def _body(actor: dict, pose, width: int, height: int, time: float):
     motion = abs(pose.walk) + abs(getattr(pose, "run", 0.0))
     bob = math.sin(time * 2.5) * .004 * s
     bob += min(1.0, motion) * abs(math.sin(time * 13)) * .018 * s
-    root = (x, y - .38 * s + bob)
+    root = (x, y - _config(actor,'root_height',.38) * s + bob)
     head_tilt = 0.0
     if pose.look is not None:
         dx, dy = pose.look[0] * width-x, pose.look[1] * height-(y-.88*s)
