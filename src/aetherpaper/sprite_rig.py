@@ -66,11 +66,10 @@ def attach_sprite(image: Image.Image, sprite: Image.Image, start: Point,
 
 def _target(actor:dict, pose, side:int, t:float, x:float,y:float,s:float)->Point:
     """Return reachable target in world pixels, blending gestures into the hand."""
-    active=max(abs(pose.walk),abs(getattr(pose,"run",0)))
-    neutral=(x+side*.26*s,y-.355*s)
+    neutral=(x+side*.21*s,y-.315*s)
     if side<0:
         return (neutral[0]+pose.walk*.07*s,neutral[1])
-    target=(x+.27*s-pose.walk*.07*s,y-.36*s)
+    target=(x+.21*s-pose.walk*.045*s,y-.315*s)
     if pose.holding:
         target=(x+.30*s,y-.47*s)
     if pose.waving or pose.gesture=="wave":
@@ -129,7 +128,7 @@ def posed_sprite_joints(actor:dict,pose,width:int,height:int,time:float) -> dict
         lift=max(0,cycle*side)*walking*.09*s
         dest=(x+side*.119*s+stride,y-.017*s-lift)
         if not (pose.bone_angles and (upper in pose.bone_angles or lower in pose.bone_angles)):
-            _update_limb(joints,upper,lower,dest,side)
+            _update_limb(joints,upper,lower,dest,-side)
     if "cape" in joints:
         a,b,_=joints["cape"]
         length=math.dist(a,b)
