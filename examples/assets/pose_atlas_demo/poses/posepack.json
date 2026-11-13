@@ -1,6 +1,7 @@
 {
   "format": "aetherpaper-posepack-0.6",
-  "source": "/home/runner/work/AetherPaper/AetherPaper/examples/assets/pose_atlas_demo/demo_sheet.png",
+  "source": "demo_sheet.png",
+  "source_sha256": "8f392f56a9873066847ef8220dfe82e8e8c0d8acb3a7668a720e8a42231a3721",
   "frames": 6,
   "states": {
     "walk": 2,
