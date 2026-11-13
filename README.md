@@ -2,6 +2,37 @@
 
 **Local-first, model-independent, JSON-driven 2D paper-cut animation.** The render engine works without calling Claude, Gemini, ChatGPT, any external API, or an AI coding agent. A scene document describes character movement, prop interaction, captions, camera motion and timing. AetherPaper renders actual frames into an MP4. The core is reusable across productions.
 
+## v0.4 — 20-piece original artkit and fully tracked character motion
+
+**Feature branch:** feature/character-art-v0.4 (stacked on v0.3; main unchanged).
+
+v0.4 adds a reproducible, independently painted 20-PNG character kit, 14 skeletal bones with actual shoulder/hip offsets, two-link IK for four limbs, hair/cape sway, interchangeable facial expression and mouth art, and a physically connected sprite hand for pickup/carry/place. Artists can replace any generated part with better transparent artwork without altering the scene JSON.
+
+Ubuntu / Linux Mint:
+
+```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip ffmpeg espeak-ng
+git clone https://github.com/SaridakisStamatisChristos/AetherPaper.git
+cd AetherPaper
+git switch feature/character-art-v0.4
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+pytest -q
+aetherpaper artkit --out examples/assets/atelier_courier
+aetherpaper manifest examples/last_light_v04.json
+aetherpaper render examples/last_light_v04.json --out output/last_light_v04.mp4
+aetherpaper qa output/last_light_v04.mp4 --frames-dir output/qa_v04
+```
+
+The accompanying 11-second film is built from **real independent transparent PNG artwork**, not a screenshot or single still frame. Its default canvas is 960×540 at 24fps with a 2× antialiasing supersample.
+
+See [Character Art v0.4 — complete workflow](docs/CHARACTER_ART_V04.md) for sprite authoring, facial/mouth states, anatomical IK and asset replacement.
+
+**Quality boundary:** The included art is source-generated cutout illustration, not studio-grade hand-painted animation. The system now enables high-quality artist-authored replacement art, but supplied artwork and art direction still determine output quality.
+
+---
 ## v0.3 — illustrated characters and cinematic acceptance film
 
 **Status:** Working development feature branch. AetherPaper now supports an original illustrated character painter, interchangeable artist-authored transparent PNG parts on hierarchical bones, a detailed moonlit atelier scene, moving lantern illumination, foreground depth, improved reaching animation, and optional 2×/3× anti-aliasing. It preserves the same offline JSON → Pillow → FFmpeg runtime and the older v0.1/v0.2 scenes.
