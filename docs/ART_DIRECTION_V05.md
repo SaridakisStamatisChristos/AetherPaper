@@ -96,6 +96,35 @@ The new `sunset_cliff` environment is an original illustrated warm coastal locat
 
 The acceptance scene `examples/last_light_directed_v05.json` directs 26 distinct movement beats over 14 seconds. It includes an independent path for left and right foot planting, physical lantern pickup and placement on stone plinths, posture anticipation, raised gaze, mouth cue animation and a moving camera.
 
+## Front-facing cutout anatomy — v0.5 optical IK
+
+Front-view human knees bend into and out of the screen, not only sideways.
+The original mathematically exact planar two-link solver therefore caused
+X-shaped knees and exaggerated wing-like elbows when painting a character
+facing camera. The new optional actor rig property:
+
+```json
+"rig": {
+  "root_height": 0.365,
+  "front_view": true,
+  "bones": [ "... existing named bone definitions ..." ]
+}
+```
+
+selects an optical 2.5-D *projected* knee/elbow layout for the sprite
+character. The hand and foot endpoints remain locked to authored targets,
+while elbow/knee midpoints are placed close to the correct limb centerlines.
+The drawn segments are deliberately foreshortened, so their projected pixel
+lengths are **not required to equal the actual authored bone length**. This
+is a visible-illustration mode, not a physical IK solution. It allows natural
+planted front-facing legs while preserving the original exact two-bone solver
+for all rigs without `front_view`.
+
+The scripted acceptance scene also uses a small `root_height` override and
+a shorter pelvis connector, so the painted shirt visibly joins the hips, and
+uses carved limestone pedestal layers rather than unlit rectangular boxes.
+These changes are opt-in and leave all v0.1–v0.4 projects unchanged.
+
 ## Verification criteria and boundaries
 
 `tests/test_studio_v05.py` exercises the real art kit and manifest, deterministic frame changes, interpolated trajectories and planted-foot holds, IK contact continuity, invalid keyframe validation and preservation of artist edits. GitHub Actions additionally renders an actual H.264 MP4, uses FFprobe and decoded frame QA, and stores all PNGs, film, stills and manifests on the branch.
