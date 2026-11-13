@@ -2,7 +2,36 @@
 
 **Local-first, model-independent, JSON-driven 2D paper-cut animation.** The render engine works without calling Claude, Gemini, ChatGPT, any external API, or an AI coding agent. A scene document describes character movement, prop interaction, captions, camera motion and timing. AetherPaper renders actual frames into an MP4. The core is reusable across productions.
 
-## v0.2 — working animation engine (feature branch)
+## v0.3 — illustrated characters and cinematic acceptance film
+
+**Status:** Working development feature branch. AetherPaper now supports an original illustrated character painter, interchangeable artist-authored transparent PNG parts on hierarchical bones, a detailed moonlit atelier scene, moving lantern illumination, foreground depth, improved reaching animation, and optional 2×/3× anti-aliasing. It preserves the same offline JSON → Pillow → FFmpeg runtime and the older v0.1/v0.2 scenes.
+
+To work with the visual-quality branch instead of v0.2:
+
+```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip ffmpeg espeak-ng
+git clone https://github.com/SaridakisStamatisChristos/AetherPaper.git
+cd AetherPaper
+git switch feature/visual-quality-v0.3
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+pytest -q
+aetherpaper validate examples/lantern_keeper_v03.json
+aetherpaper render examples/lantern_keeper_v03.json --out output/lantern_keeper_v03.mp4
+aetherpaper qa output/lantern_keeper_v03.mp4 --frames-dir output/qa
+```
+
+The supplied acceptance video is 10 seconds, 960×540 at 24 fps by default. The CI preview uses 640×360 at 24 fps. It depicts a keeper walking into a moonlit study, picking up and carrying a lantern, placing it elsewhere, and speaking. `supersample: 2` produces internally double-resolution character/stage artwork before downscaling. No API tokens or browser runtime are needed.
+
+**For genuinely sophisticated character art**, use `visual.type="sprites"` with separately authored transparent PNG parts, attached to named rig bones. This gives you an actual interchangeable illustration pipeline instead of requiring procedurally drawn geometric puppets.
+
+Read [v0.3 Visual Quality and Sprite Asset Guide](docs/VISUAL_QUALITY_V03.md) for the complete JSON interface, pivot coordinates, artist workflow, examples and limitations. The new built-in puppet is more detailed than the v0.2 one, but its appearance still does **not** guarantee artist-grade animation; deliberate art assets remain essential.
+
+---
+
+## v0.2 — preserved animation baseline (feature branch)
 
 AetherPaper v0.2 retains every v0.1 scene while adding reusable articulated 2D rigs and prop physics. A model may write **JSON only**; the locally installed Python/Pillow engine renders frames itself, uses FFmpeg for MP4, and can synchronize pre-generated narration WAVs. It does not invoke an AI model during rendering.
 
