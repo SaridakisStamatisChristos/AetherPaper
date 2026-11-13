@@ -13,6 +13,7 @@ import random
 from .model import Project
 from .timeline import actor_pose, active_caption, camera_state, lerp
 from .rig import advanced_hand, draw_character as draw_rig_character
+from .physics import rope_points, prop_state
 
 INK = '#312D34'
 OUTLINE = '#5D4B49'
@@ -99,6 +100,13 @@ def _draw_layer(img: Image.Image, layer: dict, source: Path, t: float) -> None:
     kind = layer['type']
     if kind == 'room':
         _draw_room(img, layer)
+        return
+    if kind == 'rope':
+        points=rope_points(tuple(layer['from']),tuple(layer['to']),t,
+                           layer.get('sag',.12),layer.get('wind',0))
+        d=ImageDraw.Draw(img)
+        d.line([(round(x*W),round(y*H)) for x,y in points],
+               fill=layer.get('color','#8C7059'),width=max(1,round(H*.012)),joint='curve')
         return
     x,y,w,h = (layer[k] for k in ('x','y','width','height'))
     x0,y0,x1,y1 = x*W,y*H,(x+w)*W,(y+h)*H
@@ -251,29 +259,25 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
     for layer in scene.get('layers',[]):
         _draw_layer(canvas,layer,project.source,t)
     d=ImageDraw.Draw(canvas)
-    poses={a['id']:actor_pose(scene,a,t) for a in scene.get('characters',[])}
-    grabbed=set()
-    for actor in scene.get('characters',[]):
-        if poses[actor['id']].reach_prop:
-            grabbed.add(poses[actor['id']].reach_prop)
+    actors={a['id']:a for a in scene.get('characters',[])}
+    poses={aid:actor_pose(scene,a,t) for aid,a in actors.items()}
+    def hand_at(aid,when):
+        a=actors[aid]
+        hp=actor_pose(scene,a,when)
+        hx,hy=_hand(a,hp,W,H,when)
+        return (hx/W,hy/H)
+    states={p['id']:prop_state(scene,p,t,hand_at) for p in scene.get('props',[])}
     for prop in scene.get('props',[]):
-        if prop['id'] not in grabbed:
-            _draw_prop(d,prop,W,H,prop['x'],prop['y'])
+        state=states[prop['id']]
+        if not state.foreground:
+            _draw_prop(d,prop,W,H,*state.center)
     # Draw back-to-front by canvas y.
     for actor in sorted(scene.get('characters',[]),key=lambda a:poses[a['id']].y):
         _draw_character(d,actor,poses[actor['id']],W,H,t)
-    for actor in scene.get('characters',[]):
-        pose=poses[actor['id']]
-        if not pose.reach_prop:
-            continue
-        prop=next(p for p in scene.get('props',[]) if p['id']==pose.reach_prop)
-        hx,hy=_hand(actor,pose,W,H,t)
-        progress=pose.pickup
-        # The physical paper prop visibly travels from its original position to the hand.
-        attach=min(1,max(0,(progress-.18)/.82))
-        cx=lerp(prop['x'],hx/W,attach)
-        cy=lerp(prop['y'],hy/H,attach)
-        _draw_prop(d,prop,W,H,cx,cy,0.8 if pose.holding else 1)
+    for prop in scene.get('props',[]):
+        state=states[prop['id']]
+        if state.foreground:
+            _draw_prop(d,prop,W,H,*state.center,.8 if state.owner else 1)
     cx,cy,zoom=camera_state(scene,t)
     if zoom>1.00001 or abs(cx-.5)>.00001 or abs(cy-.5)>.00001:
         cropW=W/zoom; cropH=H/zoom
