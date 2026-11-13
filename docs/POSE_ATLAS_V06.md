@@ -6,7 +6,7 @@
 
 The old character looks archaic because it consists of geometrically drawn pieces. Version 0.6 offers a different renderer: **each character pose is a complete, independently illustrated transparent PNG**, preserving its painted anatomy, hair, fabric and facial appearance. The timeline switches illustrations and moves the complete person without rotating geometric arms and legs. A director can specify precise switching beats.
 
-**The included demo uses legacy v0.5 artwork for automated regression, NOT a new professional illustration pack.** The image-generation attempts in this development turn produced promotional posters, not isolated transparent sprites. Do not treat a poster as imported character art. Good source art is still necessary before declaring the visual-quality objective complete.
+The project retains a legacy v0.5 pose demo for regression **and now includes a second, genuinely AI-illustrated character pack**. Two earlier image-generation attempts produced promotional posters; the subsequent attempt delivered a real 3×2, alpha-transparent illustration sheet. The original 1536×1024 PNG and six complete painted frames have been checksum verified and committed as actual renderer inputs. This is a meaningful character-quality improvement, not a claim of fully fluid animation.
 
 The engine does not perform arbitrary AI segmentation, weight-skinned deformation or optical flow. It does not invent new in-between drawings. Supply enough artist-created frames for smooth movement.
 
@@ -120,4 +120,25 @@ aetherpaper qa output/pose_atlas_demo_v06.mp4 --frames-dir output/qa_v06
 
 CI archives the six independent PNGs, transparent source sheet, 5-second film, sample frames and SHA-256 manifest.
 
-**Artistic acceptance gate remains open:** To claim a meaningful visual upgrade over v0.5, the six legacy illustrations must be replaced with genuinely sophisticated consistent character drawings. The working pipeline alone does not make that quality claim true.
+## Real AI illustrated character acceptance (completed)
+
+The original image-generation model created a single young traveler in six consistent hand-painted full-body poses, genuinely transparent and suitable for import. This is now preserved in GitHub:
+
+- Original source: `examples/assets/ai_courier/original_pose_atlas.png` (1536×1024 RGBA, SHA-256: `21a117aba23df6a164eb631b5a7bcc4664d19491620ab2ae752da3af053d340b`)
+- Six separate original paintings: `examples/assets/ai_courier/poses/*.png`
+- Placement grid and hand anchors: `examples/assets/ai_courier/pose_layout.json`
+- Ready-to-run scene: `examples/ai_illustrated_courier_v06.json`
+- Actual 5-second H.264 and four rendered stage frames: `samples/v0.6/ai/`
+
+Render it offline on Linux Mint or Ubuntu:
+
+~~~bash
+aetherpaper validate examples/ai_illustrated_courier_v06.json
+aetherpaper manifest examples/ai_illustrated_courier_v06.json
+aetherpaper render examples/ai_illustrated_courier_v06.json --out output/ai_illustrated_courier.mp4
+aetherpaper qa output/ai_illustrated_courier.mp4 --frames-dir output/ai_qa
+~~~
+
+**Verified:** 640×360, 12 fps, 60 H.264 frames across five seconds; SHA-256 source verification, six RGBA image validations, stable scene timing and identical prop position to authored hand contact. [Full v0.6 engine CI](https://github.com/SaridakisStamatisChristos/AetherPaper/actions/runs/43461635902) passed with 78 tests and six artwork-specific tests in its separate acceptance phase. [Focused artwork publication CI](https://github.com/SaridakisStamatisChristos/AetherPaper/actions/runs/43463891138) also passed and committed the source PNGs and film.
+
+**Quality review:** Facial anatomy, hair, coat, colors and silhouette are dramatically more refined than the v0.5 geometric puppet. The background is still a comparatively simple procedural illustration, and two walking frames plus single reach/carry/speak drawings mean transitions remain flipbook-like rather than fully fluid. A true animated turn, accurate hand/object contact across many in-betweens and facial lip sync require further illustrations and choreography. The art is original generated source artwork, not a commissioned studio painting. The supplied visual result can be reviewed directly; no marketing poster was used as an engine source.
