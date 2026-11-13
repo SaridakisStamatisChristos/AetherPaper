@@ -12,6 +12,7 @@ import math
 import random
 from .model import Project
 from .timeline import actor_pose, active_caption, camera_state, lerp
+from .rig import advanced_hand, draw_character as draw_rig_character
 
 INK = '#312D34'
 OUTLINE = '#5D4B49'
@@ -151,6 +152,8 @@ def _draw_prop(d, prop: dict, W:int, H:int, cx:float, cy:float, scale:float=1.0)
 
 
 def _hand(actor:dict, pose, W:int, H:int, t:float):
+    if 'rig' in actor:
+        return advanced_hand(actor,pose,W,H,t)
     s=H*.42*actor.get('scale',1)
     x,y=pose.x*W,pose.y*H
     right_shoulder=(x+s*.14,y-s*.68)
@@ -166,6 +169,9 @@ def _hand(actor:dict, pose, W:int, H:int, t:float):
 
 
 def _draw_character(d, actor:dict, pose, W:int,H:int,t:float):
+    if 'rig' in actor:
+        draw_rig_character(d,actor,pose,W,H,t)
+        return
     s=H*.42*actor.get('scale',1)
     x,y=pose.x*W,pose.y*H
     shirt=actor.get('shirt','#B46C5A')
