@@ -1,0 +1,30 @@
+{
+  "name": "studio-courier-v0.5",
+  "directory": "/home/runner/work/AetherPaper/AetherPaper/examples/assets/studio_courier",
+  "parts": 20,
+  "sha256": {
+    "cape.png": "967dc99caf40ed77bf297038a1db51d7f7d84b737f597dbf5e2eb2e926ec8e84",
+    "thigh_l.png": "0b22900495843e95e6882e7d566e75a8127731ad40e5c9cbe291c0e74fce9827",
+    "shin_l.png": "0dec46a5f4afa963639b1a908fc53aedfe6e734aef06b82426fbe3ef43f19121",
+    "thigh_r.png": "339501fa1af5d727bf88353f3d9cd1adc2ab2e5cd6f2a505975820143f3d1ffa",
+    "shin_r.png": "a722d7dac1fc1d5f5da07ec315f15b047c948e72084fee8eba48b114647f92b7",
+    "arm_l.png": "6a727899384bb2a4548b66f8c61ab3250998e22a0e89bafef16238632848cd86",
+    "forearm_l.png": "73311e6affcc631e2cbbfbe70cd93cc2014c4561e76138474d17ef5ca586d668",
+    "torso.png": "c36ecb48a4925cc27a340cc2beaa30f98f29b4a90d43faf69880b62a12861fd3",
+    "arm_r.png": "05818ec9f2037b3792bdda52c859f5acd7c6a151041c660990efbd300847b452",
+    "forearm_r.png": "e25aff1660b515c0d08a353a7004ca1197afed05761c15e7e4b22d374a7d382e",
+    "head.png": "a1e80718709eba7fa9eed3bf77cd5c1546eaff3f4ab8210f2a0fa46c3327414b",
+    "hair_back.png": "78d3f4701aa90bbc51e7ecde96cacdcb167a4529fcce41153c4902e657cb2805",
+    "hair_front.png": "b8bbbb95a1f747d7b7fd44cf88df1991316fc9302aa05a9e13b894f5270aefc5",
+    "scarf.png": "ca45c4234297b8ee82b16e8ae5309652369137949450f362a664e25ec3786848",
+    "face_neutral.png": "9a3c62f256625c46325614a09348baa211119fb41e6ca3e370e4c8e6987a31f7",
+    "face_happy.png": "865560f4ee675bebb28289c83b4a4d19b5af28e03aac15df6943ac5a8e7409ac",
+    "face_sad.png": "5d6156ca914c244086a30804140e1d4c1c87e11f0a664c974e34935e5dfe9978",
+    "face_surprised.png": "971d2c533a8bc74b7e7b061505f55033e1cfde4bf8a7bc301f750b89b41998eb",
+    "mouth_open.png": "c01ab3d1da1211e5d08e897d2d2846591bacd3aba0e4d1077885c7e73960daf8",
+    "mouth_closed.png": "5a8a914807ee68dd0c9c753017e5e1ba27cef3cf1b2f72c900f729abe576f06a"
+  },
+  "art_direction": "textured watercolor paper, sculpted expressive portrait, sunset-rimmed indigo coat and russet scarf",
+  "reproducible": true,
+  "network_required": false
+}

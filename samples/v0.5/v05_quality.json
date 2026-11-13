@@ -1,0 +1,28 @@
+{
+  "video": "/home/runner/work/AetherPaper/AetherPaper/output/last_light_directed_v05.mp4",
+  "codec": "h264",
+  "width": 640,
+  "height": 360,
+  "fps": 24.0,
+  "frames": 336,
+  "duration": 14.0,
+  "audio_codecs": [],
+  "frame_checks": [
+    {
+      "time": 1.918,
+      "variance": 1247.87,
+      "readable": true
+    },
+    {
+      "time": 5.866,
+      "variance": 1208.119,
+      "readable": true
+    },
+    {
+      "time": 10.234,
+      "variance": 1214.553,
+      "readable": true
+    }
+  ],
+  "sample_dir": "/home/runner/work/AetherPaper/AetherPaper/output/v05_video_qa"
+}
