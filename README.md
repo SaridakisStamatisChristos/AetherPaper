@@ -29,7 +29,18 @@ aetherpaper posepack --sheet artwork/poses.png --layout artwork/layout.json --ou
 
 See [v0.6 Pose Atlas guide](docs/POSE_ATLAS_V06.md) for the complete JSON interface, production asset authoring brief, rigless character specification, importer safety rules and limitations.
 
-**Artistic acceptance is separate from technical acceptance.** The included sample uses the legacy illustrated body as a functional fixture. AI image creation attempts for this stage returned promotional posters, not valid transparent pose art. A genuinely high-quality, consistent transparent pose set must replace the sample before we can claim that the person's appearance has reached the intended cinematic standard.
+**Real v0.6 illustrated character now verified:** A third image-generation attempt produced a genuine transparent **1536×1024 PNG sprite sheet** with six consistent, fully illustrated body poses. The source, all six split RGBA frames, and a **five-second H.264 acceptance film (640×360, 12 fps, 60 frames)** are preserved in [examples/assets/ai_courier](examples/assets/ai_courier/) and [samples/v0.6/ai](samples/v0.6/ai/). The first two generation attempts produced unusable marketing posters; those were not imported.
+
+To render the actual new art (already bundled on this feature branch):
+
+```bash
+aetherpaper validate examples/ai_illustrated_courier_v06.json
+aetherpaper manifest examples/ai_illustrated_courier_v06.json
+aetherpaper render examples/ai_illustrated_courier_v06.json --out output/v06_ai_illustrated_movie.mp4
+aetherpaper qa output/v06_ai_illustrated_movie.mp4 --frames-dir output/ai_qa
+```
+
+**Quality boundary:** The character is a substantial visual improvement over the geometry-based v0.5 puppet, but six poses alone cannot deliver fully fluid acting; the original scene backgrounds remain relatively simple. Both independent code verification and human review of the actual film are still required.
 
 ---
 
