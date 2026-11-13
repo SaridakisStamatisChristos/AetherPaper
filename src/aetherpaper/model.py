@@ -270,6 +270,8 @@ def validate_project(data: Any) -> None:
             if typ in ('pickup','place','release','spring'):
                 if action.get('prop') not in prop_ids:
                     _fail(f'{ap}.prop', 'unknown prop')
+            if typ=='pickup' and 'hand_to' in action:
+                _coord(action['hand_to'],f'{ap}.hand_to')
             if typ in ('place','spring'):
                 _coord(action.get('to'), f'{ap}.to')
             if typ == 'release':
