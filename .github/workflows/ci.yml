@@ -97,6 +97,18 @@ jobs:
           aetherpaper snapshot examples/last_light_directed_v05.json --at 12.6 --width 960 --height 540 --out output/v05_finale.png
           aetherpaper qa output/last_light_directed_v05.mp4 --frames-dir output/v05_video_qa > output/v05_quality.json
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/last_light_directed_v05.mp4
+      - name: Verify artist-pose atlas importer and render real v0.6 film
+        run: |
+          set -euo pipefail
+          aetherpaper pose-demo --source examples/last_light_directed_v05.json --out examples > output/v06_pose_demo_receipt.json
+          aetherpaper validate examples/pose_atlas_demo_v06.json
+          aetherpaper manifest examples/pose_atlas_demo_v06.json > output/v06_manifest.json
+          aetherpaper render examples/pose_atlas_demo_v06.json --width 640 --height 360 --fps 12 --out output/v06_pose_atlas_demo.mp4
+          aetherpaper snapshot examples/pose_atlas_demo_v06.json --at 0.7 --out output/v06_walk.png --width 640 --height 360
+          aetherpaper snapshot examples/pose_atlas_demo_v06.json --at 2.5 --out output/v06_reach.png --width 640 --height 360
+          aetherpaper snapshot examples/pose_atlas_demo_v06.json --at 4.3 --out output/v06_speak.png --width 640 --height 360
+          aetherpaper qa output/v06_pose_atlas_demo.mp4 --frames-dir output/v06_qa > output/v06_quality.json
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/v06_pose_atlas_demo.mp4
       - name: Probe MP4 stream
         run: |
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of default=noprint_wrappers=1 output/ci.mp4
@@ -247,6 +259,43 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m 'chore(samples): store tested v0.5 directed 14-second film and original character PNGs [skip ci]'
             git push origin HEAD:feature/art-direction-v0.5
+          fi
+      - name: Upload v0.6 whole-illustration pose atlas and real movie
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetherpaper-v06-pose-atlas
+          path: |
+            output/v06_pose_atlas_demo.mp4
+            output/v06_walk.png
+            output/v06_reach.png
+            output/v06_speak.png
+            output/v06_quality.json
+            output/v06_manifest.json
+            output/v06_pose_demo_receipt.json
+            output/v06_qa/
+            examples/pose_atlas_demo_v06.json
+            examples/assets/pose_atlas_demo/
+          retention-days: 30
+      - name: Preserve v0.6 acceptance source poses and verified MP4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/illustrated-assets-v0.6'
+        run: |
+          set -euo pipefail
+          git fetch origin feature/illustrated-assets-v0.6
+          if [ "$(git rev-parse FETCH_HEAD)" != "$GITHUB_SHA" ]; then
+            echo "A newer commit exists; do not publish stale acceptance footage."
+            exit 0
+          fi
+          mkdir -p samples/v0.6
+          cp output/v06_pose_atlas_demo.mp4 samples/v0.6/
+          cp output/v06_walk.png output/v06_reach.png output/v06_speak.png samples/v0.6/
+          cp output/v06_quality.json output/v06_manifest.json samples/v0.6/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add samples/v0.6 examples/pose_atlas_demo_v06.json examples/assets/pose_atlas_demo/demo_layout.json
+          git add -f samples/v0.6/v06_pose_atlas_demo.mp4 examples/assets/pose_atlas_demo/demo_sheet.png examples/assets/pose_atlas_demo/poses/*.png examples/assets/pose_atlas_demo/poses/posepack.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(samples): archive verified v0.6 transparent pose atlas and 5-second film [skip ci]'
+            git push origin HEAD:feature/illustrated-assets-v0.6
           fi
       - name: Archive independently verified MP4 previews in the feature branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/feature/advanced-animation-v0.2'
