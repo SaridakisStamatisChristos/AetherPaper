@@ -188,7 +188,10 @@ jobs:
           cp output/artkit_quality_v04.json output/artkit_receipt_v04.json output/asset_manifest_v04.json samples/v0.4/
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Keep the 20 original source-generated transparent artworks in GitHub too.
+          # They are the exact PNGs used to render the attached MP4.
           git add samples/v0.4
+          git add -f examples/assets/atelier_courier/*.png
           git add -f samples/v0.4/last_light_v04.mp4
           if ! git diff --cached --quiet; then
             git commit -m 'chore(samples): preserve CI-verified v0.4 character art film [skip ci]'
