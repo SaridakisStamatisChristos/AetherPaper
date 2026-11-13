@@ -1,0 +1,208 @@
+"""Versioned scene contract and strict, actionable validation."""
+from __future__ import annotations
+from dataclasses import dataclass
+from pathlib import Path
+import json
+import math
+import re
+from typing import Any
+
+HEX_COLOR = re.compile(r'^#[0-9a-fA-F]{6}$')
+SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room'}
+PROP_SHAPES = {'book', 'ball', 'cup', 'star', 'box'}
+ACTION_TYPES = {'walk', 'pickup', 'speak', 'wave'}
+
+class SceneError(ValueError):
+    """Invalid animation project."""
+
+
+def _fail(path: str, message: str) -> None:
+    raise SceneError(f'{path}: {message}')
+
+
+def _object(value: Any, path: str) -> dict:
+    if not isinstance(value, dict):
+        _fail(path, 'expected object')
+    return value
+
+
+def _list(value: Any, path: str) -> list:
+    if not isinstance(value, list):
+        _fail(path, 'expected array')
+    return value
+
+
+def _string(value: Any, path: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        _fail(path, 'expected nonempty string')
+    return value
+
+
+def _number(value: Any, path: str, lo: float | None = None, hi: float | None = None) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        _fail(path, 'expected finite number')
+    v = float(value)
+    if lo is not None and v < lo or hi is not None and v > hi:
+        _fail(path, f'out of range [{lo}, {hi}]')
+    return v
+
+
+def _color(value: Any, path: str) -> None:
+    if not isinstance(value, str) or not HEX_COLOR.fullmatch(value):
+        _fail(path, 'expected #RRGGBB color')
+
+
+def _coord(value: Any, path: str) -> None:
+    if not isinstance(value, list) or len(value) != 2:
+        _fail(path, 'expected [x, y]')
+    _number(value[0], f'{path}[0]', -2, 3)
+    _number(value[1], f'{path}[1]', -2, 3)
+
+
+@dataclass(frozen=True)
+class Project:
+    source: Path
+    data: dict
+
+    @property
+    def canvas(self) -> dict:
+        return self.data['canvas']
+
+    @property
+    def scenes(self) -> list[dict]:
+        return self.data['scenes']
+
+    @property
+    def duration(self) -> float:
+        return sum(scene['duration'] for scene in self.scenes)
+
+
+def load_project(path: str | Path) -> Project:
+    source = Path(path).resolve()
+    try:
+        data = json.loads(source.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError) as e:
+        raise SceneError(f'{source}: unable to read JSON: {e}') from e
+    validate_project(data)
+    return Project(source, data)
+
+
+def validate_project(data: Any) -> None:
+    data = _object(data, '$')
+    if data.get('version') != '0.1':
+        _fail('$.version', 'expected "0.1"')
+    canvas = _object(data.get('canvas'), '$.canvas')
+    for key in ('width', 'height'):
+        v = _number(canvas.get(key), f'$.canvas.{key}', 64, 4096)
+        if int(v) != v or int(v) % 2:
+            _fail(f'$.canvas.{key}', 'must be an even integer')
+    fps = _number(canvas.get('fps'), '$.canvas.fps', 1, 60)
+    if fps != int(fps):
+        _fail('$.canvas.fps', 'must be an integer')
+    scenes = _list(data.get('scenes'), '$.scenes')
+    if not scenes:
+        _fail('$.scenes', 'at least one scene is required')
+    ids: set[str] = set()
+    total_frames = 0
+    for i, scene in enumerate(scenes):
+        path = f'$.scenes[{i}]'
+        scene = _object(scene, path)
+        ident = _string(scene.get('id'), f'{path}.id')
+        if ident in ids:
+            _fail(f'{path}.id', 'duplicate scene id')
+        ids.add(ident)
+        dur = _number(scene.get('duration'), f'{path}.duration', 1/fps, 600)
+        frames = round(dur * fps)
+        if abs(frames / fps - dur) > 1e-6:
+            _fail(f'{path}.duration', 'duration must be a multiple of 1/fps')
+        total_frames += frames
+        _color(scene.get('background', '#F5EAD6'), f'{path}.background')
+        for j, layer in enumerate(_list(scene.get('layers', []), f'{path}.layers')):
+            lp = f'{path}.layers[{j}]'
+            layer = _object(layer, lp)
+            kind = _string(layer.get('type'), f'{lp}.type')
+            if kind not in SHAPES:
+                _fail(f'{lp}.type', f'unsupported shape {kind!r}')
+            if kind != 'room':
+                for k in ('x', 'y', 'width', 'height'):
+                    _number(layer.get(k), f'{lp}.{k}', -2, 3)
+            if kind == 'text':
+                _string(layer.get('text'), f'{lp}.text')
+            if kind == 'image':
+                _string(layer.get('src'), f'{lp}.src')
+            if kind == 'polygon':
+                pts = _list(layer.get('points'), f'{lp}.points')
+                if len(pts) < 3:
+                    _fail(f'{lp}.points', 'polygon needs at least three points')
+                for k, pt in enumerate(pts):
+                    _coord(pt, f'{lp}.points[{k}]')
+            if 'color' in layer:
+                _color(layer['color'], f'{lp}.color')
+            if 'enter' in layer:
+                _number(layer['enter'], f'{lp}.enter', 0, dur)
+        char_ids: set[str] = set()
+        for j, actor in enumerate(_list(scene.get('characters', []), f'{path}.characters')):
+            cp = f'{path}.characters[{j}]'
+            actor = _object(actor, cp)
+            aid = _string(actor.get('id'), f'{cp}.id')
+            if aid in char_ids:
+                _fail(f'{cp}.id', 'duplicate character id')
+            char_ids.add(aid)
+            for axis in ('x', 'y'):
+                _number(actor.get(axis), f'{cp}.{axis}', -1, 2)
+            _number(actor.get('scale', 1), f'{cp}.scale', 0.25, 3)
+            for k in ('skin', 'shirt', 'pants', 'hair'):
+                if k in actor:
+                    _color(actor[k], f'{cp}.{k}')
+        prop_ids: set[str] = set()
+        for j, prop in enumerate(_list(scene.get('props', []), f'{path}.props')):
+            pp = f'{path}.props[{j}]'
+            prop = _object(prop, pp)
+            pid = _string(prop.get('id'), f'{pp}.id')
+            if pid in prop_ids:
+                _fail(f'{pp}.id', 'duplicate prop id')
+            prop_ids.add(pid)
+            shape = _string(prop.get('shape'), f'{pp}.shape')
+            if shape not in PROP_SHAPES:
+                _fail(f'{pp}.shape', f'unsupported prop shape {shape}')
+            for k in ('x', 'y'):
+                _number(prop.get(k), f'{pp}.{k}', -2, 3)
+            _number(prop.get('size', 0.1), f'{pp}.size', 0.01, 1)
+            if 'color' in prop:
+                _color(prop['color'], f'{pp}.color')
+        for j, action in enumerate(_list(scene.get('actions', []), f'{path}.actions')):
+            ap = f'{path}.actions[{j}]'
+            action = _object(action, ap)
+            typ = _string(action.get('type'), f'{ap}.type')
+            if typ not in ACTION_TYPES:
+                _fail(f'{ap}.type', f'unsupported action {typ!r}')
+            target = _string(action.get('target'), f'{ap}.target')
+            if target not in char_ids:
+                _fail(f'{ap}.target', f'unknown character {target}')
+            start = _number(action.get('start'), f'{ap}.start', 0, dur)
+            end = _number(action.get('end'), f'{ap}.end', 0, dur)
+            if end <= start:
+                _fail(f'{ap}.end', 'must be later than start')
+            if typ == 'walk':
+                _coord(action.get('to'), f'{ap}.to')
+            if typ == 'pickup':
+                if action.get('prop') not in prop_ids:
+                    _fail(f'{ap}.prop', 'unknown prop')
+            if typ == 'speak':
+                _string(action.get('text'), f'{ap}.text')
+                if 'audio' in action:
+                    _string(action['audio'], f'{ap}.audio')
+        for j, cam in enumerate(_list(scene.get('camera', []), f'{path}.camera')):
+            cp = f'{path}.camera[{j}]'
+            cam = _object(cam, cp)
+            a = _number(cam.get('start'), f'{cp}.start', 0, dur)
+            b = _number(cam.get('end'), f'{cp}.end', 0, dur)
+            if b <= a:
+                _fail(f'{cp}.end', 'must be later than start')
+            for k in ('zoom_from', 'zoom_to'):
+                _number(cam.get(k, 1), f'{cp}.{k}', 1, 2.5)
+            for k in ('center_from', 'center_to'):
+                if k in cam:
+                    _coord(cam[k], f'{cp}.{k}')
+    if total_frames > 120_000:
+        _fail('$.scenes', 'project exceeds 120,000 frames')

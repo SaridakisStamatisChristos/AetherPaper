@@ -1,0 +1,29 @@
+name: Engine tests and render smoke test
+on:
+  push:
+    branches: [main, feature/**]
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install package and test dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: Unit and integration tests
+        run: pytest -q
+      - name: Validate supplied animation scenes
+        run: |
+          aetherpaper validate examples/room_pickup.json
+          aetherpaper validate examples/three_scenes.json
+      - name: Render actual short movie
+        run: aetherpaper render examples/room_pickup.json --width 320 --height 180 --fps 6 --out output/ci.mp4
+      - name: Probe MP4 stream
+        run: |
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of default=noprint_wrappers=1 output/ci.mp4
+          test -s output/ci.mp4

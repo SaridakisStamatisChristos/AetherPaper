@@ -1,0 +1,31 @@
+{
+  "version": "0.1",
+  "title": "The Lost Book — AetherPaper Engine Test",
+  "canvas": { "width": 960, "height": 540, "fps": 24 },
+  "scenes": [
+    {
+      "id": "living-room",
+      "duration": 7.5,
+      "background": "#E8D6BA",
+      "layers": [
+        { "type": "room", "wall": "#EBDAC1", "floor": "#AD795C" },
+        { "type": "text", "x": 0.56, "y": 0.11, "width": 0.39, "height": 0.09, "text": "AetherPaper", "color": "#584637", "font_size": 0.068 },
+        { "type": "text", "x": 0.56, "y": 0.195, "width": 0.42, "height": 0.05, "text": "LOCAL PAPER ANIMATION", "color": "#735845", "font_size": 0.026 }
+      ],
+      "characters": [
+        { "id": "alex", "x": 0.38, "y": 0.79, "scale": 1.0, "skin": "#D5A079", "shirt": "#BC755D", "pants": "#527186", "hair": "#4F413F" }
+      ],
+      "props": [
+        { "id": "book", "shape": "book", "x": 0.68, "y": 0.621, "size": 0.105, "color": "#486F6B" }
+      ],
+      "actions": [
+        { "type": "walk", "target": "alex", "start": 0.4, "end": 2.9, "to": [0.54, 0.79] },
+        { "type": "pickup", "target": "alex", "start": 3.0, "end": 4.5, "prop": "book" },
+        { "type": "speak", "target": "alex", "start": 4.7, "end": 7.4, "text": "Found it! This is real animation." }
+      ],
+      "camera": [
+        { "start": 0.0, "end": 7.5, "zoom_from": 1.0, "zoom_to": 1.035 }
+      ]
+    }
+  ]
+}
