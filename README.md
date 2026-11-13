@@ -2,6 +2,37 @@
 
 **Local-first, model-independent, JSON-driven 2D paper-cut animation.** The render engine works without calling Claude, Gemini, ChatGPT, any external API, or an AI coding agent. A scene document describes character movement, prop interaction, captions, camera motion and timing. AetherPaper renders actual frames into an MP4. The core is reusable across productions.
 
+## v0.6 — illustration-first full-pose character animation
+
+**Feature branch:** `feature/illustrated-assets-v0.6` (stacked on v0.5; main unchanged).
+
+**Why:** Earlier characters looked like polygon puppets. v0.6 can animate **whole artist-painted PNG character poses** instead of reconstructing faces, hair and limbs out of rotated cutouts. It supports imported transparent pose sheets, strict asset validation, director-controlled idle/walk/reach/carry/speak switching and precise painted-hand contact markers.
+
+```bash
+sudo apt update && sudo apt install -y git python3 python3-venv python3-pip ffmpeg espeak-ng
+git clone https://github.com/SaridakisStamatisChristos/AetherPaper.git
+cd AetherPaper
+git switch feature/illustrated-assets-v0.6
+python3 -m venv .venv && source .venv/bin/activate
+python -m pip install -e '.[dev]'
+pytest -q
+
+# Verified pipeline demo using preserved v0.5 artwork, NOT premium painted art:
+aetherpaper pose-demo --source examples/last_light_directed_v05.json --out examples
+aetherpaper manifest examples/pose_atlas_demo_v06.json
+aetherpaper render examples/pose_atlas_demo_v06.json --out output/pose_atlas_demo_v06.mp4
+aetherpaper qa output/pose_atlas_demo_v06.mp4 --frames-dir output/qa_v06
+
+# Import a REAL transparent artist/AI-created pose sheet instead:
+aetherpaper posepack --sheet artwork/poses.png --layout artwork/layout.json --out examples/assets/poses
+```
+
+See [v0.6 Pose Atlas guide](docs/POSE_ATLAS_V06.md) for the complete JSON interface, production asset authoring brief, rigless character specification, importer safety rules and limitations.
+
+**Artistic acceptance is separate from technical acceptance.** The included sample uses the legacy illustrated body as a functional fixture. AI image creation attempts for this stage returned promotional posters, not valid transparent pose art. A genuinely high-quality, consistent transparent pose set must replace the sample before we can claim that the person's appearance has reached the intended cinematic standard.
+
+---
+
 ## v0.5 — director-controlled storybook performance
 
 **Feature branch:** `feature/art-direction-v0.5` (stacked on v0.4). This release focuses on improving visual direction, not simply increasing the number of rendered frames.
