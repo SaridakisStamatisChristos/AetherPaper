@@ -91,6 +91,8 @@ def validate_project(data: Any) -> None:
     data = _object(data, '$')
     if data.get('version') not in ('0.1', '0.2'):
         _fail('$.version', 'expected "0.1" or "0.2"')
+    if data.get('style','paper_cut') not in ('paper_cut','scrapbook','storybook'):
+        _fail('$.style','unknown visual preset')
     canvas = _object(data.get('canvas'), '$.canvas')
     for key in ('width', 'height'):
         v = _number(canvas.get(key), f'$.canvas.{key}', 64, 4096)
@@ -117,6 +119,13 @@ def validate_project(data: Any) -> None:
             _fail(f'{path}.duration', 'duration must be a multiple of 1/fps')
         total_frames += frames
         _color(scene.get('background', '#F5EAD6'), f'{path}.background')
+        if scene.get('style',data.get('style','paper_cut')) not in ('paper_cut','scrapbook','storybook'):
+            _fail(f'{path}.style', 'unknown visual preset')
+        if 'transition' in scene:
+            tr = _object(scene['transition'],f'{path}.transition')
+            if tr.get('type') not in ('fade','wipe'):
+                _fail(f'{path}.transition.type', 'unsupported transition')
+            _number(tr.get('duration',.4), f'{path}.transition.duration',.01,min(2,dur))
         for j, layer in enumerate(_list(scene.get('layers', []), f'{path}.layers')):
             lp = f'{path}.layers[{j}]'
             layer = _object(layer, lp)
@@ -143,6 +152,12 @@ def validate_project(data: Any) -> None:
                     _coord(pt, f'{lp}.points[{k}]')
             if 'color' in layer:
                 _color(layer['color'], f'{lp}.color')
+            if 'outline' in layer:
+                _color(layer['outline'], f'{lp}.outline')
+            if 'edge_width' in layer:
+                _number(layer['edge_width'],f'{lp}.edge_width',0,.08)
+            if 'depth' in layer:
+                _number(layer['depth'],f'{lp}.depth',0,1)
             if 'enter' in layer:
                 _number(layer['enter'], f'{lp}.enter', 0, dur)
         char_ids: set[str] = set()
@@ -249,6 +264,8 @@ def validate_project(data: Any) -> None:
             b = _number(cam.get('end'), f'{cp}.end', 0, dur)
             if b <= a:
                 _fail(f'{cp}.end', 'must be later than start')
+            if 'track' in cam and cam['track'] not in char_ids:
+                _fail(f'{cp}.track','unknown camera tracking character')
             for k in ('zoom_from', 'zoom_to'):
                 _number(cam.get(k, 1), f'{cp}.{k}', 1, 2.5)
             for k in ('center_from', 'center_to'):
