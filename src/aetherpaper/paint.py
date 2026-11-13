@@ -269,10 +269,17 @@ def _caption(img, text):
         y+=fs+spacing
 
 
-def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, height:int|None=None)->Image.Image:
+def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, height:int|None=None,
+                 _native:bool=False)->Image.Image:
     W=width or project.canvas['width']; H=height or project.canvas['height']
     if W%2 or H%2 or W<64 or H<64:
         raise ValueError('output width and height must be even and >=64')
+    factor=scene.get('supersample',1)
+    if not _native and factor>1:
+        if W*H*factor*factor>20_000_000 or max(W,H)*factor>8192:
+            raise ValueError('supersampled raster exceeds the safe render limit')
+        high=render_frame(project,scene,t,width=W*factor,height=H*factor,_native=True)
+        return high.resize((W,H),Image.Resampling.LANCZOS)
     seed=int.from_bytes(sha256(scene['id'].encode()).digest()[:4], 'big')
     preset=scene.get('style',project.data.get('style','paper_cut'))
     if preset=='cinematic_storybook':
