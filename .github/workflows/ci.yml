@@ -22,6 +22,45 @@ jobs:
         run: python -m pip install -e '.[dev]'
       - name: Unit and integration tests
         run: pytest -q
+      - name: Verify artist-pose atlas importer and render real v0.6 film
+        run: |
+          set -euo pipefail
+          aetherpaper pose-demo --source examples/last_light_directed_v05.json --out examples > output/v06_pose_demo_receipt.json
+          aetherpaper validate examples/pose_atlas_demo_v06.json
+          aetherpaper manifest examples/pose_atlas_demo_v06.json > output/v06_manifest.json
+          aetherpaper render examples/pose_atlas_demo_v06.json --width 640 --height 360 --fps 12 --out output/v06_pose_atlas_demo.mp4
+          aetherpaper snapshot examples/pose_atlas_demo_v06.json --at 0.7 --out output/v06_walk.png --width 640 --height 360
+          aetherpaper snapshot examples/pose_atlas_demo_v06.json --at 2.5 --out output/v06_reach.png --width 640 --height 360
+          aetherpaper snapshot examples/pose_atlas_demo_v06.json --at 4.3 --out output/v06_speak.png --width 640 --height 360
+          aetherpaper qa output/v06_pose_atlas_demo.mp4 --frames-dir output/v06_qa > output/v06_quality.json
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/v06_pose_atlas_demo.mp4
+      - name: Import the actual six-pose AI illustrated RGBA character atlas
+        run: |
+          set -euo pipefail
+          mkdir -p examples/assets/ai_courier
+          if [ ! -f examples/assets/ai_courier/original_pose_atlas.png ]; then
+            curl --fail --location --silent --show-error --retry 3 --max-time 120 \
+              'https://e750f2de-4821-48f5-92b3-32ccdc49b9dc.sandbox.floot.app/_cdn/static/9432aaf0-941e-41db-8551-675429b4166c-aetherpaper_v06_illustrated_six_pose_atlas.png' \
+              --output examples/assets/ai_courier/original_pose_atlas.png
+          fi
+          echo '21a117aba23df6a164eb631b5a7bcc4664d19491620ab2ae752da3af053d340b  examples/assets/ai_courier/original_pose_atlas.png' | sha256sum --check
+          aetherpaper posepack --sheet examples/assets/ai_courier/original_pose_atlas.png \
+             --layout examples/assets/ai_courier/pose_layout.json \
+             --out examples/assets/ai_courier/poses > output/v06_ai_posepack_receipt.json
+          aetherpaper validate examples/ai_illustrated_courier_v06.json
+          aetherpaper manifest examples/ai_illustrated_courier_v06.json > output/v06_ai_asset_manifest.json
+          python -m pytest -q tests/test_ai_courier_v06.py
+      - name: Render the five-second true illustrated character film
+        run: |
+          set -euo pipefail
+          aetherpaper render examples/ai_illustrated_courier_v06.json --width 640 --height 360 --fps 12 \
+            --out output/v06_ai_illustrated_movie.mp4
+          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 0.85 --width 640 --height 360 --out output/v06_ai_walk.png
+          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 2.45 --width 640 --height 360 --out output/v06_ai_reach.png
+          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 3.45 --width 640 --height 360 --out output/v06_ai_carry.png
+          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 4.55 --width 640 --height 360 --out output/v06_ai_speak.png
+          aetherpaper qa output/v06_ai_illustrated_movie.mp4 --frames-dir output/v06_ai_qa > output/v06_ai_quality.json
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/v06_ai_illustrated_movie.mp4
       - name: Validate supplied animation scenes
         run: |
           aetherpaper validate examples/room_pickup.json
@@ -97,45 +136,6 @@ jobs:
           aetherpaper snapshot examples/last_light_directed_v05.json --at 12.6 --width 960 --height 540 --out output/v05_finale.png
           aetherpaper qa output/last_light_directed_v05.mp4 --frames-dir output/v05_video_qa > output/v05_quality.json
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/last_light_directed_v05.mp4
-      - name: Verify artist-pose atlas importer and render real v0.6 film
-        run: |
-          set -euo pipefail
-          aetherpaper pose-demo --source examples/last_light_directed_v05.json --out examples > output/v06_pose_demo_receipt.json
-          aetherpaper validate examples/pose_atlas_demo_v06.json
-          aetherpaper manifest examples/pose_atlas_demo_v06.json > output/v06_manifest.json
-          aetherpaper render examples/pose_atlas_demo_v06.json --width 640 --height 360 --fps 12 --out output/v06_pose_atlas_demo.mp4
-          aetherpaper snapshot examples/pose_atlas_demo_v06.json --at 0.7 --out output/v06_walk.png --width 640 --height 360
-          aetherpaper snapshot examples/pose_atlas_demo_v06.json --at 2.5 --out output/v06_reach.png --width 640 --height 360
-          aetherpaper snapshot examples/pose_atlas_demo_v06.json --at 4.3 --out output/v06_speak.png --width 640 --height 360
-          aetherpaper qa output/v06_pose_atlas_demo.mp4 --frames-dir output/v06_qa > output/v06_quality.json
-          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/v06_pose_atlas_demo.mp4
-      - name: Import the actual six-pose AI illustrated RGBA character atlas
-        run: |
-          set -euo pipefail
-          mkdir -p examples/assets/ai_courier
-          if [ ! -f examples/assets/ai_courier/original_pose_atlas.png ]; then
-            curl --fail --location --silent --show-error --retry 3 --max-time 120 \
-              'https://e750f2de-4821-48f5-92b3-32ccdc49b9dc.sandbox.floot.app/_cdn/static/9432aaf0-941e-41db-8551-675429b4166c-aetherpaper_v06_illustrated_six_pose_atlas.png' \
-              --output examples/assets/ai_courier/original_pose_atlas.png
-          fi
-          echo '21a117aba23df6a164eb631b5a7bcc4664d19491620ab2ae752da3af053d340b  examples/assets/ai_courier/original_pose_atlas.png' | sha256sum --check
-          aetherpaper posepack --sheet examples/assets/ai_courier/original_pose_atlas.png \
-             --layout examples/assets/ai_courier/pose_layout.json \
-             --out examples/assets/ai_courier/poses > output/v06_ai_posepack_receipt.json
-          aetherpaper validate examples/ai_illustrated_courier_v06.json
-          aetherpaper manifest examples/ai_illustrated_courier_v06.json > output/v06_ai_asset_manifest.json
-          python -m pytest -q tests/test_ai_courier_v06.py
-      - name: Render the five-second true illustrated character film
-        run: |
-          set -euo pipefail
-          aetherpaper render examples/ai_illustrated_courier_v06.json --width 640 --height 360 --fps 12 \
-            --out output/v06_ai_illustrated_movie.mp4
-          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 0.85 --width 640 --height 360 --out output/v06_ai_walk.png
-          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 2.45 --width 640 --height 360 --out output/v06_ai_reach.png
-          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 3.45 --width 640 --height 360 --out output/v06_ai_carry.png
-          aetherpaper snapshot examples/ai_illustrated_courier_v06.json --at 4.55 --width 640 --height 360 --out output/v06_ai_speak.png
-          aetherpaper qa output/v06_ai_illustrated_movie.mp4 --frames-dir output/v06_ai_qa > output/v06_ai_quality.json
-          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/v06_ai_illustrated_movie.mp4
       - name: Probe MP4 stream
         run: |
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of default=noprint_wrappers=1 output/ci.mp4
