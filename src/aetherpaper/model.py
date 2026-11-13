@@ -8,7 +8,7 @@ import re
 from typing import Any
 
 HEX_COLOR = re.compile(r'^#[0-9a-fA-F]{6}$')
-SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room', 'rope'}
+SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room', 'rope', 'pedestal'}
 PROP_SHAPES = {'book', 'ball', 'cup', 'star', 'box', 'lantern'}
 ACTION_TYPES = {'walk', 'run', 'pickup', 'speak', 'wave', 'look', 'gesture', 'expression', 'place', 'release', 'spring', 'pose', 'performance'}
 
@@ -228,7 +228,7 @@ def validate_project(data: Any) -> None:
                         _fail(f'{cp}.visual.{key}','unknown visual field')
             if 'rig' in actor:
                 rig = _object(actor['rig'], f'{cp}.rig')
-                lengths = {'torso', 'neck', 'upper_arm', 'forearm', 'thigh', 'shin', 'head'}
+                lengths = {'torso', 'neck', 'upper_arm', 'forearm', 'thigh', 'shin', 'head', 'root_height'}
                 for key, value in rig.items():
                     if key == 'bones':
                         bones = _list(value,f'{cp}.rig.bones')
