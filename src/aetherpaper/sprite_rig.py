@@ -66,10 +66,10 @@ def attach_sprite(image: Image.Image, sprite: Image.Image, start: Point,
 
 def _target(actor:dict, pose, side:int, t:float, x:float,y:float,s:float)->Point:
     """Return reachable target in world pixels, blending gestures into the hand."""
-    neutral=(x+side*.21*s,y-.315*s)
+    neutral=(x+side*.21*s,y-.355*s)
     if side<0:
         return (neutral[0]+pose.walk*.07*s,neutral[1])
-    target=(x+.21*s-pose.walk*.045*s,y-.315*s)
+    target=(x+.21*s-pose.walk*.045*s,y-.355*s)
     if pose.holding:
         target=(x+.30*s,y-.47*s)
     if pose.waving or pose.gesture=="wave":
