@@ -215,7 +215,11 @@ def validate_project(data: Any) -> None:
                             _number(value,f'{sp}.pivot[{axis}]',0,1)
                         _number(part.get('scale',1),f'{sp}.scale',.1,4)
                         _number(part.get('z',0),f'{sp}.z',-100,100)
-                        if set(part)-{'bone','src','pivot','scale','z'}:
+                        if 'expression' in part and part['expression'] not in ('neutral','happy','sad','surprised'):
+                            _fail(f'{sp}.expression','unknown expression state')
+                        if 'mouth_state' in part and part['mouth_state'] not in ('open','closed'):
+                            _fail(f'{sp}.mouth_state','must be open or closed')
+                        if set(part)-{'bone','src','pivot','scale','z','expression','mouth_state'}:
                             _fail(sp,'unsupported sprite part fields')
                 for key,val in visual.items():
                     if key in ('coat','lining') and visual['type']=='illustrated':
