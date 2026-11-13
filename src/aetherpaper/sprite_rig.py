@@ -117,7 +117,8 @@ def posed_sprite_joints(actor:dict,pose,width:int,height:int,time:float) -> dict
     for side,suffix in ((-1,"l"),(1,"r")):
         upper,lower="arm_"+suffix,"forearm_"+suffix
         dest=_target(actor_data,pose,side,time,x,y,s)
-        _update_limb(joints,upper,lower,dest,-side)
+        if not (pose.bone_angles and (upper in pose.bone_angles or lower in pose.bone_angles)):
+            _update_limb(joints,upper,lower,dest,-side)
     walking=max(abs(pose.walk),abs(pose.run))
     for side,suffix in ((-1,"l"),(1,"r")):
         upper,lower="thigh_"+suffix,"shin_"+suffix
@@ -127,7 +128,8 @@ def posed_sprite_joints(actor:dict,pose,width:int,height:int,time:float) -> dict
         stride=cycle*(.105 if abs(pose.run)<.1 else .17)*s*side
         lift=max(0,cycle*side)*walking*.09*s
         dest=(x+side*.119*s+stride,y-.017*s-lift)
-        _update_limb(joints,upper,lower,dest,side)
+        if not (pose.bone_angles and (upper in pose.bone_angles or lower in pose.bone_angles)):
+            _update_limb(joints,upper,lower,dest,side)
     if "cape" in joints:
         a,b,_=joints["cape"]
         length=math.dist(a,b)
