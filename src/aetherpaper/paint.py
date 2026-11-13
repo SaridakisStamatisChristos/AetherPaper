@@ -15,6 +15,9 @@ from .timeline import actor_pose, active_caption, camera_state, lerp
 from .rig import advanced_hand, draw_character as draw_rig_character
 from .physics import rope_points, prop_state
 from .styles import styled_background, shadows, finish_style, transition_frame
+from .illustration import draw_illustrated
+from .cinematic import (render_atelier_background, add_prop_light,
+                        foreground_and_grade, cinematic_caption, title_overlay)
 
 INK = '#312D34'
 OUTLINE = '#5D4B49'
@@ -153,6 +156,18 @@ def _draw_prop(d, prop: dict, W:int, H:int, cx:float, cy:float, scale:float=1.0)
     elif shape == 'box':
         _paper_rectangle(d,(x-s*.5,y-s*.4,x+s*.5,y+s*.45),c)
         d.line((x-s*.48,y-s*.03,x+s*.48,y-s*.03),fill='#E4BA80',width=max(1,round(s*.06)))
+    elif shape == 'lantern':
+        # A brass-framed paper lantern with warm glass, distinct hinge and handle.
+        edge=max(1,round(s*.045))
+        d.ellipse((x-s*.16,y-s*.68,x+s*.16,y-s*.32),outline='#E8BD6E',width=edge)
+        _poly(d,[(x-s*.35,y-s*.32),(x+s*.35,y-s*.32),
+                 (x+s*.27,y+s*.39),(x-s*.27,y+s*.39)],'#CE9657',stroke='#3D4448',w=edge)
+        _poly(d,[(x-s*.26,y-s*.22),(x+s*.26,y-s*.22),
+                 (x+s*.195,y+s*.28),(x-s*.195,y+s*.28)],'#F6D89C',stroke='#8B5B46',w=edge)
+        d.ellipse((x-s*.12,y-s*.06,x+s*.12,y+s*.19),fill='#FFF0B9')
+        d.line((x,y-s*.27,x,y+s*.29),fill='#B17B54',width=edge)
+        d.line((x-s*.26,y+s*.34,x+s*.26,y+s*.34),fill='#F4CF85',width=edge)
+        d.ellipse((x-s*.07,y-s*.74,x+s*.07,y-s*.62),fill='#DAB473',outline='#604D43',width=edge)
     elif shape == 'star':
         pts=[]
         for i in range(10):
@@ -259,13 +274,17 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
         raise ValueError('output width and height must be even and >=64')
     seed=int.from_bytes(sha256(scene['id'].encode()).digest()[:4], 'big')
     preset=scene.get('style',project.data.get('style','paper_cut'))
-    canvas=styled_background(_background(W,H,scene.get('background','#F5EAD6'),seed).copy(),preset,seed)
+    if preset=='cinematic_storybook':
+        canvas=render_atelier_background(scene,W,H,t)
+    else:
+        canvas=styled_background(_background(W,H,scene.get('background','#F5EAD6'),seed).copy(),preset,seed)
     cx,cy,zoom=camera_state(scene,t)
     for layer in scene.get('layers',[]):
         depth=layer.get('depth',1)
         shift=((cx-.5)*W*(1-depth),(cy-.5)*H*(1-depth))
         _draw_layer(canvas,layer,project.source,t,offset=shift)
-    canvas=shadows(canvas,[(actor_pose(scene,a,t).x*W,actor_pose(scene,a,t).y*H,H*.42*a.get('scale',1))
+    canvas=shadows(canvas,[(actor_pose(scene,a,t).x*W,actor_pose(scene,a,t).y*H,
+                            H*(.66 if a.get('visual',{}).get('type')=='illustrated' else .42)*a.get('scale',1))
                           for a in scene.get('characters',[])])
     d=ImageDraw.Draw(canvas)
     actors={a['id']:a for a in scene.get('characters',[])}
@@ -276,13 +295,20 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
         hx,hy=_hand(a,hp,W,H,when)
         return (hx/W,hy/H)
     states={p['id']:prop_state(scene,p,t,hand_at) for p in scene.get('props',[])}
+    if preset=='cinematic_storybook':
+        canvas=add_prop_light(canvas,scene.get('props',[]),states,t)
+        d=ImageDraw.Draw(canvas)
     for prop in scene.get('props',[]):
         state=states[prop['id']]
         if not state.foreground:
             _draw_prop(d,prop,W,H,*state.center)
     # Draw back-to-front by canvas y.
     for actor in sorted(scene.get('characters',[]),key=lambda a:poses[a['id']].y):
-        _draw_character(d,actor,poses[actor['id']],W,H,t)
+        if actor.get('visual',{}).get('type')=='illustrated':
+            draw_illustrated(canvas,actor,poses[actor['id']],t)
+            d=ImageDraw.Draw(canvas)
+        else:
+            _draw_character(d,actor,poses[actor['id']],W,H,t)
     for prop in scene.get('props',[]):
         state=states[prop['id']]
         if state.foreground:
@@ -292,9 +318,16 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
         left=max(0,min(W-cropW,cx*W-cropW/2)); top=max(0,min(H-cropH,cy*H-cropH/2))
         canvas=canvas.crop((round(left),round(top),round(left+cropW),round(top+cropH))).resize((W,H),Image.Resampling.BICUBIC)
     canvas=finish_style(canvas,preset,t)
+    if preset=='cinematic_storybook':
+        canvas=foreground_and_grade(canvas,scene,t)
     if scene.get('transition'):
         canvas=transition_frame(canvas,scene['transition'],t)
     caption=active_caption(scene,t)
     if caption:
-        _caption(canvas,caption)
+        if preset=='cinematic_storybook':
+            cinematic_caption(canvas,caption)
+        else:
+            _caption(canvas,caption)
+    if preset=='cinematic_storybook':
+        title_overlay(canvas,scene,t)
     return canvas
