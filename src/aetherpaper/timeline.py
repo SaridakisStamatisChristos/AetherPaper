@@ -47,6 +47,8 @@ class Pose:
     gesture_weight: float = 0.0
     bone_angles: dict | None = None
     pose_weight: float = 0.0
+    hand_target: tuple[float,float] | None = None
+    hand_weight: float = 0.0
 
 
 def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
@@ -66,6 +68,8 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
     gesture_weight = 0.0
     bone_angles = None
     pose_weight = 0.0
+    hand_target = None
+    hand_weight = 0.0
     for action in scene.get('actions', []):
         if action['target'] != actor['id']:
             continue
@@ -107,7 +111,15 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
             waving = waving or (start <= t < end)
             if start <= t < end:
                 gesture_weight = max(gesture_weight,ease(min(1,(t-start)/.15))*ease(min(1,(end-t)/.15)))
-        elif action['type'] in ('place','release') and t >= end:
+        elif action['type'] == 'place' and t >= start:
+            if t < end:
+                hand_target = tuple(action['to'])
+                hand_weight = ease((t-start)/(end-start))
+            elif holding == action.get('prop'):
+                holding = None
+                reach_prop = None
+                pickup = 0.0
+        elif action['type'] == 'release' and t >= end:
             if holding == action.get('prop'):
                 holding = None
                 reach_prop = None
@@ -116,7 +128,14 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
             holding = action['prop'] if t >= end else None
             pickup = ease((min(t, end)-start)/(end-start))
             reach_prop = action['prop']
-    return Pose(x, y, walk, talking, waving, pickup, holding, reach_prop, run, gesture, look, expression, mouth, gesture_weight, bone_angles, pose_weight)
+            if 'hand_to' in action:
+                if t < end:
+                    hand_weight = pickup
+                    hand_target = tuple(action['hand_to'])
+                elif t < end + .45:
+                    hand_weight = 1 - ease((t-end)/.45)
+                    hand_target = tuple(action['hand_to'])
+    return Pose(x, y, walk, talking, waving, pickup, holding, reach_prop, run, gesture, look, expression, mouth, gesture_weight, bone_angles, pose_weight, hand_target, hand_weight)
 
 
 def active_caption(scene: dict, t: float) -> str | None:
