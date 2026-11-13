@@ -157,16 +157,16 @@ def advanced_hand(actor: dict, pose, width: int, height: int, time: float) -> Po
     else:
         swing = (pose.walk+getattr(pose,"run",0.0))*.13*s
         target = (x+(.24 if actor.get('visual',{}).get('type')=='illustrated' else .25)*s-swing,
-                  y-(.42 if actor.get('visual',{}).get('type')=='illustrated' else .49)*s)
+                  y-(.32 if actor.get('visual',{}).get('type')=='illustrated' else .49)*s)
     if getattr(pose,'hand_target',None) is not None and actor.get('visual',{}).get('type')=='illustrated':
-        neutral=(x+.24*s,y-.42*s)
+        neutral=(x+.24*s,y-.32*s)
         aim=(pose.hand_target[0]*width,pose.hand_target[1]*height)
         f=max(0,min(1,pose.hand_weight))
         target=(neutral[0]+(aim[0]-neutral[0])*f,neutral[1]+(aim[1]-neutral[1])*f)
     if (pose.waving or gesture) and not pose.reach_prop and not pose.holding:
         swing=(pose.walk+getattr(pose,'run',0.0))*.13*s
         neutral=(x+(.24 if actor.get('visual',{}).get('type')=='illustrated' else .25)*s-swing,
-                 y-(.42 if actor.get('visual',{}).get('type')=='illustrated' else .49)*s)
+                 y-(.32 if actor.get('visual',{}).get('type')=='illustrated' else .49)*s)
         w=max(0,min(1,getattr(pose,'gesture_weight',1)))
         target=(neutral[0]+(target[0]-neutral[0])*w,
                 neutral[1]+(target[1]-neutral[1])*w)
