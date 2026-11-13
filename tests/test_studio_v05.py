@@ -114,7 +114,29 @@ def test_studio_hero_physically_carries_prop_on_sprite_hand(studio_project):
         assert state.center==pytest.approx(hand("courier",t))
     placed=prop_state(scene,prop,11.2,hand)
     assert placed.owner is None
-    assert placed.center==pytest.approx((.747,.665))
+    assert placed.center==pytest.approx((.70,.625))
+
+
+def test_studio_limbs_root_join_and_foot_contact(studio_project):
+    scene=studio_project.scenes[0];actor=scene["characters"][0]
+    pose=actor_pose(scene,actor,12.6)
+    width,height=640,360
+    joints=posed_sprite_joints(actor,pose,width,height,12.6)
+    s=height*.66*actor["scale"]
+    # Shirt must touch the pelvis/hips; no floating cardboard torso.
+    assert abs(joints["torso"][0][1]-joints["thigh_l"][0][1]) < .026*s
+    # Two independent feet can be planted on the ground without teleporting.
+    for side in ("l","r"):
+        foot=joints["shin_"+side][1]
+        goal=pose.foot_world[side]
+        assert math.dist(foot,(goal[0]*width,goal[1]*height)) < 2
+    # Smaller bent knees must stay in their respective left/right lanes.
+    assert joints["thigh_l"][1][0] < joints["thigh_r"][1][0]
+    # Directed pickup end must be at the illustrated visible right hand.
+    reaching=actor_pose(scene,actor,5.10)
+    hand=sprite_hand(actor,reaching,width,height,5.10)
+    target=(.54*width,.625*height)
+    assert math.dist(hand,target) < 6
 
 
 def test_v05_rejects_invalid_foot_and_time_choreography(studio_project):
