@@ -97,11 +97,11 @@ def draw_illustrated(image: Image.Image, actor: dict, pose, t: float) -> None:
     # The near/far boot and trousers are drawn independently with two-bone IK.
     for side in (-1,1):
         phase=t*(17 if run else 11)+(math.pi if side>0 else 0)
-        step=math.sin(phase)*(.27 if run else .17)*activity*s
+        step=math.sin(phase)*(.19 if run else .115)*activity*s
         lift=max(0,math.cos(phase))*(.19 if run else .095)*activity*s
-        hip=(root[0]+side*.10*s,root[1]+.005*s)
-        target=(x+side*.11*s+step,y-.022*s-lift)
-        knee,foot=two_bone_ik(hip,target,.245*s,.258*s,bend=side)
+        hip=(root[0]+side*.105*s,root[1]+.005*s)
+        target=(x+side*.135*s+step,y-.022*s-lift)
+        knee,foot=two_bone_ik(hip,target,.205*s,.235*s,bend=side)
         pants_fill=trousers if side>0 else _shade(trousers,-18)
         _mass(d,hip,knee,.073*s,.061*s,pants_fill,ink,edge)
         _mass(d,knee,foot,.061*s,.044*s,_shade(pants_fill,-5),ink,edge)
@@ -161,9 +161,11 @@ def draw_illustrated(image: Image.Image, actor: dict, pose, t: float) -> None:
         if side>0:
             hand=advanced_hand(actor,pose,W,H,t)
         else:
-            neutral=(x-.24*s+sway,y-.49*s)
+            neutral=(x-.24*s+sway,y-.42*s)
             hand=neutral
-        elbow,actual=two_bone_ik(shoulder,hand,.29*s,.28*s,bend=-side)
+        upper=actor.get('rig',{}).get('upper_arm',.20)
+        fore=actor.get('rig',{}).get('forearm',.21)
+        elbow,actual=two_bone_ik(shoulder,hand,upper*s,fore*s,bend=-side)
         sleeve=coat if side>0 else _shade(coat,-22)
         _mass(d,shoulder,elbow,.083*s,.070*s,sleeve,ink,edge)
         _mass(d,elbow,actual,.070*s,.052*s,_shade(sleeve,6),ink,edge)
