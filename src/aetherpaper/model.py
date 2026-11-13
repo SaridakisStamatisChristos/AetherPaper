@@ -10,7 +10,7 @@ from typing import Any
 HEX_COLOR = re.compile(r'^#[0-9a-fA-F]{6}$')
 SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room', 'rope'}
 PROP_SHAPES = {'book', 'ball', 'cup', 'star', 'box'}
-ACTION_TYPES = {'walk', 'run', 'pickup', 'speak', 'wave', 'look', 'gesture', 'expression', 'place', 'release', 'spring'}
+ACTION_TYPES = {'walk', 'run', 'pickup', 'speak', 'wave', 'look', 'gesture', 'expression', 'place', 'release', 'spring', 'pose'}
 
 class SceneError(ValueError):
     """Invalid animation project."""
@@ -178,9 +178,28 @@ def validate_project(data: Any) -> None:
                 rig = _object(actor['rig'], f'{cp}.rig')
                 lengths = {'torso', 'neck', 'upper_arm', 'forearm', 'thigh', 'shin', 'head'}
                 for key, value in rig.items():
-                    if key not in lengths | {'spring'}:
+                    if key == 'bones':
+                        bones = _list(value,f'{cp}.rig.bones')
+                        seen: set[str] = set()
+                        for n, bone in enumerate(bones):
+                            bp=f'{cp}.rig.bones[{n}]'
+                            bone = _object(bone,bp)
+                            name=_string(bone.get('name'),f'{bp}.name')
+                            if name in seen:
+                                _fail(f'{bp}.name','duplicate bone')
+                            parent=bone.get('parent')
+                            if parent is not None and parent not in seen:
+                                _fail(f'{bp}.parent','parent must precede child')
+                            _number(bone.get('length'),f'{bp}.length',.02,1)
+                            _number(bone.get('angle',0),f'{bp}.angle',-math.pi,math.pi)
+                            _number(bone.get('at',1),f'{bp}.at',0,1)
+                            seen.add(name)
+                        if not {'pelvis','torso','neck'} <= seen:
+                            _fail(f'{cp}.rig.bones','must contain pelvis, torso and neck bones')
+                    elif key in lengths | {'spring'}:
+                        _number(value, f'{cp}.rig.{key}', 0.02 if key != 'spring' else 0.1, 1 if key != 'spring' else 12)
+                    else:
                         _fail(f'{cp}.rig.{key}', 'unknown rig property')
-                    _number(value, f'{cp}.rig.{key}', 0.02 if key != 'spring' else 0.1, 1 if key != 'spring' else 12)
         prop_ids: set[str] = set()
         for j, prop in enumerate(_list(scene.get('props', []), f'{path}.props')):
             pp = f'{path}.props[{j}]'
@@ -216,6 +235,16 @@ def validate_project(data: Any) -> None:
                 _fail(f'{ap}.name', 'unknown gesture')
             if typ == 'expression' and action.get('state') not in ('neutral', 'happy', 'sad', 'surprised'):
                 _fail(f'{ap}.state', 'unknown expression')
+            if typ == 'pose':
+                angles=_object(action.get('angles'),f'{ap}.angles')
+                if not angles:
+                    _fail(f'{ap}.angles','at least one bone angle required')
+                actor=next(a for a in scene['characters'] if a['id']==target)
+                named={b['name'] for b in actor.get('rig',{}).get('bones',[])} if actor.get('rig',{}).get('bones') else {'pelvis','torso','neck'}
+                for name,value in angles.items():
+                    if name not in named:
+                        _fail(f'{ap}.angles.{name}','unknown bone')
+                    _number(value,f'{ap}.angles.{name}',-math.pi,math.pi)
             if typ in ('pickup','place','release','spring'):
                 if action.get('prop') not in prop_ids:
                     _fail(f'{ap}.prop', 'unknown prop')
