@@ -10,17 +10,17 @@
   "frame_checks": [
     {
       "time": 1.507,
-      "variance": 1887.738,
+      "variance": 1894.695,
       "readable": true
     },
     {
       "time": 4.609,
-      "variance": 1859.813,
+      "variance": 1865.138,
       "readable": true
     },
     {
       "time": 8.041,
-      "variance": 1742.612,
+      "variance": 1746.695,
       "readable": true
     }
   ],
