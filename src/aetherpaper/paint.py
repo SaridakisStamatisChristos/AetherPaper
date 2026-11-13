@@ -14,6 +14,7 @@ from .model import Project
 from .timeline import actor_pose, active_caption, camera_state, lerp
 from .rig import advanced_hand, draw_character as draw_rig_character
 from .physics import rope_points, prop_state
+from .styles import styled_background, shadows, finish_style, transition_frame
 
 INK = '#312D34'
 OUTLINE = '#5D4B49'
@@ -93,7 +94,7 @@ def _draw_room(img: Image.Image, scene: dict) -> None:
     d.ellipse((W*.87,H*.37,W*.99,H*.59),fill='#7B9870',outline='#516D4B',width=3)
 
 
-def _draw_layer(img: Image.Image, layer: dict, source: Path, t: float) -> None:
+def _draw_layer(img: Image.Image, layer: dict, source: Path, t: float, offset=(0,0)) -> None:
     W,H = img.size
     if t < layer.get('enter', 0):
         return
@@ -105,20 +106,22 @@ def _draw_layer(img: Image.Image, layer: dict, source: Path, t: float) -> None:
         points=rope_points(tuple(layer['from']),tuple(layer['to']),t,
                            layer.get('sag',.12),layer.get('wind',0))
         d=ImageDraw.Draw(img)
-        d.line([(round(x*W),round(y*H)) for x,y in points],
+        d.line([(round(x*W+offset[0]),round(y*H+offset[1])) for x,y in points],
                fill=layer.get('color','#8C7059'),width=max(1,round(H*.012)),joint='curve')
         return
     x,y,w,h = (layer[k] for k in ('x','y','width','height'))
-    x0,y0,x1,y1 = x*W,y*H,(x+w)*W,(y+h)*H
+    x0,y0,x1,y1 = x*W+offset[0],y*H+offset[1],(x+w)*W+offset[0],(y+h)*H+offset[1]
     d = ImageDraw.Draw(img)
     c = layer.get('color', '#E8BB85')
+    outline=layer.get('outline',OUTLINE)
+    edge=max(1,round(H*layer.get('edge_width',.005)))
     if kind == 'rectangle':
-        _paper_rectangle(d, (x0,y0,x1,y1), c, width=max(1,H//280))
+        _paper_rectangle(d, (x0,y0,x1,y1), c, outline=outline, width=edge)
     elif kind == 'ellipse':
         _ellipse(d, (x0+3,y0+4,x1+3,y1+4), '#968474', outline=None)
-        _ellipse(d,(x0,y0,x1,y1),c, line=max(1,H//240))
+        _ellipse(d,(x0,y0,x1,y1),c, outline=outline, line=edge)
     elif kind == 'polygon':
-        _poly(d, [(x0+a*w*W, y0+b*h*H) for a,b in layer['points']], c)
+        _poly(d, [(x0+a*w*W, y0+b*h*H) for a,b in layer['points']], c, stroke=outline,w=edge)
     elif kind == 'text':
         d.text((int(x0),int(y0)),layer['text'],font=_font(int(layer.get('font_size',.04)*H),bold=bool(layer.get('bold',True))),fill=c)
     elif kind == 'image':
@@ -255,9 +258,15 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
     if W%2 or H%2 or W<64 or H<64:
         raise ValueError('output width and height must be even and >=64')
     seed=int.from_bytes(sha256(scene['id'].encode()).digest()[:4], 'big')
-    canvas=_background(W,H,scene.get('background','#F5EAD6'),seed).copy()
+    preset=scene.get('style',project.data.get('style','paper_cut'))
+    canvas=styled_background(_background(W,H,scene.get('background','#F5EAD6'),seed).copy(),preset,seed)
+    cx,cy,zoom=camera_state(scene,t)
     for layer in scene.get('layers',[]):
-        _draw_layer(canvas,layer,project.source,t)
+        depth=layer.get('depth',1)
+        shift=((cx-.5)*W*(1-depth),(cy-.5)*H*(1-depth))
+        _draw_layer(canvas,layer,project.source,t,offset=shift)
+    canvas=shadows(canvas,[(a['x']*W,a['y']*H,H*.42*a.get('scale',1))
+                          for a in scene.get('characters',[])])
     d=ImageDraw.Draw(canvas)
     actors={a['id']:a for a in scene.get('characters',[])}
     poses={aid:actor_pose(scene,a,t) for aid,a in actors.items()}
@@ -278,11 +287,13 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
         state=states[prop['id']]
         if state.foreground:
             _draw_prop(d,prop,W,H,*state.center,.8 if state.owner else 1)
-    cx,cy,zoom=camera_state(scene,t)
     if zoom>1.00001 or abs(cx-.5)>.00001 or abs(cy-.5)>.00001:
         cropW=W/zoom; cropH=H/zoom
         left=max(0,min(W-cropW,cx*W-cropW/2)); top=max(0,min(H-cropH,cy*H-cropH/2))
         canvas=canvas.crop((round(left),round(top),round(left+cropW),round(top+cropH))).resize((W,H),Image.Resampling.BICUBIC)
+    canvas=finish_style(canvas,preset,t)
+    if scene.get('transition'):
+        canvas=transition_frame(canvas,scene['transition'],t)
     caption=active_caption(scene,t)
     if caption:
         _caption(canvas,caption)
