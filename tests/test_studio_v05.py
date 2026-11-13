@@ -116,9 +116,6 @@ def test_studio_hero_physically_carries_prop_on_sprite_hand(studio_project):
 
 def test_v05_rejects_invalid_foot_and_time_choreography(studio_project):
     data=studio_project.data
-    for change,keyword in [
-        (lambda p:p["keyframes"][1]["at"].__class__,None)
-    ][:0]:pass
     modified=copy.deepcopy(data)
     a=next(x for x in modified["scenes"][0]["actions"] if x["type"]=="performance")
     a["keyframes"][1]["at"]=0
