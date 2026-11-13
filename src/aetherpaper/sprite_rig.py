@@ -51,6 +51,8 @@ def attach_sprite(image: Image.Image, sprite: Image.Image, start: tuple[float,fl
     art=sprite.resize((target_width,target_height),Image.Resampling.LANCZOS)
     anchor=(round(pivot[0]*target_width),round(pivot[1]*target_height))
     radius=math.ceil(math.hypot(target_width,target_height))+3
+    if radius>2048:
+        raise ValueError('sprite rotated canvas exceeds 4096 pixels')
     # A centered pivot avoids rotation/expand offset ambiguities.
     square=Image.new("RGBA",(2*radius,2*radius))
     square.alpha_composite(art,(radius-anchor[0],radius-anchor[1]))
