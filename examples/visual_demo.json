@@ -1,0 +1,251 @@
+{
+  "version": "0.2",
+  "title": "AetherPaper Three Looks",
+  "canvas": {
+    "width": 480,
+    "height": 270,
+    "fps": 12
+  },
+  "scenes": [
+    {
+      "id": "handcrafted",
+      "style": "paper_cut",
+      "background": "#E3D4B8",
+      "layers": [
+        {
+          "type": "room"
+        },
+        {
+          "type": "ellipse",
+          "x": 0.05,
+          "y": 0.08,
+          "width": 0.3,
+          "height": 0.32,
+          "color": "#E2BF68",
+          "depth": 0
+        },
+        {
+          "type": "text",
+          "x": 0.42,
+          "y": 0.14,
+          "width": 0.5,
+          "height": 0.08,
+          "text": "PAPER CUT",
+          "color": "#5B3E3C",
+          "font_size": 0.062
+        }
+      ],
+      "characters": [
+        {
+          "id": "p1",
+          "x": 0.27,
+          "y": 0.79,
+          "rig": {},
+          "shirt": "#C28069"
+        }
+      ],
+      "actions": [
+        {
+          "type": "walk",
+          "target": "p1",
+          "start": 0.2,
+          "end": 2.8,
+          "to": [
+            0.53,
+            0.79
+          ]
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 3,
+          "zoom_from": 1,
+          "zoom_to": 1.12
+        }
+      ],
+      "duration": 3
+    },
+    {
+      "id": "collage",
+      "style": "scrapbook",
+      "background": "#DED1BF",
+      "transition": {
+        "type": "wipe",
+        "duration": 0.35
+      },
+      "layers": [
+        {
+          "type": "rectangle",
+          "x": 0.04,
+          "y": 0.1,
+          "width": 0.32,
+          "height": 0.23,
+          "color": "#A4C7C1",
+          "depth": 0,
+          "outline": "#566B68",
+          "edge_width": 0.009
+        },
+        {
+          "type": "text",
+          "x": 0.42,
+          "y": 0.14,
+          "width": 0.5,
+          "height": 0.08,
+          "text": "SCRAPBOOK",
+          "color": "#694A47",
+          "font_size": 0.058,
+          "depth": 0
+        }
+      ],
+      "characters": [
+        {
+          "id": "p2",
+          "x": 0.18,
+          "y": 0.79,
+          "rig": {},
+          "shirt": "#738EA9"
+        }
+      ],
+      "actions": [
+        {
+          "type": "run",
+          "target": "p2",
+          "start": 0.1,
+          "end": 2.8,
+          "to": [
+            0.65,
+            0.79
+          ]
+        },
+        {
+          "type": "gesture",
+          "target": "p2",
+          "start": 2,
+          "end": 2.9,
+          "name": "wave"
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 3,
+          "zoom_from": 1.12,
+          "zoom_to": 1.32,
+          "track": "p2"
+        }
+      ],
+      "duration": 3
+    },
+    {
+      "id": "illustration",
+      "style": "storybook",
+      "background": "#B8D5DB",
+      "transition": {
+        "type": "fade",
+        "duration": 0.4
+      },
+      "layers": [
+        {
+          "type": "ellipse",
+          "x": 0.08,
+          "y": 0.12,
+          "width": 0.14,
+          "height": 0.14,
+          "color": "#F0D68A",
+          "depth": 0
+        },
+        {
+          "type": "polygon",
+          "x": 0,
+          "y": 0.55,
+          "width": 1,
+          "height": 0.45,
+          "points": [
+            [
+              0,
+              1
+            ],
+            [
+              0.27,
+              0.05
+            ],
+            [
+              0.55,
+              0.9
+            ],
+            [
+              0.8,
+              0.2
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "color": "#A8B58B",
+          "depth": 0.35
+        },
+        {
+          "type": "text",
+          "x": 0.36,
+          "y": 0.08,
+          "width": 0.6,
+          "height": 0.12,
+          "text": "STORYBOOK",
+          "color": "#625344",
+          "font_size": 0.067,
+          "depth": 0.3
+        }
+      ],
+      "characters": [
+        {
+          "id": "p3",
+          "x": 0.27,
+          "y": 0.79,
+          "rig": {},
+          "shirt": "#BB7076"
+        }
+      ],
+      "actions": [
+        {
+          "type": "walk",
+          "target": "p3",
+          "start": 0.15,
+          "end": 2.8,
+          "to": [
+            0.59,
+            0.79
+          ]
+        },
+        {
+          "type": "look",
+          "target": "p3",
+          "start": 1.5,
+          "end": 2.95,
+          "to": [
+            0.75,
+            0.18
+          ]
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 3,
+          "zoom_from": 1.04,
+          "zoom_to": 1.17,
+          "center_from": [
+            0.5,
+            0.5
+          ],
+          "center_to": [
+            0.56,
+            0.5
+          ]
+        }
+      ],
+      "duration": 3
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "version": "0.2",
+  "title": "Prop lifecycle: pickup, carry, place, rope and spring",
+  "canvas": {
+    "width": 480,
+    "height": 270,
+    "fps": 12
+  },
+  "scenes": [
+    {
+      "id": "carry-and-place",
+      "duration": 10,
+      "background": "#E8D6BA",
+      "layers": [
+        {
+          "type": "room"
+        },
+        {
+          "type": "rope",
+          "from": [
+            0.79,
+            0.18
+          ],
+          "to": [
+            0.88,
+            0.48
+          ],
+          "sag": 0.12,
+          "wind": 0.026,
+          "color": "#6B5345"
+        },
+        {
+          "type": "text",
+          "x": 0.53,
+          "y": 0.08,
+          "width": 0.4,
+          "height": 0.05,
+          "text": "CARRY & PLACE",
+          "color": "#5E483F",
+          "font_size": 0.04
+        }
+      ],
+      "characters": [
+        {
+          "id": "ava",
+          "x": 0.08,
+          "y": 0.79,
+          "scale": 0.9,
+          "skin": "#DCA77F",
+          "shirt": "#B86B71",
+          "pants": "#53687C",
+          "hair": "#4B443D",
+          "rig": {
+            "head": 0.17
+          }
+        }
+      ],
+      "props": [
+        {
+          "id": "book",
+          "shape": "book",
+          "x": 0.57,
+          "y": 0.62,
+          "size": 0.11,
+          "color": "#477D79"
+        },
+        {
+          "id": "ball",
+          "shape": "ball",
+          "x": 0.88,
+          "y": 0.67,
+          "size": 0.11,
+          "color": "#BE7856"
+        }
+      ],
+      "actions": [
+        {
+          "type": "walk",
+          "target": "ava",
+          "start": 0.2,
+          "end": 2.2,
+          "to": [
+            0.45,
+            0.79
+          ]
+        },
+        {
+          "type": "pickup",
+          "target": "ava",
+          "start": 2.3,
+          "end": 3.4,
+          "prop": "book"
+        },
+        {
+          "type": "speak",
+          "target": "ava",
+          "start": 3.6,
+          "end": 5,
+          "text": "Got it! Taking this to the other side."
+        },
+        {
+          "type": "walk",
+          "target": "ava",
+          "start": 4.9,
+          "end": 7.1,
+          "to": [
+            0.72,
+            0.79
+          ]
+        },
+        {
+          "type": "place",
+          "target": "ava",
+          "start": 7.2,
+          "end": 8.3,
+          "prop": "book",
+          "to": [
+            0.81,
+            0.63
+          ]
+        },
+        {
+          "type": "gesture",
+          "target": "ava",
+          "start": 8.5,
+          "end": 9.8,
+          "name": "wave"
+        },
+        {
+          "type": "spring",
+          "target": "ava",
+          "start": 1.1,
+          "end": 3.3,
+          "prop": "ball",
+          "to": [
+            0.9,
+            0.53
+          ],
+          "frequency": 2.2,
+          "damping": 0.68
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 10,
+          "zoom_from": 1,
+          "zoom_to": 1.06
+        }
+      ]
+    }
+  ]
+}

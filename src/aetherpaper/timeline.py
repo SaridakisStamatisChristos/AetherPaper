@@ -39,6 +39,14 @@ class Pose:
     pickup: float = 0
     holding: str | None = None
     reach_prop: str | None = None
+    run: float = 0.0
+    gesture: str | None = None
+    look: tuple[float, float] | None = None
+    expression: str = 'neutral'
+    mouth: float = 0.0
+    gesture_weight: float = 0.0
+    bone_angles: dict | None = None
+    pose_weight: float = 0.0
 
 
 def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
@@ -50,25 +58,65 @@ def actor_pose(scene: dict, actor: dict, t: float) -> Pose:
     pickup = 0.0
     holding = None
     reach_prop = None
+    run = 0.0
+    gesture = None
+    look = None
+    expression = 'neutral'
+    mouth = 0.0
+    gesture_weight = 0.0
+    bone_angles = None
+    pose_weight = 0.0
     for action in scene.get('actions', []):
         if action['target'] != actor['id']:
             continue
         start, end = action['start'], action['end']
-        if action['type'] == 'walk':
+        if action['type'] in ('walk', 'run'):
             if t >= start:
                 progress = ease((min(t, end) - start) / (end - start))
                 x, y = lerp(x, action['to'][0], progress), lerp(y, action['to'][1], progress)
                 if t < end:
-                    walk = math.sin((t-start) * 2*math.pi*2.1) * (0.7 + 0.3 * math.sin(math.pi*progress))
+                    phase = math.sin((t-start) * 2*math.pi*(3.6 if action['type']=='run' else 2.1))
+                    if action['type'] == 'run':
+                        run = phase
+                    else:
+                        walk = phase * (0.7 + 0.3 * math.sin(math.pi*progress))
         elif action['type'] == 'speak':
             talking = talking or (start <= t < end)
+            if start <= t < end and action.get('mouth_cues'):
+                cues = action['mouth_cues']
+                relative = t - start
+                mouth = cues[0]['openness']
+                for left, right in zip(cues, cues[1:]):
+                    if relative >= right['at']:
+                        mouth = right['openness']
+                    elif left['at'] <= relative < right['at']:
+                        f = (relative-left['at'])/(right['at']-left['at'])
+                        mouth = lerp(left['openness'],right['openness'],f)
+                        break
+        elif action['type'] == 'look' and t >= start:
+            look = tuple(action['to'])
+        elif action['type'] == 'gesture' and start <= t < end:
+            gesture = action['name']
+            gesture_weight = ease(min(1,(t-start)/.15))*ease(min(1,(end-t)/.15))
+        elif action['type'] == 'pose' and start <= t < end:
+            bone_angles = action['angles']
+            pose_weight = ease(min(1,(t-start)/.2))*ease(min(1,(end-t)/.2))
+        elif action['type'] == 'expression' and start <= t < end:
+            expression = action['state']
         elif action['type'] == 'wave':
             waving = waving or (start <= t < end)
+            if start <= t < end:
+                gesture_weight = max(gesture_weight,ease(min(1,(t-start)/.15))*ease(min(1,(end-t)/.15)))
+        elif action['type'] in ('place','release') and t >= end:
+            if holding == action.get('prop'):
+                holding = None
+                reach_prop = None
+                pickup = 0.0
         elif action['type'] == 'pickup' and t >= start:
             holding = action['prop'] if t >= end else None
             pickup = ease((min(t, end)-start)/(end-start))
             reach_prop = action['prop']
-    return Pose(x, y, walk, talking, waving, pickup, holding, reach_prop)
+    return Pose(x, y, walk, talking, waving, pickup, holding, reach_prop, run, gesture, look, expression, mouth, gesture_weight, bone_angles, pose_weight)
 
 
 def active_caption(scene: dict, t: float) -> str | None:
@@ -86,4 +134,8 @@ def camera_state(scene: dict, t: float) -> tuple[float, float, float]:
             a = action.get('center_from', [cx, cy]); b = action.get('center_to', a)
             cx, cy = lerp(a[0], b[0], f), lerp(a[1], b[1], f)
             zoom = lerp(action.get('zoom_from', zoom), action.get('zoom_to', zoom), f)
+            if 'track' in action:
+                actor=next(a for a in scene.get('characters',[]) if a['id']==action['track'])
+                tracked=actor_pose(scene,actor,t)
+                cx,cy=tracked.x,tracked.y-.23*actor.get('scale',1)
     return cx, cy, zoom

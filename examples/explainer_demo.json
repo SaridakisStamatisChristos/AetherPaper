@@ -1,0 +1,318 @@
+{
+  "canvas": {
+    "width": 480,
+    "height": 270,
+    "fps": 12
+  },
+  "version": "0.2",
+  "title": "AetherPaper: Build videos from JSON, not generated code",
+  "scenes": [
+    {
+      "id": "explain-intro",
+      "style": "storybook",
+      "duration": 6,
+      "background": "#C5D9D8",
+      "transition": {
+        "type": "fade",
+        "duration": 0.4
+      },
+      "layers": [
+        {
+          "type": "ellipse",
+          "x": 0.07,
+          "y": 0.12,
+          "width": 0.15,
+          "height": 0.15,
+          "color": "#F2D585",
+          "depth": 0
+        },
+        {
+          "type": "text",
+          "x": 0.34,
+          "y": 0.12,
+          "width": 0.62,
+          "height": 0.12,
+          "text": "ANIMATE WITH JSON",
+          "color": "#624A3A",
+          "font_size": 0.052,
+          "depth": 0.1
+        }
+      ],
+      "characters": [
+        {
+          "id": "narrator",
+          "x": 0.12,
+          "y": 0.79,
+          "rig": {},
+          "shirt": "#B67A68"
+        }
+      ],
+      "props": [],
+      "actions": [
+        {
+          "type": "walk",
+          "target": "narrator",
+          "start": 0.4,
+          "end": 2,
+          "to": [
+            0.32,
+            0.79
+          ]
+        },
+        {
+          "type": "speak",
+          "target": "narrator",
+          "start": 2,
+          "end": 5.8,
+          "text": "What if reusable code could animate every new story from simple scene instructions?"
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 6,
+          "zoom_from": 1.02,
+          "zoom_to": 1.1
+        }
+      ]
+    },
+    {
+      "id": "articulated-character",
+      "style": "paper_cut",
+      "duration": 6,
+      "background": "#E4D6BA",
+      "transition": {
+        "type": "fade",
+        "duration": 0.4
+      },
+      "layers": [
+        {
+          "type": "room"
+        },
+        {
+          "type": "text",
+          "x": 0.45,
+          "y": 0.13,
+          "width": 0.5,
+          "height": 0.1,
+          "text": "JOINTS + ACTIONS",
+          "font_size": 0.059,
+          "color": "#58443A"
+        }
+      ],
+      "characters": [
+        {
+          "id": "presenter",
+          "x": 0.1,
+          "y": 0.79,
+          "rig": {
+            "head": 0.17,
+            "upper_arm": 0.28
+          },
+          "shirt": "#728FA1"
+        }
+      ],
+      "props": [],
+      "actions": [
+        {
+          "type": "run",
+          "target": "presenter",
+          "start": 0.3,
+          "end": 2.5,
+          "to": [
+            0.41,
+            0.79
+          ]
+        },
+        {
+          "type": "wave",
+          "target": "presenter",
+          "start": 2.7,
+          "end": 4
+        },
+        {
+          "type": "speak",
+          "target": "presenter",
+          "start": 1.7,
+          "end": 5.75,
+          "text": "A paper puppet can run, wave, and speak using only a reusable skeleton and a timeline."
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 6,
+          "zoom_from": 1,
+          "zoom_to": 1.12
+        }
+      ]
+    },
+    {
+      "id": "reusable-interactions",
+      "style": "paper_cut",
+      "duration": 6,
+      "background": "#E4D6BA",
+      "transition": {
+        "type": "fade",
+        "duration": 0.4
+      },
+      "layers": [
+        {
+          "type": "room"
+        },
+        {
+          "type": "text",
+          "x": 0.52,
+          "y": 0.1,
+          "width": 0.45,
+          "height": 0.09,
+          "text": "PICK UP & PLACE",
+          "font_size": 0.054,
+          "color": "#5B423A"
+        }
+      ],
+      "characters": [
+        {
+          "id": "builder",
+          "x": 0.14,
+          "y": 0.79,
+          "rig": {},
+          "shirt": "#6D967D"
+        }
+      ],
+      "props": [
+        {
+          "id": "tool",
+          "shape": "book",
+          "x": 0.62,
+          "y": 0.63,
+          "size": 0.115,
+          "color": "#C0805A"
+        }
+      ],
+      "actions": [
+        {
+          "type": "walk",
+          "target": "builder",
+          "start": 0.3,
+          "end": 1.55,
+          "to": [
+            0.47,
+            0.79
+          ]
+        },
+        {
+          "type": "pickup",
+          "target": "builder",
+          "start": 1.65,
+          "end": 2.65,
+          "prop": "tool"
+        },
+        {
+          "type": "walk",
+          "target": "builder",
+          "start": 2.75,
+          "end": 3.95,
+          "to": [
+            0.66,
+            0.79
+          ]
+        },
+        {
+          "type": "place",
+          "target": "builder",
+          "start": 4.05,
+          "end": 5.1,
+          "prop": "tool",
+          "to": [
+            0.79,
+            0.65
+          ]
+        },
+        {
+          "type": "speak",
+          "target": "builder",
+          "start": 1.35,
+          "end": 5.7,
+          "text": "Objects attach to hands, move through space, and return to the environment."
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 6,
+          "zoom_from": 1,
+          "zoom_to": 1.08
+        }
+      ]
+    },
+    {
+      "id": "closing",
+      "style": "scrapbook",
+      "duration": 6,
+      "background": "#E4D6BA",
+      "transition": {
+        "type": "wipe",
+        "duration": 0.4
+      },
+      "layers": [
+        {
+          "type": "rectangle",
+          "x": 0.06,
+          "y": 0.12,
+          "width": 0.83,
+          "height": 0.25,
+          "color": "#F5E8CE",
+          "outline": "#77534A",
+          "depth": 0.4,
+          "edge_width": 0.008
+        },
+        {
+          "type": "text",
+          "x": 0.12,
+          "y": 0.2,
+          "width": 0.77,
+          "height": 0.1,
+          "text": "ONE ENGINE. MANY FILMS.",
+          "color": "#634B49",
+          "font_size": 0.05,
+          "depth": 0.2
+        }
+      ],
+      "characters": [
+        {
+          "id": "guide",
+          "x": 0.28,
+          "y": 0.79,
+          "rig": {},
+          "shirt": "#B584A1"
+        }
+      ],
+      "props": [],
+      "actions": [
+        {
+          "type": "gesture",
+          "target": "guide",
+          "start": 1.1,
+          "end": 2.6,
+          "name": "point"
+        },
+        {
+          "type": "speak",
+          "target": "guide",
+          "start": 1,
+          "end": 5.8,
+          "text": "Write the scene once as JSON, render offline, and reuse the same animation tools in your next film."
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 6,
+          "zoom_from": 1.05,
+          "zoom_to": 1.17
+        }
+      ]
+    }
+  ]
+}

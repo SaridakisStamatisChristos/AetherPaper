@@ -1,0 +1,225 @@
+{
+  "version": "0.2",
+  "title": "Articulated Puppets: IK, run, look and speech timing",
+  "canvas": {
+    "width": 480,
+    "height": 270,
+    "fps": 12
+  },
+  "scenes": [
+    {
+      "id": "rig-performance",
+      "duration": 8,
+      "background": "#E8DBBF",
+      "layers": [
+        {
+          "type": "room"
+        },
+        {
+          "type": "text",
+          "x": 0.53,
+          "y": 0.12,
+          "width": 0.45,
+          "height": 0.09,
+          "text": "JOINTED PAPER",
+          "color": "#574338",
+          "font_size": 0.044
+        }
+      ],
+      "characters": [
+        {
+          "id": "mira",
+          "x": 0.09,
+          "y": 0.79,
+          "scale": 1,
+          "skin": "#D8A078",
+          "shirt": "#5D8C82",
+          "pants": "#5B698C",
+          "hair": "#553F3F",
+          "rig": {
+            "torso": 0.3,
+            "upper_arm": 0.29,
+            "forearm": 0.28,
+            "thigh": 0.23,
+            "shin": 0.23,
+            "spring": 3,
+            "bones": [
+              {
+                "name": "pelvis",
+                "parent": null,
+                "length": 0.05,
+                "angle": -1.5707963267948966
+              },
+              {
+                "name": "torso",
+                "parent": "pelvis",
+                "length": 0.3,
+                "angle": 0
+              },
+              {
+                "name": "neck",
+                "parent": "torso",
+                "length": 0.12,
+                "angle": 0
+              },
+              {
+                "name": "scarf",
+                "parent": "torso",
+                "length": 0.13,
+                "angle": 0.38,
+                "at": 0.7
+              }
+            ]
+          }
+        },
+        {
+          "id": "leo",
+          "x": 0.75,
+          "y": 0.79,
+          "scale": 0.82,
+          "skin": "#E4B990",
+          "shirt": "#D49B65",
+          "pants": "#786888",
+          "hair": "#433A3B",
+          "rig": {
+            "head": 0.18,
+            "spring": 2.5
+          }
+        }
+      ],
+      "props": [
+        {
+          "id": "ball",
+          "shape": "ball",
+          "x": 0.61,
+          "y": 0.65,
+          "size": 0.105,
+          "color": "#BD7757"
+        }
+      ],
+      "actions": [
+        {
+          "type": "run",
+          "target": "mira",
+          "start": 0.2,
+          "end": 1.8,
+          "to": [
+            0.35,
+            0.79
+          ]
+        },
+        {
+          "type": "walk",
+          "target": "mira",
+          "start": 1.9,
+          "end": 3.1,
+          "to": [
+            0.52,
+            0.79
+          ]
+        },
+        {
+          "type": "look",
+          "target": "mira",
+          "start": 2.6,
+          "end": 7.9,
+          "to": [
+            0.76,
+            0.5
+          ]
+        },
+        {
+          "type": "gesture",
+          "target": "mira",
+          "start": 3.15,
+          "end": 4.1,
+          "name": "point"
+        },
+        {
+          "type": "expression",
+          "target": "mira",
+          "start": 3.15,
+          "end": 4.1,
+          "state": "surprised"
+        },
+        {
+          "type": "wave",
+          "target": "mira",
+          "start": 4.2,
+          "end": 5.05
+        },
+        {
+          "type": "pose",
+          "target": "mira",
+          "start": 4.15,
+          "end": 5.02,
+          "angles": {
+            "neck": 0.19,
+            "scarf": 0.85
+          }
+        },
+        {
+          "type": "speak",
+          "target": "mira",
+          "start": 5.1,
+          "end": 7.8,
+          "text": "This puppet moves with real articulated joints.",
+          "mouth_cues": [
+            {
+              "at": 0,
+              "openness": 0
+            },
+            {
+              "at": 0.22,
+              "openness": 0.7
+            },
+            {
+              "at": 0.48,
+              "openness": 0.1
+            },
+            {
+              "at": 0.7,
+              "openness": 1
+            },
+            {
+              "at": 1.03,
+              "openness": 0.2
+            },
+            {
+              "at": 1.35,
+              "openness": 0.8
+            },
+            {
+              "at": 1.7,
+              "openness": 0.15
+            },
+            {
+              "at": 2,
+              "openness": 0.7
+            },
+            {
+              "at": 2.45,
+              "openness": 0
+            }
+          ]
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 8,
+          "zoom_from": 1,
+          "zoom_to": 1.12,
+          "center_from": [
+            0.5,
+            0.5
+          ],
+          "center_to": [
+            0.53,
+            0.5
+          ]
+        }
+      ]
+    }
+  ]
+}

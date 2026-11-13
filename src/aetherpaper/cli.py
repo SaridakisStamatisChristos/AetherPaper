@@ -4,6 +4,8 @@ import argparse
 import json
 from .model import load_project, SceneError
 from .renderer import snapshot, render
+from .assets import production_manifest
+from .qa import verify_video
 
 
 def main(argv=None) -> int:
@@ -19,10 +21,19 @@ def main(argv=None) -> int:
     r.add_argument('project');r.add_argument('--out',default='output/movie.mp4')
     r.add_argument('--width',type=int);r.add_argument('--height',type=int)
     r.add_argument('--fps',type=int);r.add_argument('--voice',choices=['none','espeak'],default='none')
+    m=sub.add_parser('manifest',help='validate scene assets and export offline production manifest')
+    m.add_argument('project')
+    q=sub.add_parser('qa',help='probe H.264 stream and decode three real video frames')
+    q.add_argument('video');q.add_argument('--frames-dir')
     args=parser.parse_args(argv)
     try:
+        if args.command=='qa':
+            print(json.dumps(verify_video(args.video,sample_dir=args.frames_dir),indent=2))
+            return 0
         project=load_project(args.project)
-        if args.command=='validate':
+        if args.command=='manifest':
+            print(json.dumps(production_manifest(project),indent=2))
+        elif args.command=='validate':
             print(json.dumps({'valid':True,'title':project.data.get('title','Untitled'),
                               'scenes':len(project.scenes),'duration':project.duration},indent=2))
         elif args.command=='snapshot':

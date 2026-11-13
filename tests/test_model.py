@@ -14,7 +14,7 @@ def test_example_validates():
     assert len(proj.scenes)==1
 
 @pytest.mark.parametrize('mutation,match',[
-    (lambda p:p.update(version='0.2'),'version'),
+    (lambda p:p.update(version='0.9'),'version'),
     (lambda p:p['canvas'].update(fps=0),'fps'),
     (lambda p:p['canvas'].update(width=961),'width'),
     (lambda p:p['scenes'][0]['characters'][0].update(x=float('nan')),'finite'),

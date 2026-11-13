@@ -8,9 +8,9 @@ import re
 from typing import Any
 
 HEX_COLOR = re.compile(r'^#[0-9a-fA-F]{6}$')
-SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room'}
+SHAPES = {'rectangle', 'ellipse', 'polygon', 'text', 'image', 'room', 'rope'}
 PROP_SHAPES = {'book', 'ball', 'cup', 'star', 'box'}
-ACTION_TYPES = {'walk', 'pickup', 'speak', 'wave'}
+ACTION_TYPES = {'walk', 'run', 'pickup', 'speak', 'wave', 'look', 'gesture', 'expression', 'place', 'release', 'spring', 'pose'}
 
 class SceneError(ValueError):
     """Invalid animation project."""
@@ -89,8 +89,10 @@ def load_project(path: str | Path) -> Project:
 
 def validate_project(data: Any) -> None:
     data = _object(data, '$')
-    if data.get('version') != '0.1':
-        _fail('$.version', 'expected "0.1"')
+    if data.get('version') not in ('0.1', '0.2'):
+        _fail('$.version', 'expected "0.1" or "0.2"')
+    if data.get('style','paper_cut') not in ('paper_cut','scrapbook','storybook'):
+        _fail('$.style','unknown visual preset')
     canvas = _object(data.get('canvas'), '$.canvas')
     for key in ('width', 'height'):
         v = _number(canvas.get(key), f'$.canvas.{key}', 64, 4096)
@@ -117,13 +119,25 @@ def validate_project(data: Any) -> None:
             _fail(f'{path}.duration', 'duration must be a multiple of 1/fps')
         total_frames += frames
         _color(scene.get('background', '#F5EAD6'), f'{path}.background')
+        if scene.get('style',data.get('style','paper_cut')) not in ('paper_cut','scrapbook','storybook'):
+            _fail(f'{path}.style', 'unknown visual preset')
+        if 'transition' in scene:
+            tr = _object(scene['transition'],f'{path}.transition')
+            if tr.get('type') not in ('fade','wipe'):
+                _fail(f'{path}.transition.type', 'unsupported transition')
+            _number(tr.get('duration',.4), f'{path}.transition.duration',.01,min(2,dur))
         for j, layer in enumerate(_list(scene.get('layers', []), f'{path}.layers')):
             lp = f'{path}.layers[{j}]'
             layer = _object(layer, lp)
             kind = _string(layer.get('type'), f'{lp}.type')
             if kind not in SHAPES:
                 _fail(f'{lp}.type', f'unsupported shape {kind!r}')
-            if kind != 'room':
+            if kind == 'rope':
+                _coord(layer.get('from'), f'{lp}.from')
+                _coord(layer.get('to'), f'{lp}.to')
+                _number(layer.get('sag',.12), f'{lp}.sag', 0, 1)
+                _number(layer.get('wind',0), f'{lp}.wind', 0, .5)
+            if kind not in ('room','rope'):
                 for k in ('x', 'y', 'width', 'height'):
                     _number(layer.get(k), f'{lp}.{k}', -2, 3)
             if kind == 'text':
@@ -138,6 +152,12 @@ def validate_project(data: Any) -> None:
                     _coord(pt, f'{lp}.points[{k}]')
             if 'color' in layer:
                 _color(layer['color'], f'{lp}.color')
+            if 'outline' in layer:
+                _color(layer['outline'], f'{lp}.outline')
+            if 'edge_width' in layer:
+                _number(layer['edge_width'],f'{lp}.edge_width',0,.08)
+            if 'depth' in layer:
+                _number(layer['depth'],f'{lp}.depth',0,1)
             if 'enter' in layer:
                 _number(layer['enter'], f'{lp}.enter', 0, dur)
         char_ids: set[str] = set()
@@ -154,6 +174,32 @@ def validate_project(data: Any) -> None:
             for k in ('skin', 'shirt', 'pants', 'hair'):
                 if k in actor:
                     _color(actor[k], f'{cp}.{k}')
+            if 'rig' in actor:
+                rig = _object(actor['rig'], f'{cp}.rig')
+                lengths = {'torso', 'neck', 'upper_arm', 'forearm', 'thigh', 'shin', 'head'}
+                for key, value in rig.items():
+                    if key == 'bones':
+                        bones = _list(value,f'{cp}.rig.bones')
+                        seen: set[str] = set()
+                        for n, bone in enumerate(bones):
+                            bp=f'{cp}.rig.bones[{n}]'
+                            bone = _object(bone,bp)
+                            name=_string(bone.get('name'),f'{bp}.name')
+                            if name in seen:
+                                _fail(f'{bp}.name','duplicate bone')
+                            parent=bone.get('parent')
+                            if parent is not None and parent not in seen:
+                                _fail(f'{bp}.parent','parent must precede child')
+                            _number(bone.get('length'),f'{bp}.length',.02,1)
+                            _number(bone.get('angle',0),f'{bp}.angle',-math.pi,math.pi)
+                            _number(bone.get('at',1),f'{bp}.at',0,1)
+                            seen.add(name)
+                        if not {'pelvis','torso','neck'} <= seen:
+                            _fail(f'{cp}.rig.bones','must contain pelvis, torso and neck bones')
+                    elif key in lengths | {'spring'}:
+                        _number(value, f'{cp}.rig.{key}', 0.02 if key != 'spring' else 0.1, 1 if key != 'spring' else 12)
+                    else:
+                        _fail(f'{cp}.rig.{key}', 'unknown rig property')
         prop_ids: set[str] = set()
         for j, prop in enumerate(_list(scene.get('props', []), f'{path}.props')):
             pp = f'{path}.props[{j}]'
@@ -183,15 +229,63 @@ def validate_project(data: Any) -> None:
             end = _number(action.get('end'), f'{ap}.end', 0, dur)
             if end <= start:
                 _fail(f'{ap}.end', 'must be later than start')
-            if typ == 'walk':
+            if typ in ('walk', 'run', 'look'):
                 _coord(action.get('to'), f'{ap}.to')
-            if typ == 'pickup':
+            if typ == 'gesture' and action.get('name') not in ('wave', 'point', 'raise'):
+                _fail(f'{ap}.name', 'unknown gesture')
+            if typ == 'expression' and action.get('state') not in ('neutral', 'happy', 'sad', 'surprised'):
+                _fail(f'{ap}.state', 'unknown expression')
+            if typ == 'pose':
+                angles=_object(action.get('angles'),f'{ap}.angles')
+                if not angles:
+                    _fail(f'{ap}.angles','at least one bone angle required')
+                actor=next(a for a in scene['characters'] if a['id']==target)
+                named={b['name'] for b in actor.get('rig',{}).get('bones',[])} if actor.get('rig',{}).get('bones') else {'pelvis','torso','neck'}
+                for name,value in angles.items():
+                    if name not in named:
+                        _fail(f'{ap}.angles.{name}','unknown bone')
+                    _number(value,f'{ap}.angles.{name}',-math.pi,math.pi)
+            if typ in ('pickup','place','release','spring'):
                 if action.get('prop') not in prop_ids:
                     _fail(f'{ap}.prop', 'unknown prop')
+            if typ in ('place','spring'):
+                _coord(action.get('to'), f'{ap}.to')
+            if typ == 'release':
+                _number(action.get('gravity',.9), f'{ap}.gravity', .01, 3)
+                _number(action.get('ground',.78), f'{ap}.ground', 0, 2)
+                _number(action.get('bounce',.28), f'{ap}.bounce', 0, 1)
+                _number(action.get('velocity_x',0), f'{ap}.velocity_x', -2, 2)
+            if typ == 'spring':
+                _number(action.get('frequency',2.2), f'{ap}.frequency', .1, 12)
+                _number(action.get('damping',.68), f'{ap}.damping', .01, .99)
             if typ == 'speak':
                 _string(action.get('text'), f'{ap}.text')
                 if 'audio' in action:
                     _string(action['audio'], f'{ap}.audio')
+                if 'mouth_cues' in action:
+                    cues = _list(action['mouth_cues'], f'{ap}.mouth_cues')
+                    if not cues:
+                        _fail(f'{ap}.mouth_cues', 'requires at least one cue')
+                    previous = -1.0
+                    for k, cue in enumerate(cues):
+                        cue = _object(cue, f'{ap}.mouth_cues[{k}]')
+                        stamp = _number(cue.get('at'), f'{ap}.mouth_cues[{k}].at', 0, end-start)
+                        if stamp <= previous:
+                            _fail(f'{ap}.mouth_cues[{k}].at', 'cues must be strictly increasing')
+                        previous = stamp
+                        _number(cue.get('openness'), f'{ap}.mouth_cues[{k}].openness', 0, 1)
+        # Release and placement must follow a pickup by the same character.
+        owned: dict[str,str] = {}
+        interactions = sorted(enumerate(scene.get('actions',[])),key=lambda p:p[1]['start'])
+        for index, action in interactions:
+            if action['type'] == 'pickup':
+                if action['prop'] in owned:
+                    _fail(f'{path}.actions[{index}]', 'prop already held')
+                owned[action['prop']] = action['target']
+            elif action['type'] in ('place','release'):
+                if owned.get(action['prop']) != action['target']:
+                    _fail(f'{path}.actions[{index}]', 'prop must be picked up by this character first')
+                owned.pop(action['prop'])
         for j, cam in enumerate(_list(scene.get('camera', []), f'{path}.camera')):
             cp = f'{path}.camera[{j}]'
             cam = _object(cam, cp)
@@ -199,6 +293,8 @@ def validate_project(data: Any) -> None:
             b = _number(cam.get('end'), f'{cp}.end', 0, dur)
             if b <= a:
                 _fail(f'{cp}.end', 'must be later than start')
+            if 'track' in cam and cam['track'] not in char_ids:
+                _fail(f'{cp}.track','unknown camera tracking character')
             for k in ('zoom_from', 'zoom_to'):
                 _number(cam.get(k, 1), f'{cp}.{k}', 1, 2.5)
             for k in ('center_from', 'center_to'):

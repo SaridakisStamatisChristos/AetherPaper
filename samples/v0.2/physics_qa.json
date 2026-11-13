@@ -1,0 +1,28 @@
+{
+  "video": "/home/runner/work/AetherPaper/AetherPaper/output/physics_demo.mp4",
+  "codec": "h264",
+  "width": 320,
+  "height": 180,
+  "fps": 12.0,
+  "frames": 108,
+  "duration": 9.0,
+  "audio_codecs": [],
+  "frame_checks": [
+    {
+      "time": 1.233,
+      "variance": 2120.487,
+      "readable": true
+    },
+    {
+      "time": 3.771,
+      "variance": 2096.011,
+      "readable": true
+    },
+    {
+      "time": 6.579,
+      "variance": 3930.39,
+      "readable": true
+    }
+  ],
+  "sample_dir": "/home/runner/work/AetherPaper/AetherPaper/output/physics_qa"
+}
