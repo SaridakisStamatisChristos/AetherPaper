@@ -109,7 +109,8 @@ def _config(actor: dict, key: str, default: float) -> float:
 
 
 def _body(actor: dict, pose, width: int, height: int, time: float):
-    s = height * .42 * actor.get("scale", 1)
+    illustrated=actor.get("visual",{}).get("type")=="illustrated"
+    s = height * (.66 if illustrated else .42) * actor.get("scale", 1)
     x, y = pose.x * width, pose.y * height
     motion = abs(pose.walk) + abs(getattr(pose, "run", 0.0))
     bob = math.sin(time * 2.5) * .004 * s
