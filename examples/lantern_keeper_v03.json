@@ -1,0 +1,189 @@
+{
+  "version": "0.3",
+  "title": "The Lantern Keeper — v0.3 illustration acceptance scene",
+  "canvas": {
+    "width": 960,
+    "height": 540,
+    "fps": 24
+  },
+  "style": "cinematic_storybook",
+  "scenes": [
+    {
+      "id": "lantern-keeper",
+      "duration": 10,
+      "background": "#263F4D",
+      "environment": {
+        "type": "moonlit_atelier"
+      },
+      "title_card": {
+        "text": "THE LANTERN KEEPER",
+        "start": 0.1,
+        "end": 2.65
+      },
+      "characters": [
+        {
+          "id": "keeper",
+          "x": 0.115,
+          "y": 0.855,
+          "scale": 1.04,
+          "skin": "#E1B38E",
+          "hair": "#303C45",
+          "shirt": "#457182",
+          "pants": "#435665",
+          "rig": {
+            "torso": 0.31,
+            "neck": 0.12,
+            "upper_arm": 0.2,
+            "forearm": 0.21,
+            "thigh": 0.245,
+            "shin": 0.258,
+            "head": 0.175,
+            "spring": 2.9
+          },
+          "visual": {
+            "type": "illustrated",
+            "coat": "#427486",
+            "lining": "#CE9B61"
+          }
+        }
+      ],
+      "props": [
+        {
+          "id": "light",
+          "shape": "lantern",
+          "x": 0.585,
+          "y": 0.648,
+          "size": 0.19,
+          "color": "#DAAE69"
+        }
+      ],
+      "layers": [],
+      "actions": [
+        {
+          "type": "walk",
+          "target": "keeper",
+          "start": 0.48,
+          "end": 2.82,
+          "to": [
+            0.405,
+            0.855
+          ]
+        },
+        {
+          "type": "look",
+          "target": "keeper",
+          "start": 1.7,
+          "end": 9.8,
+          "to": [
+            0.585,
+            0.64
+          ]
+        },
+        {
+          "type": "pickup",
+          "target": "keeper",
+          "start": 3,
+          "end": 4.22,
+          "prop": "light",
+          "hand_to": [
+            0.585,
+            0.648
+          ]
+        },
+        {
+          "type": "walk",
+          "target": "keeper",
+          "start": 4.42,
+          "end": 6.76,
+          "to": [
+            0.635,
+            0.855
+          ]
+        },
+        {
+          "type": "place",
+          "target": "keeper",
+          "start": 7,
+          "end": 8.22,
+          "prop": "light",
+          "to": [
+            0.8,
+            0.636
+          ]
+        },
+        {
+          "type": "gesture",
+          "target": "keeper",
+          "start": 8.38,
+          "end": 9.55,
+          "name": "raise"
+        },
+        {
+          "type": "expression",
+          "target": "keeper",
+          "start": 8.4,
+          "end": 9.6,
+          "state": "happy"
+        },
+        {
+          "type": "speak",
+          "target": "keeper",
+          "start": 8.53,
+          "end": 9.78,
+          "text": "Every story begins with a little light.",
+          "mouth_cues": [
+            {
+              "at": 0,
+              "openness": 0
+            },
+            {
+              "at": 0.15,
+              "openness": 0.45
+            },
+            {
+              "at": 0.27,
+              "openness": 0.2
+            },
+            {
+              "at": 0.45,
+              "openness": 0.85
+            },
+            {
+              "at": 0.63,
+              "openness": 0.15
+            },
+            {
+              "at": 0.81,
+              "openness": 0.8
+            },
+            {
+              "at": 1,
+              "openness": 0.16
+            },
+            {
+              "at": 1.18,
+              "openness": 0
+            }
+          ]
+        }
+      ],
+      "camera": [
+        {
+          "start": 0,
+          "end": 10,
+          "zoom_from": 1,
+          "zoom_to": 1.095,
+          "center_from": [
+            0.5,
+            0.5
+          ],
+          "center_to": [
+            0.535,
+            0.49
+          ]
+        }
+      ],
+      "supersample": 2
+    }
+  ]
+}

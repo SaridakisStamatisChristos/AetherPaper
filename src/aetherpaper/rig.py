@@ -109,7 +109,8 @@ def _config(actor: dict, key: str, default: float) -> float:
 
 
 def _body(actor: dict, pose, width: int, height: int, time: float):
-    s = height * .42 * actor.get("scale", 1)
+    illustrated=actor.get("visual",{}).get("type")=="illustrated"
+    s = height * (.66 if illustrated else .42) * actor.get("scale", 1)
     x, y = pose.x * width, pose.y * height
     motion = abs(pose.walk) + abs(getattr(pose, "run", 0.0))
     bob = math.sin(time * 2.5) * .004 * s
@@ -155,10 +156,17 @@ def advanced_hand(actor: dict, pose, width: int, height: int, time: float) -> Po
         target = (x+.16*s,y-1.12*s)
     else:
         swing = (pose.walk+getattr(pose,"run",0.0))*.13*s
-        target = (x+.25*s-swing,y-.49*s)
+        target = (x+(.24 if actor.get('visual',{}).get('type')=='illustrated' else .25)*s-swing,
+                  y-(.32 if actor.get('visual',{}).get('type')=='illustrated' else .49)*s)
+    if getattr(pose,'hand_target',None) is not None and actor.get('visual',{}).get('type')=='illustrated':
+        neutral=(x+.24*s,y-.32*s)
+        aim=(pose.hand_target[0]*width,pose.hand_target[1]*height)
+        f=max(0,min(1,pose.hand_weight))
+        target=(neutral[0]+(aim[0]-neutral[0])*f,neutral[1]+(aim[1]-neutral[1])*f)
     if (pose.waving or gesture) and not pose.reach_prop and not pose.holding:
         swing=(pose.walk+getattr(pose,'run',0.0))*.13*s
-        neutral=(x+.25*s-swing,y-.49*s)
+        neutral=(x+(.24 if actor.get('visual',{}).get('type')=='illustrated' else .25)*s-swing,
+                 y-(.32 if actor.get('visual',{}).get('type')=='illustrated' else .49)*s)
         w=max(0,min(1,getattr(pose,'gesture_weight',1)))
         target=(neutral[0]+(target[0]-neutral[0])*w,
                 neutral[1]+(target[1]-neutral[1])*w)

@@ -4,13 +4,13 @@ from PIL import Image, ImageDraw, ImageFilter
 import math
 import random
 
-PRESETS = {"paper_cut", "scrapbook", "storybook"}
+PRESETS = {"paper_cut", "scrapbook", "storybook", "cinematic_storybook"}
 
 
 def styled_background(base: Image.Image, style: str, seed: int) -> Image.Image:
     if style not in PRESETS:
         raise ValueError("unknown style preset: " + style)
-    if style == "paper_cut":
+    if style in ("paper_cut", "cinematic_storybook"):
         return base
     w,h=base.size
     d=ImageDraw.Draw(base)
@@ -59,7 +59,7 @@ def shadows(base: Image.Image, feet: list[tuple[float,float,float]]) -> Image.Im
 
 
 def finish_style(base: Image.Image, style: str, time: float) -> Image.Image:
-    if style == "paper_cut":
+    if style in ("paper_cut", "cinematic_storybook"):
         return base
     w,h=base.size
     d=ImageDraw.Draw(base)
