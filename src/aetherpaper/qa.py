@@ -39,7 +39,8 @@ def verify_video(path: str | Path, sample_dir: str | Path | None = None) -> dict
         raise RuntimeError("invalid frame rate")
     output_dir=Path(sample_dir).resolve() if sample_dir else None
     # Avoid seeking beyond the final presentation timestamp of short clips.
-    sample_times=(.1,.5,.75)
+    # Non-midpoint fractions reduce false flags on intentional scene-boundary fades.
+    sample_times=(.137,.419,.731)
     checks=[]
     with TemporaryDirectory(prefix="aetherpaper-qa-") as tmp:
         destination=output_dir or Path(tmp)
