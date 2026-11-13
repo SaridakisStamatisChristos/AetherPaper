@@ -265,7 +265,7 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
         depth=layer.get('depth',1)
         shift=((cx-.5)*W*(1-depth),(cy-.5)*H*(1-depth))
         _draw_layer(canvas,layer,project.source,t,offset=shift)
-    canvas=shadows(canvas,[(a['x']*W,a['y']*H,H*.42*a.get('scale',1))
+    canvas=shadows(canvas,[(actor_pose(scene,a,t).x*W,actor_pose(scene,a,t).y*H,H*.42*a.get('scale',1))
                           for a in scene.get('characters',[])])
     d=ImageDraw.Draw(canvas)
     actors={a['id']:a for a in scene.get('characters',[])}
