@@ -1,0 +1,39 @@
+{
+  "version": "0.1",
+  "title": "Paper Scenes and Character Actions",
+  "canvas": { "width": 960, "height": 540, "fps": 24 },
+  "scenes": [
+    {
+      "id": "opening", "duration": 3,
+      "background": "#D0E3D1",
+      "layers": [
+        {"type":"ellipse","x":0.05,"y":0.10,"width":0.30,"height":0.48,"color":"#F0DDB0"},
+        {"type":"rectangle","x":0.00,"y":0.82,"width":1.0,"height":0.18,"color":"#8DB18F"},
+        {"type":"text","x":0.45,"y":0.17,"width":0.5,"height":0.15,"text":"HELLO, PAPER!","font_size":0.077,"color":"#42604D"}
+      ],
+      "characters": [{"id":"milo","x":0.30,"y":0.81,"skin":"#E2B18D","shirt":"#688F6F","pants":"#4E6482","hair":"#453A37"}],
+      "actions": [{"type":"wave","target":"milo","start":0.4,"end":2.8}]
+    },
+    {
+      "id":"sunny-day","duration":3,"background":"#F1D7AE",
+      "layers": [
+        {"type":"ellipse","x":0.69,"y":0.06,"width":0.20,"height":0.35,"color":"#F2C46A"},
+        {"type":"rectangle","x":0,"y":0.85,"width":1,"height":0.15,"color":"#9AAB84"},
+        {"type":"text","x":0.15,"y":0.11,"width":0.6,"height":0.13,"text":"WALKING IN THE SUN","font_size":0.065,"color":"#4F5A43"}
+      ],
+      "characters":[{"id":"milo","x":0.14,"y":0.80,"skin":"#E2B18D","shirt":"#688F6F","pants":"#4E6482","hair":"#453A37"}],
+      "actions":[{"type":"walk","target":"milo","start":0,"end":2.9,"to":[0.78,0.80]}],
+      "camera":[{"start":0,"end":3,"zoom_from":1,"zoom_to":1.09}]
+    },
+    {
+      "id":"finale","duration":3,"background":"#D3D9E9",
+      "layers":[{"type":"room"}],
+      "props":[{"id":"ball","shape":"ball","x":0.72,"y":0.71,"size":0.13,"color":"#CE8E70"}],
+      "characters":[{"id":"milo","x":0.60,"y":0.81,"skin":"#E2B18D","shirt":"#688F6F","pants":"#4E6482","hair":"#453A37"}],
+      "actions":[
+        {"type":"pickup","target":"milo","start":0.3,"end":1.6,"prop":"ball"},
+        {"type":"speak","target":"milo","start":1.6,"end":2.9,"text":"Made locally."}
+      ]
+    }
+  ]
+}

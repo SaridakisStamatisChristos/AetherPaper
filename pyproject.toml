@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aetherpaper"
+version = "0.1.0"
+description = "Local, JSON-driven, reusable paper-cut animation renderer"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "AetherPaper contributors"}]
+dependencies = ["Pillow>=10.0,<13"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+aetherpaper = "aetherpaper.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
