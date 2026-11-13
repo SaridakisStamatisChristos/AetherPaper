@@ -254,6 +254,9 @@ def validate_project(data: Any) -> None:
                             seen.add(name)
                         if not {'pelvis','torso','neck'} <= seen:
                             _fail(f'{cp}.rig.bones','must contain pelvis, torso and neck bones')
+                    elif key == 'front_view':
+                        if not isinstance(value,bool):
+                            _fail(f'{cp}.rig.front_view','must be boolean')
                     elif key in lengths | {'spring'}:
                         _number(value, f'{cp}.rig.{key}', 0.02 if key != 'spring' else 0.1, 1 if key != 'spring' else 12)
                     else:
