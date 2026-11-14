@@ -2,6 +2,33 @@
 
 **Local-first, model-independent, JSON-driven 2D paper-cut animation.** The render engine works without calling Claude, Gemini, ChatGPT, any external API, or an AI coding agent. A scene document describes character movement, prop interaction, captions, camera motion and timing. AetherPaper renders actual frames into an MP4. The core is reusable across productions.
 
+## v0.6 — Coherent character illustration poses
+
+**New feature branch:** `feature/pose-art-cinematography-v0.6`. AetherPaper now has a second art pipeline: **one complete transparent illustration per pose** instead of a puppet assembled from straight rigid strips. Render full-body poses from a regularly gridded 3×2 PNG artwork sheet; switch between named poses with scene-local timing, optional very short dissolves and a ground anchor while the existing JSON timeline/camera provides continuous motion.
+
+The bundled `posekit` command makes a reproducible **fallback** sheet from the existing v0.5 art (not a professional illustration). Replace that PNG with professional painter-authored full-body poses for better silhouette quality; no source code change is necessary.
+
+```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip ffmpeg
+git clone https://github.com/SaridakisStamatisChristos/AetherPaper.git
+cd AetherPaper
+git switch feature/pose-art-cinematography-v0.6
+python3 -m venv .venv && source .venv/bin/activate
+python -m pip install -e '.[dev]'
+pytest -q
+aetherpaper posekit --source examples/last_light_directed_v05.json --out examples/assets/pose_courier.png
+aetherpaper validate examples/illustrated_poses_v06.json
+aetherpaper render examples/illustrated_poses_v06.json --width 640 --height 360 --fps 24 --out output/illustrated_poses_v06.mp4
+aetherpaper qa output/illustrated_poses_v06.mp4 --frames-dir output/v06_qa
+```
+
+**Expected sample:** a real 14-second, 24-fps H.264 video, not a static image or screen-in-frame effect. The normal renderer has no network or AI-runtime calls. The whole-pose option does not replace existing 0.1–0.5 formats.
+
+See [the complete v0.6 pose art guide](docs/WHOLE_POSE_ART_V06.md) for asset authoring, exact JSON contract and limits.
+
+---
+
 ## v0.5 — director-controlled storybook performance
 
 **Feature branch:** `feature/art-direction-v0.5` (stacked on v0.4). This release focuses on improving visual direction, not simply increasing the number of rendered frames.

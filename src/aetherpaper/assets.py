@@ -11,6 +11,9 @@ def audit_assets(project) -> list[dict]:
     references=[]
     for i,scene in enumerate(project.scenes):
         for j,actor in enumerate(scene.get('characters',[])):
+            if actor.get('visual',{}).get('type')=='pose_atlas':
+                references.append((f'scenes[{i}].characters[{j}].visual.src',
+                                   actor['visual']['src'],'image'))
             if actor.get('visual',{}).get('type')=='sprites':
                 for k,part in enumerate(actor['visual']['parts']):
                     references.append((f'scenes[{i}].characters[{j}].visual.parts[{k}].src',

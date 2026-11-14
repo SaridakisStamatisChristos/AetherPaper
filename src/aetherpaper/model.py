@@ -89,8 +89,8 @@ def load_project(path: str | Path) -> Project:
 
 def validate_project(data: Any) -> None:
     data = _object(data, '$')
-    if data.get('version') not in ('0.1', '0.2', '0.3', '0.4', '0.5'):
-        _fail('$.version', 'expected a version from "0.1" through "0.5"')
+    if data.get('version') not in ('0.1', '0.2', '0.3', '0.4', '0.5', '0.6'):
+        _fail('$.version', 'expected a version from "0.1" through "0.6"')
     if data.get('style','paper_cut') not in ('paper_cut','scrapbook','storybook','cinematic_storybook'):
         _fail('$.style','unknown visual preset')
     canvas = _object(data.get('canvas'), '$.canvas')
@@ -190,9 +190,49 @@ def validate_project(data: Any) -> None:
                     _color(actor[k], f'{cp}.{k}')
             if 'visual' in actor:
                 visual=_object(actor['visual'],f'{cp}.visual')
-                if visual.get('type') not in ('illustrated','sprites'):
+                if visual.get('type') not in ('illustrated','sprites','pose_atlas'):
                     _fail(f'{cp}.visual.type','unsupported character visual')
-                if 'rig' not in actor:
+                if visual['type']=='pose_atlas':
+                    _string(visual.get('src'),f'{cp}.visual.src')
+                    cols=_number(visual.get('columns'),f'{cp}.visual.columns',1,12)
+                    rows=_number(visual.get('rows'),f'{cp}.visual.rows',1,12)
+                    if int(cols)!=cols or int(rows)!=rows or cols*rows>64:
+                        _fail(f'{cp}.visual','atlas grid must contain 1..64 integer cells')
+                    _number(visual.get('height',.71),f'{cp}.visual.height',.1,1.6)
+                    _number(visual.get('aspect_ratio',1),f'{cp}.visual.aspect_ratio',.2,4)
+                    anchor=visual.get('anchor',[.5,.96])
+                    if not isinstance(anchor,list) or len(anchor)!=2:_fail(f'{cp}.visual.anchor','expected [x,y]')
+                    for k,v in enumerate(anchor):_number(v,f'{cp}.visual.anchor[{k}]',0,1)
+                    variants=_object(visual.get('poses'),f'{cp}.visual.poses')
+                    if not 1<=len(variants)<=64:_fail(f'{cp}.visual.poses','expected 1..64 pose names')
+                    for name,variant in variants.items():
+                        _string(name,f'{cp}.visual.poses.name')
+                        vp=f'{cp}.visual.poses.{name}'
+                        variant=_object(variant,vp)
+                        cell=_number(variant.get('cell'),vp+'.cell',0,cols*rows-1)
+                        if int(cell)!=cell:_fail(vp+'.cell','expected integer cell')
+                        for key in ('anchor','hand'):
+                            if key in variant:
+                                vec=variant[key]
+                                if not isinstance(vec,list) or len(vec)!=2:_fail(vp+'.'+key,'expected [x,y]')
+                                for axis,v in enumerate(vec):_number(v,f'{vp}.{key}[{axis}]',0,1)
+                        if set(variant)-{'cell','anchor','hand'}:_fail(vp,'unknown pose variant properties')
+                    events=_list(visual.get('timeline'),f'{cp}.visual.timeline')
+                    if not 1<=len(events)<=500:_fail(f'{cp}.visual.timeline','expected 1..500 pose switches')
+                    last=-1
+                    for k,event in enumerate(events):
+                        ep=f'{cp}.visual.timeline[{k}]'
+                        event=_object(event,ep)
+                        stamp=_number(event.get('at'),ep+'.at',0,dur)
+                        if stamp<=last:_fail(ep+'.at','pose switches must be strictly increasing')
+                        if k==0 and stamp!=0:_fail(ep+'.at','first pose switch must be at time 0')
+                        last=stamp
+                        if event.get('pose') not in variants:_fail(ep+'.pose','unknown pose name')
+                        _number(event.get('crossfade',0),ep+'.crossfade',0,.75)
+                        if set(event)-{'at','pose','crossfade'}:_fail(ep,'unknown pose switch properties')
+                    if set(visual)-{'type','src','columns','rows','height','aspect_ratio','anchor','poses','timeline'}:
+                        _fail(f'{cp}.visual','unknown pose atlas property')
+                if visual['type'] in ('illustrated','sprites') and 'rig' not in actor:
                     _fail(f'{cp}.rig','illustrated or sprite characters require a rig object')
                 if visual['type']=='sprites':
                     rawrig=_object(actor['rig'],f'{cp}.rig')
@@ -221,11 +261,12 @@ def validate_project(data: Any) -> None:
                             _fail(f'{sp}.mouth_state','must be open or closed')
                         if set(part)-{'bone','src','pivot','scale','z','expression','mouth_state'}:
                             _fail(sp,'unsupported sprite part fields')
-                for key,val in visual.items():
-                    if key in ('coat','lining') and visual['type']=='illustrated':
-                        _color(val,f'{cp}.visual.{key}')
-                    elif key not in ({'type','coat','lining'} if visual['type']=='illustrated' else {'type','parts'}):
-                        _fail(f'{cp}.visual.{key}','unknown visual field')
+                if visual['type']!='pose_atlas':
+                    for key,val in visual.items():
+                        if key in ('coat','lining') and visual['type']=='illustrated':
+                            _color(val,f'{cp}.visual.{key}')
+                        elif key not in ({'type','coat','lining'} if visual['type']=='illustrated' else {'type','parts'}):
+                            _fail(f'{cp}.visual.{key}','unknown visual field')
             if 'rig' in actor:
                 rig = _object(actor['rig'], f'{cp}.rig')
                 lengths = {'torso', 'neck', 'upper_arm', 'forearm', 'thigh', 'shin', 'head', 'root_height'}
