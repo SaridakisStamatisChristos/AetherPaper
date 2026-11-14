@@ -8,6 +8,7 @@ from .assets import production_manifest
 from .qa import verify_video
 from .artkit import build_artkit
 from .studio_art import generate_studio_kit
+from .posekit import build_posekit
 
 
 def main(argv=None) -> int:
@@ -30,8 +31,14 @@ def main(argv=None) -> int:
     g=sub.add_parser('artkit',help='generate original transparent PNG artwork for the v0.4 rig')
     g.add_argument('--out',default='examples/assets/atelier_courier')
     g.add_argument('--edition',choices=['original','studio'],default='original')
+    pk=sub.add_parser('posekit',help='bake original six-pose transparent PNG atlas for artist replacement')
+    pk.add_argument('--out',default='examples/assets/pose_courier.png')
+    pk.add_argument('--source',default='examples/last_light_directed_v05.json')
     args=parser.parse_args(argv)
     try:
+        if args.command=='posekit':
+            print(json.dumps(build_posekit(args.out,args.source),indent=2))
+            return 0
         if args.command=='artkit':
             print(json.dumps(generate_studio_kit(args.out) if args.edition=='studio' else build_artkit(args.out),indent=2))
             return 0
