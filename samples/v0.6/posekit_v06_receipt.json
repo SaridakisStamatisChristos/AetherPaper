@@ -1,0 +1,80 @@
+{
+  "format": "aetherpaper-pose-atlas-0.6",
+  "path": "/home/runner/work/AetherPaper/AetherPaper/examples/assets/pose_courier.png",
+  "columns": 3,
+  "rows": 2,
+  "width": 1536,
+  "height": 1024,
+  "source": "local original studio courier rig",
+  "poses": {
+    "idle": {
+      "cell": 0,
+      "anchor": [
+        0.5,
+        0.875
+      ],
+      "hand": [
+        0.63167,
+        0.6508512139917695
+      ]
+    },
+    "step": {
+      "cell": 1,
+      "anchor": [
+        0.5,
+        0.875
+      ],
+      "hand": [
+        0.63167,
+        0.6454150000000001
+      ]
+    },
+    "reach": {
+      "cell": 2,
+      "anchor": [
+        0.5,
+        0.875
+      ],
+      "hand": [
+        0.54,
+        0.625
+      ]
+    },
+    "carry": {
+      "cell": 3,
+      "anchor": [
+        0.5,
+        0.875
+      ],
+      "hand": [
+        0.6732660540846268,
+        0.6333931436549367
+      ]
+    },
+    "place": {
+      "cell": 4,
+      "anchor": [
+        0.5,
+        0.875
+      ],
+      "hand": [
+        0.6987558934892525,
+        0.6261715406382272
+      ]
+    },
+    "gaze": {
+      "cell": 5,
+      "anchor": [
+        0.5,
+        0.875
+      ],
+      "hand": [
+        0.63167,
+        0.652415
+      ]
+    }
+  },
+  "sha256": "856991e539309a1a06eee87658a56576dcad1086f1d5374f393272261f629450",
+  "reproducible": true,
+  "network_required": false
+}

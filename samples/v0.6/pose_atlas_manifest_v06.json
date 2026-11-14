@@ -1,0 +1,34 @@
+{
+  "format": "aetherpaper-manifest-0.4",
+  "project": "/home/runner/work/AetherPaper/AetherPaper/examples/illustrated_poses_v06.json",
+  "version": "0.6",
+  "canvas": {
+    "width": 960,
+    "height": 540,
+    "fps": 24
+  },
+  "duration_seconds": 14,
+  "scene_count": 1,
+  "scenes": [
+    {
+      "id": "illustrated-last-light",
+      "duration": 14,
+      "style": "cinematic_storybook",
+      "action_types": [
+        "performance",
+        "speak"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "reference": "scenes[0].characters[0].visual.src",
+      "kind": "image",
+      "path": "assets/pose_courier.png",
+      "bytes": 265159,
+      "sha256": "856991e539309a1a06eee87658a56576dcad1086f1d5374f393272261f629450"
+    }
+  ],
+  "network_required": false,
+  "ai_runtime_required": false
+}
