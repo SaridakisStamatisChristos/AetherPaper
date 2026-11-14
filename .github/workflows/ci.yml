@@ -97,6 +97,19 @@ jobs:
           aetherpaper snapshot examples/last_light_directed_v05.json --at 12.6 --width 960 --height 540 --out output/v05_finale.png
           aetherpaper qa output/last_light_directed_v05.mp4 --frames-dir output/v05_video_qa > output/v05_quality.json
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/last_light_directed_v05.mp4
+      - name: Bake illustrated pose atlas and render v0.6 full-body animated film
+        run: |
+          set -euo pipefail
+          aetherpaper posekit --out examples/assets/pose_courier.png --source examples/last_light_directed_v05.json > output/posekit_v06_receipt.json
+          aetherpaper validate examples/illustrated_poses_v06.json
+          aetherpaper manifest examples/illustrated_poses_v06.json > output/pose_atlas_manifest_v06.json
+          aetherpaper render examples/illustrated_poses_v06.json --width 640 --height 360 --fps 24 --out output/illustrated_poses_v06.mp4
+          aetherpaper snapshot examples/illustrated_poses_v06.json --at 1.5 --width 960 --height 540 --out output/pose_arrival_v06.png
+          aetherpaper snapshot examples/illustrated_poses_v06.json --at 4.3 --width 960 --height 540 --out output/pose_reach_v06.png
+          aetherpaper snapshot examples/illustrated_poses_v06.json --at 7.5 --width 960 --height 540 --out output/pose_walk_v06.png
+          aetherpaper snapshot examples/illustrated_poses_v06.json --at 12.5 --width 960 --height 540 --out output/pose_finale_v06.png
+          aetherpaper qa output/illustrated_poses_v06.mp4 --frames-dir output/pose_qa_v06 > output/pose_qa_v06.json
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 output/illustrated_poses_v06.mp4
       - name: Probe MP4 stream
         run: |
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of default=noprint_wrappers=1 output/ci.mp4
@@ -247,6 +260,43 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m 'chore(samples): store tested v0.5 directed 14-second film and original character PNGs [skip ci]'
             git push origin HEAD:feature/art-direction-v0.5
+          fi
+      - name: Upload v0.6 whole-body pose atlas and verified animation
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetherpaper-v06-illustrated-pose-film
+          path: |
+            output/illustrated_poses_v06.mp4
+            output/pose_arrival_v06.png
+            output/pose_reach_v06.png
+            output/pose_walk_v06.png
+            output/pose_finale_v06.png
+            output/posekit_v06_receipt.json
+            output/pose_atlas_manifest_v06.json
+            output/pose_qa_v06.json
+            output/pose_qa_v06/
+            examples/assets/pose_courier.png
+          retention-days: 30
+      - name: Preserve v0.6 independently checked film and full-body source art
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/pose-art-cinematography-v0.6'
+        run: |
+          set -euo pipefail
+          git fetch origin feature/pose-art-cinematography-v0.6
+          if [ "$(git rev-parse FETCH_HEAD)" != "$GITHUB_SHA" ]; then
+            echo "Source was superseded; skipping stale preview publication."
+            exit 0
+          fi
+          mkdir -p samples/v0.6
+          cp output/illustrated_poses_v06.mp4 samples/v0.6/
+          cp output/pose_arrival_v06.png output/pose_reach_v06.png output/pose_walk_v06.png output/pose_finale_v06.png samples/v0.6/
+          cp output/posekit_v06_receipt.json output/pose_atlas_manifest_v06.json output/pose_qa_v06.json samples/v0.6/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add samples/v0.6
+          git add -f samples/v0.6/illustrated_poses_v06.mp4 examples/assets/pose_courier.png
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(samples): preserve v0.6 verified H.264 film and illustrator-ready pose atlas [skip ci]'
+            git push origin HEAD:feature/pose-art-cinematography-v0.6
           fi
       - name: Archive independently verified MP4 previews in the feature branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/feature/advanced-animation-v0.2'
