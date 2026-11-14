@@ -17,6 +17,7 @@ from .physics import rope_points, prop_state
 from .styles import styled_background, shadows, finish_style, transition_frame
 from .illustration import draw_illustrated
 from .sprite_rig import draw_sprite_character, sprite_hand
+from .pose_atlas import draw_pose_atlas, pose_hand
 from .cinematic import (render_atelier_background, add_prop_light,
                         foreground_and_grade, cinematic_caption, title_overlay)
 from .sunset import sunset_background, sunset_foreground
@@ -211,6 +212,8 @@ def _draw_prop(d, prop: dict, W:int, H:int, cx:float, cy:float, scale:float=1.0)
 def _hand(actor:dict, pose, W:int, H:int, t:float):
     if actor.get('visual',{}).get('type')=='sprites':
         return sprite_hand(actor,pose,W,H,t)
+    if actor.get('visual',{}).get('type')=='pose_atlas':
+        return pose_hand(actor,pose,W,H,t)
     if 'rig' in actor:
         return advanced_hand(actor,pose,W,H,t)
     s=H*.42*actor.get('scale',1)
@@ -326,7 +329,7 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
         shift=((cx-.5)*W*(1-depth),(cy-.5)*H*(1-depth))
         _draw_layer(canvas,layer,project.source,t,offset=shift)
     canvas=shadows(canvas,[(actor_pose(scene,a,t).x*W,actor_pose(scene,a,t).y*H,
-                            H*(.66 if a.get('visual',{}).get('type')=='illustrated' else .42)*a.get('scale',1))
+                            H*(.71 if a.get('visual',{}).get('type')=='pose_atlas' else .66 if a.get('visual',{}).get('type')=='illustrated' else .42)*a.get('scale',1))
                           for a in scene.get('characters',[])])
     d=ImageDraw.Draw(canvas)
     actors={a['id']:a for a in scene.get('characters',[])}
@@ -352,6 +355,9 @@ def render_frame(project:Project, scene:dict, t:float, *, width:int|None=None, h
             d=ImageDraw.Draw(canvas)
         elif visual_type=='sprites':
             draw_sprite_character(canvas,project.source.parent,actor,poses[actor['id']],t)
+            d=ImageDraw.Draw(canvas)
+        elif visual_type=='pose_atlas':
+            draw_pose_atlas(canvas,project.source.parent,actor,poses[actor['id']],t)
             d=ImageDraw.Draw(canvas)
         else:
             _draw_character(d,actor,poses[actor['id']],W,H,t)
