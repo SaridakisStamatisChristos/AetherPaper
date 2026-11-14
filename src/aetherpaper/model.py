@@ -261,11 +261,12 @@ def validate_project(data: Any) -> None:
                             _fail(f'{sp}.mouth_state','must be open or closed')
                         if set(part)-{'bone','src','pivot','scale','z','expression','mouth_state'}:
                             _fail(sp,'unsupported sprite part fields')
-                for key,val in visual.items():
-                    if key in ('coat','lining') and visual['type']=='illustrated':
-                        _color(val,f'{cp}.visual.{key}')
-                    elif key not in ({'type','coat','lining'} if visual['type']=='illustrated' else {'type','parts'}):
-                        _fail(f'{cp}.visual.{key}','unknown visual field')
+                if visual['type']!='pose_atlas':
+                    for key,val in visual.items():
+                        if key in ('coat','lining') and visual['type']=='illustrated':
+                            _color(val,f'{cp}.visual.{key}')
+                        elif key not in ({'type','coat','lining'} if visual['type']=='illustrated' else {'type','parts'}):
+                            _fail(f'{cp}.visual.{key}','unknown visual field')
             if 'rig' in actor:
                 rig = _object(actor['rig'], f'{cp}.rig')
                 lengths = {'torso', 'neck', 'upper_arm', 'forearm', 'thigh', 'shin', 'head', 'root_height'}
