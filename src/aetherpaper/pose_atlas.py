@@ -14,7 +14,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 from dataclasses import dataclass
-from PIL import Image, ImageEnhance
+from PIL import Image
 from .timeline import actor_pose
 
 @lru_cache(maxsize=32)
@@ -127,7 +127,7 @@ def pose_hand(actor:dict,pose,width:int,height:int,t:float)->tuple[float,float]:
     if hand is None:
         raise ValueError(f"pose {frame.name!r} requires a hand anchor for prop attachment")
     ah=height*visual.get("height",.71)*actor.get("scale",1)
-    width_px=ah*visual["columns"]/visual["rows"]*visual.get("_aspect_ratio",1.)
+    width_px=ah*visual.get("aspect_ratio",1.0)
     ax,ay=meta.get("anchor",visual.get("anchor",[.5,.96]))
     return (pose.x*width+(hand[0]-ax)*width_px,
             pose.y*height+(hand[1]-ay)*ah)
